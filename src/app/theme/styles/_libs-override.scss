@@ -3,13 +3,13 @@
     -ms-touch-action: auto;
     touch-action: auto;
     overflow: hidden !important;
-    -ms-overflow-style: none; 
+    -ms-overflow-style: none;
     position: relative;
 }
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .ps {
-        overflow: auto !important; 
-    } 
+        overflow: auto !important;
+    }
 }
 .ps__rail-x {
     display: none;
@@ -101,13 +101,6 @@
 
 //----------Google Maps---------------
 .sebm-google-map-container {
-  height: 490px;
-  height: calc(100vh - 144px);
-}
-
-//----------Leaflet Maps---------------
-#leaflet-map {
-  width: 100%;
   height: 490px;
   height: calc(100vh - 144px);
 }

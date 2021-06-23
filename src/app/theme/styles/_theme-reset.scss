@@ -65,29 +65,6 @@
         color: mat.get-color-from-palette($primary) !important;
     }
 
-    /* angular-calendar */
-    .cal-day-view .cal-hour-segment:hover,
-    .cal-day-view .cal-drag-over .cal-hour-segment,
-    .cal-week-view .cal-day-headers .cal-header:hover,
-    .cal-week-view .cal-day-headers .cal-drag-over,
-    .cal-month-view .cal-cell-row .cal-cell:hover,
-    .cal-month-view .cal-cell.cal-has-events.cal-open{
-        background-color: rgba(mat.get-color-from-palette($primary), 0.4);
-    }
-    .cal-month-view .cal-cell-row:hover{
-        background-color: rgba(mat.get-color-from-palette($primary), 0.05);
-    }
-    .cal-week-view .cal-header.cal-today,
-    .cal-month-view .cal-day-cell.cal-today{
-        background-color: rgba(mat.get-color-from-palette($primary), 0.4);
-    }
-    .cal-day-view .cal-hour:nth-child(odd){
-        background-color: inherit;
-    }
-    .cal-event-action i{
-        margin: 4px;
-    }
-
     /* ngx-pagination */
     .gradus-pagination .ngx-pagination{
         margin-bottom: 0;
@@ -101,28 +78,4 @@
             color: mat.get-color-from-palette($foreground, base);
         }
     }
-
-    /* ngx-quill */
-    .ql-snow .ql-picker,
-    .ql-editor.ql-blank::before{
-        color: mat.get-color-from-palette($foreground, text);
-    }
-    .ql-snow .ql-stroke{
-        stroke: mat.get-color-from-palette($foreground, text);
-    }
-    .ql-snow .ql-fill{
-        fill: mat.get-color-from-palette($foreground, text);
-    }
-    .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-label,
-    .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options{
-        background: mat.get-color-from-palette($background, app-bar);
-    }
-
-    /* ngx-charts */
-    .ngx-charts{
-        text{
-            fill: mat.get-color-from-palette($foreground, text);
-        }
-    }
-
 }

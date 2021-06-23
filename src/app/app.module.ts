@@ -14,9 +14,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   wheelPropagation: true,
   suppressScrollX: true,
 };
-import { CalendarModule, DateAdapter } from "angular-calendar";
-import { adapterFactory } from "angular-calendar/date-adapters/date-fns";
-
 import { SharedModule } from "./shared/shared.module";
 import { PipesModule } from "./theme/pipes/pipes.module";
 import { AppRoutingModule } from "./app.routing";
@@ -43,10 +40,6 @@ import { FullScreenComponent } from "./theme/components/fullscreen/fullscreen.co
       apiKey: "AIzaSyAO7Mg2Cs1qzo_3jkKkZAKY6jtwIlm41-I",
     }),
     PerfectScrollbarModule,
-    CalendarModule.forRoot({
-      provide: DateAdapter,
-      useFactory: adapterFactory,
-    }),
     SharedModule,
     PipesModule,
     AppRoutingModule,
