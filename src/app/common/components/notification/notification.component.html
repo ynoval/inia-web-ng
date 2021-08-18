@@ -1,0 +1,7 @@
+<div fxLayout="row" fxLayoutAlign="start start">
+  <mat-icon> {{ notificationInfo.iconName }} </mat-icon>
+  <div fxFlex fxLayout="column" fxLayoutAlign="start center">
+    <span> {{ notificationInfo.message }} </span>
+    <mat-progress-bar *ngIf="notificationInfo.showProgress" mode="query"></mat-progress-bar>
+  </div>
+</div>

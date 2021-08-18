@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -7,52 +8,54 @@ import { verticalMenuItems } from './menu';
 
 @Injectable()
 export class MenuService {
+  items: Menu[];
 
-  constructor(private location:Location,
-              private router:Router){ }
+  constructor(private location: Location, private router: Router) {}
 
-  public getVerticalMenuItems():Array<Menu> {
+  public getVerticalMenuItems(): Array<Menu> {
     return verticalMenuItems;
   }
 
-  public expandActiveSubMenu(menu:Array<Menu>){
-      let url = this.location.path();
-      let routerLink = url; // url.substring(1, url.length);
-      let activeMenuItem = menu.filter(item => item.routerLink === routerLink);
-      if(activeMenuItem[0]){
-        let menuItem = activeMenuItem[0];
-        while (menuItem.parentId != 0){
-          let parentMenuItem = menu.filter(item => item.id == menuItem.parentId)[0];
-          menuItem = parentMenuItem;
-          this.toggleMenuItem(menuItem.id);
-        }
+  public expandActiveSubMenu(menu: Array<Menu>) {
+    const getParentMenuItem = (menuItem) => {
+      const result = menu.filter((item) => item.id === menuItem.parentId);
+      return result ? result[0] : undefined;
+    };
+    const url = this.location.path();
+    const routerLink = url; // url.substring(1, url.length);
+    const activeMenuItem = menu.filter((item) => item.routerLink === routerLink);
+    if (activeMenuItem[0]) {
+      let menuItem = activeMenuItem[0];
+      while (menuItem.parentId !== 0) {
+        menuItem = getParentMenuItem(menuItem);
+        this.toggleMenuItem(menuItem.id);
       }
+    }
   }
 
-  public toggleMenuItem(menuId){
-    let menuItem = document.getElementById('menu-item-'+menuId);
-    let subMenu = document.getElementById('sub-menu-'+menuId);
-    if(subMenu){
-      if(subMenu.classList.contains('show')){
+  public toggleMenuItem(menuId: number) {
+    const menuItem = document.getElementById(`menu-item-${menuId}`);
+    const subMenu = document.getElementById(`sub-menu-${menuId}`);
+    if (subMenu) {
+      if (subMenu.classList.contains('show')) {
         subMenu.classList.remove('show');
         menuItem.classList.remove('expanded');
-      }
-      else{
+      } else {
         subMenu.classList.add('show');
         menuItem.classList.add('expanded');
       }
     }
   }
 
-  public closeOtherSubMenus(menu:Array<Menu>, menuId){
-    let currentMenuItem = menu.filter(item => item.id == menuId)[0];
-    if(currentMenuItem.parentId == 0 && !currentMenuItem.target){
-      menu.forEach(item => {
-        if(item.id != menuId){
-          let subMenu = document.getElementById('sub-menu-'+item.id);
-          let menuItem = document.getElementById('menu-item-'+item.id);
-          if(subMenu){
-            if(subMenu.classList.contains('show')){
+  public closeOtherSubMenus(menu: Array<Menu>, menuId) {
+    const currentMenuItem = menu.filter((item) => item.id === menuId)[0];
+    if (currentMenuItem.parentId === 0 && !currentMenuItem.target) {
+      menu.forEach((item) => {
+        if (item.id !== menuId) {
+          const subMenu = document.getElementById(`sub-menu-${item.id}`);
+          const menuItem = document.getElementById(`menu-item-${item.id}`);
+          if (subMenu) {
+            if (subMenu.classList.contains('show')) {
               subMenu.classList.remove('show');
               menuItem.classList.remove('expanded');
             }
@@ -61,6 +64,4 @@ export class MenuService {
       });
     }
   }
-
-
 }

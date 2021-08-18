@@ -1,6 +1,5 @@
 # Add files here to ignore them from prettier formatting
-
 /dist
-package.json
+/coverage
 package-lock.json
-dist
+

@@ -66,7 +66,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatStepperModule
+    MatStepperModule,
   ],
   exports: [
     FlexLayoutModule,
@@ -100,8 +100,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatStepperModule
+    MatStepperModule,
   ],
-  declarations: []
+  declarations: [],
 })
-export class SharedModule { }
+export class SharedModule {}

@@ -1,28 +1,34 @@
-import { Directive, HostListener, Output, EventEmitter} from '@angular/core';
+import { Directive, HostListener, Output, EventEmitter } from '@angular/core';
 
 export type ScrollEvent = {
-  originalEvent: Event,
-  isWindowEvent: boolean,
-  scrollTop: number
+  originalEvent: Event;
+  isWindowEvent: boolean;
+  scrollTop: number;
 };
 
 @Directive({
-  selector: '[detectScroll]'
+  selector: '[appDetectScroll]',
 })
 export class DetectScrollDirective {
-
-  @Output() onScroll = new EventEmitter<ScrollEvent>();
+  @Output() scrollEvent = new EventEmitter<ScrollEvent>();
 
   @HostListener('scroll', ['$event']) elementScrolled(event) {
-    const scrollTop = event.target.scrollTop;
-    const emitValue: ScrollEvent = { originalEvent: event, isWindowEvent: false, scrollTop};
-    this.onScroll.emit(emitValue);
+    const { scrollTop } = event.target;
+    const emitValue: ScrollEvent = {
+      originalEvent: event,
+      isWindowEvent: false,
+      scrollTop,
+    };
+    this.scrollEvent.emit(emitValue);
   }
 
   @HostListener('window:scroll', ['$event']) windowScrolled(event) {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const emitValue: ScrollEvent = { originalEvent: event, isWindowEvent: true, scrollTop };
-    this.onScroll.emit(emitValue);
+    const emitValue: ScrollEvent = {
+      originalEvent: event,
+      isWindowEvent: true,
+      scrollTop,
+    };
+    this.scrollEvent.emit(emitValue);
   }
-
 }

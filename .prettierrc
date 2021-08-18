@@ -1,0 +1,23 @@
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "singleQuote": true,
+  "arrow-body-style": "off",
+  "prefer-arrow-callback": "off",
+  "printWidth": 120,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html"
+      }
+    },
+    {
+      "files": "*.component.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
+}
