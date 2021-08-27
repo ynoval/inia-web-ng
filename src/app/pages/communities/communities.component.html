@@ -1,9 +1,8 @@
-<div fxLayout="row wrap">
-  <ul>
-    <li><a [routerLink]="['community', 'I']">Comunidad I</a></li>
-    <li><a [routerLink]="['community', 'II']">Comunidad II</a></li>
-    <li><a [routerLink]="['community', 'III']">Comunidad III</a></li>
-    <li><a [routerLink]="['community', 'IV']">Comunidad IV</a></li>
-    <li><a [routerLink]="['community', 'V']">Comunidad V</a></li>
-  </ul>
+<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+  <div fxFlex class="flex-p" style="height: 100%">
+    <div style="height: 100%">
+      <google-map width="100%" height="100%" [options]="gmOptions"></google-map>
+    </div>
+  </div>
 </div>
+

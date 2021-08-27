@@ -7,14 +7,21 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { AppCommonModule } from '@app/common/common.module';
 import { createCustomElement } from '@angular/elements';
+import { NotificationComponent } from '@app/common/components/notification/notification.component';
+import { LAYERS_SERVICE_CONTEXT } from '@app/common/services/layers.service';
+import { ZONES_SERVICE_CONTEXT } from '@app/common/services/zones.service';
 import { SharedModule } from '../../shared/shared.module';
 import { DashboardComponent } from './dashboard.component';
 import { MapLayersComponent } from './map-layers/map-layers.component';
+import { ImportZonesComponent } from './import-zones/import-zones.component';
+import { ExportZonesComponent } from './export-zones/export-zones.component';
+import { DeleteZonesComponent } from './delete-zones/delete-zones.component';
+import { AddZoneComponent } from './add-zone/add-zone.component';
 
 export const routes = [
   { path: '', component: DashboardComponent, pathMatch: 'full' },
   {
-    path: 'zone',
+    path: 'zone/:id',
     loadChildren: () => import('../zone/zone.module').then((m) => m.ZoneModule),
     data: { breadcrumb: 'Zona Seleccionada' },
   },
@@ -32,8 +39,32 @@ export const routes = [
     SharedModule,
     AppCommonModule,
   ],
-  declarations: [DashboardComponent, MapLayersComponent],
-  entryComponents: [MapLayersComponent],
+  declarations: [
+    DashboardComponent,
+    MapLayersComponent,
+    ImportZonesComponent,
+    ExportZonesComponent,
+    AddZoneComponent,
+    DeleteZonesComponent,
+  ],
+  entryComponents: [
+    MapLayersComponent,
+    NotificationComponent,
+    ImportZonesComponent,
+    ExportZonesComponent,
+    AddZoneComponent,
+    DeleteZonesComponent,
+  ],
+  providers: [
+    {
+      provide: LAYERS_SERVICE_CONTEXT,
+      useValue: 'dashboard-layers',
+    },
+    {
+      provide: ZONES_SERVICE_CONTEXT,
+      useValue: 'dashboard-zones',
+    },
+  ],
 })
 export class DashboardModule {
   constructor(injector: Injector) {

@@ -1,50 +1,48 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
 import { GoogleMap } from '@angular/google-maps';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import * as ee from '@google/earthengine';
-import { ApiService } from '@app/common/services/api.service';
+import { Observable } from 'rxjs';
 import { GEEMapLayerModel } from '@app/common/models/geeMapLayer.model';
+import { ZonesService } from '@app/common/services/zones.service';
+import { ZoneModel } from '@app/common/models/zone.model';
+import { LayersService } from '@app/common/services/layers.service';
+import { NotificationService } from '@app/common/components/notification/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { AppSettings } from '../../app.settings';
 import { Settings } from '../../app.settings.model';
 import { MapLayersComponent } from './map-layers/map-layers.component';
+import { ImportZonesComponent } from './import-zones/import-zones.component';
+import { ExportZonesComponent } from './export-zones/export-zones.component';
+import { DeleteZonesComponent } from './delete-zones/delete-zones.component';
+import { AddZoneComponent } from './add-zone/add-zone.component';
 
-export interface Zone {
-  name: string;
-  type: google.maps.drawing.OverlayType;
-  visible: boolean;
-  info: any;
-}
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent {
+export class DashboardComponent implements AfterViewInit {
   public settings: Settings;
 
-  @ViewChild(GoogleMap, { static: false }) set map(m: GoogleMap) {
-    if (m) {
-      this.loadLayers(m);
-      this.initDrawingManager(m);
-    }
-  }
+  // @ViewChild(GoogleMap, { static: false }) set map(m: GoogleMap) {
+  //   if (m) {
+  //     this.mapInstance = m;
+  //     this.initDrawingManager(m);
+  //     this.setLayers(m)
+  //   }
+  // }
 
-  public activeMarkerIcon: string = 'https://cdn3.iconfinder.com/data/icons/musthave/32/Stock%20Index%20Down.png';
-
-  public mapInstance: GoogleMap;
+  @ViewChild(GoogleMap, { static: false }) mapInstance: GoogleMap;
 
   public mapLayers = [];
 
-  public definedZones: Zone[] = [];
+  public definedZones: ZoneModel[] = [];
 
   public selectedZone: string = '';
 
   public displayedColumns = ['name', 'actions'];
-
-  // @ViewChild(MatTable) zoneTable: MatTable<any>;
 
   public gmOptions: google.maps.MapOptions;
 
@@ -53,93 +51,146 @@ export class DashboardComponent {
   drawingManager: google.maps.drawing.DrawingManager;
 
   constructor(
-    private httpClient: HttpClient,
     appSettings: AppSettings,
-    private apiService: ApiService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private zonesService: ZonesService,
+    private layersService: LayersService,
+    private notificationService: NotificationService,
+    public dialog: MatDialog,
+    public router: Router
   ) {
     this.settings = appSettings.settings;
-    this.loadGoogleMapsApi();
+    // this.loadGoogleMapsApi();
+    this.gmOptions = {
+      center: { lat: -32, lng: -56 },
+      zoom: 6,
+      mapTypeId: 'satellite',
+      scaleControl: false,
+      disableDefaultUI: true,
+      zoomControl: true,
+      fullscreenControl: true,
+      fullscreenControlOptions: { position: google.maps.ControlPosition.BOTTOM_RIGHT },
+      keyboardShortcuts: false,
+    };
+  }
+
+  ngAfterViewInit() {
+    this.notificationService.showAction('cargando la información');
+    // Load Layers
+    this.layersService.getAll().subscribe((layers) => {
+      this.mapLayers = layers;
+      if (this.mapInstance) {
+        this.setLayers();
+      }
+      // this.notificationService.snackBar.dismiss();
+    });
+    // Initialize Drawing
+    this.initDrawingManager();
+
+    // Load Zones
+    this.zonesService.getZones().subscribe((zones) => {
+      this.definedZones = [];
+      if (zones) {
+        zones.forEach((z) => {
+          z.shape.setMap(z.visible ? this.mapInstance.googleMap : null);
+          this.definedZones.push(z);
+        });
+      }
+      this.cd.detectChanges();
+    });
+    // Load Selected Zone
+    this.zonesService.getSelectedZone().subscribe((zone) => {
+      this.selectedZone = zone;
+      this.cd.detectChanges();
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
   toogleZone(zone: any) {
     const index = this.definedZones.findIndex((z) => z.name === zone.name);
     if (this.definedZones[index].visible) {
-      // Hide zone
-      this.definedZones[index].info.overlay.setMap(null);
-      this.definedZones[index].visible = false;
-      if (this.selectedZone === zone.name) {
-        this.selectedZone = '';
-      }
+      this.zonesService.hideZone(zone.name);
     } else {
-      this.definedZones[index].info.overlay.setMap(this.mapInstance.googleMap);
-      this.definedZones[index].visible = true;
-      this.selectedZone = zone.name;
+      this.zonesService.showZone(zone.name);
     }
   }
 
   // eslint-disable-next-line class-methods-use-this
   deleteZone(zone: any) {
-    const index = this.definedZones.findIndex((z) => z.name === zone.name);
-    this.definedZones[index].info.overlay.setMap(null);
-    this.definedZones.splice(index, 1);
+    this.zonesService.removeZone(zone.name);
   }
 
   selectZone(zone: any) {
-    this.definedZones.forEach((z) => {
-      if (z.type !== google.maps.drawing.OverlayType.MARKER) {
-        z.info.overlay.setEditable(z.name === zone.name && z.visible);
-      } else {
-        const markerIcon =
-          z.name === zone.name && zone.visible
-            ? 'https://cdn3.iconfinder.com/data/icons/musthave/32/Stock%20Index%20Down.png'
-            : '';
-        z.info.overlay.setIcon(markerIcon);
-      }
-    });
+    this.zonesService.selectZone(zone.name);
     // TODO: IMPORTANTE!!, por qué fue necesario esto!!!?? :( :(
     this.cd.detectChanges();
-    this.selectedZone = zone.name;
   }
 
   noSelectedZone() {
-    this.definedZones.forEach((z) => {
-      if (z.type !== google.maps.drawing.OverlayType.MARKER) {
-        z.info.overlay.setEditable(false);
-      } else {
-        z.info.overlay.setIcon();
-      }
+    this.zonesService.noSelectedZone();
+  }
+
+  addZone() {
+    const dialogRef = this.dialog.open(AddZoneComponent, {
+      data: { defaultZoneName: this.zonesService.generateZoneName() },
+      width: '50%',
     });
-    this.selectedZone = '';
-    this.cd.detectChanges();
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 
-  private loadGoogleMapsApi() {
-    const { gmKey } = this.settings;
-    this.apiLoaded = this.httpClient
-      .jsonp(`https://maps.googleapis.com/maps/api/js?key=${gmKey}&libraries=drawing`, 'callback')
-      .pipe(
-        map(() => {
-          this.gmOptions = {
-            center: { lat: -33.031, lng: -55.932 },
-            zoom: 5,
-            mapTypeId: 'satellite',
-            scaleControl: false,
-            disableDefaultUI: true,
-            zoomControl: true,
-            fullscreenControl: true,
-            fullscreenControlOptions: { position: google.maps.ControlPosition.BOTTOM_RIGHT },
-            keyboardShortcuts: false,
-          };
-          return true;
-        }),
-        catchError(() => of(false))
-      );
+  importZones() {
+    const dialogRef = this.dialog.open(ImportZonesComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 
-  private initDrawingManager(gm: GoogleMap) {
-    gm.googleMap.addListener('click', () => {
+  exportZones() {
+    const dialogRef = this.dialog.open(ExportZonesComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+
+  deleteZones() {
+    const dialogRef = this.dialog.open(DeleteZonesComponent, {
+      data: { zones: this.definedZones },
+      width: '80%',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+
+  // LAZY LOADING PROBLEM (multiple googlemap API)
+  // Try to solve later, now api is loading as script on index.html
+  // private loadGoogleMapsApi() {
+  //   const { gmKey } = this.settings;
+  //   this.apiLoaded = this.httpClient
+  //     .jsonp(`https://maps.googleapis.com/maps/api/js?key=${gmKey}&libraries=drawing`, 'callback')
+  //     .pipe(
+  //       map(() => {
+  //         this.gmOptions = {
+  //           center: { lat: -33.031, lng: -55.932 },
+  //           zoom: 5,
+  //           mapTypeId: 'satellite',
+  //           scaleControl: false,
+  //           disableDefaultUI: true,
+  //           zoomControl: true,
+  //           fullscreenControl: true,
+  //           fullscreenControlOptions: { position: google.maps.ControlPosition.BOTTOM_RIGHT },
+  //           keyboardShortcuts: false,
+  //         };
+  //         return true;
+  //       }),
+  //       catchError(() => of(false))
+  //     );
+  // }
+
+  private initDrawingManager() {
+    this.mapInstance.googleMap.addListener('click', () => {
       this.noSelectedZone();
     });
     if (!this.drawingManager) {
@@ -177,121 +228,70 @@ export class DashboardComponent {
         },
       };
       this.drawingManager = new google.maps.drawing.DrawingManager(drawingOptions);
-      this.drawingManager.setMap(gm.googleMap);
-      this.mapInstance = gm;
+      this.drawingManager.setMap(this.mapInstance.googleMap);
       google.maps.event.addListener(this.drawingManager, 'overlaycomplete', (event) => {
-        const name = this.getZoneName();
-
-        const zone = {
-          name,
-          type: event.type,
-          visible: true,
-          info: event, // { ...event.overlay, name },
-          coordinates: this.getCoordinates(event.overlay),
-        };
-
-        if (event.type === google.maps.drawing.OverlayType.MARKER) {
-          zone.info.overlay.setIcon(this.activeMarkerIcon);
-        }
-        this.selectZone(zone);
-        this.definedZones.push(zone);
-        google.maps.event.addListener(zone.info.overlay, 'click', () => {
-          this.selectZone(zone);
-          if (zone.type === google.maps.drawing.OverlayType.MARKER) {
-            zone.info.overlay.setIcon(this.activeMarkerIcon);
-          }
-        });
+        this.zonesService.addZone(event);
+        event.overlay.setMap(null);
       });
     }
   }
 
-  private loadLayers(gm: GoogleMap) {
-    if (this.mapLayers.length === 0) {
-      this.apiService.getInformationLayers().then((layers) => {
-        layers.forEach((layer) => {
-          this.mapLayers.push({ ...layer, isVisible: layer.label === 'ROU', isEditable: layer.label !== 'ROU' });
-          if (layer.label === 'ROU') {
-            this.addLayer(layer);
-          }
-        });
-        // Create angular element to manage layers
-        const containerEl = document.getElementById('containerLayers');
+  private setLayers() {
+    if (this.mapLayers && this.mapLayers.length > 0) {
+      // Create angular element to manage layers
+      const containerEl = document.getElementById('containerLayers');
+      if (containerEl.childElementCount === 0) {
         const layersElement: NgElement & WithProperties<MapLayersComponent> = document.createElement(
           'app-map-layers'
         ) as any;
 
         layersElement.addEventListener('changeLayer', (event: any) => {
           if (event.detail.action === 'SHOW') {
-            this.addLayer(event.detail.layer);
+            this.showLayer(event.detail.layer);
           } else {
             this.hideLayer(event.detail.layer);
           }
         });
-
         layersElement.mapLayers = this.mapLayers;
-
         // Add to the DOM
         containerEl.innerHTML = '';
         containerEl.appendChild(layersElement);
-        gm.googleMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(containerEl);
-      });
+        this.mapInstance.googleMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(containerEl);
+        const overlays = this.mapInstance.googleMap.overlayMapTypes.getArray();
+        this.mapLayers.forEach((l) => {
+          if (l.isVisible) {
+            const index = overlays.findIndex((overlay) => overlay.name === l.label);
+            if (index === -1) {
+              this.mapInstance.googleMap.overlayMapTypes.push(l.overlay);
+            }
+          }
+        });
+        this.notificationService.snackBar.dismiss();
+      }
+      // } else {
+      //   const layersElement: NgElement & WithProperties<MapLayersComponent> = containerEl.children[0] as NgElement &
+      //     WithProperties<MapLayersComponent>;
+      //   layersElement.mapLayers = this.mapLayers;
+      // }
     }
   }
 
-  private addLayer(layer: GEEMapLayerModel) {
-    const index = this.mapLayers.findIndex((l) => l.label === layer.label);
-    this.mapLayers[index].visible = true;
-    const source = new ee.layers.EarthEngineTileSource({ mapid: layer.mapId });
-    const overlay = new ee.layers.ImageOverlay(source);
-    overlay.name = layer.label;
-    this.mapInstance.googleMap.overlayMapTypes.push(overlay);
+  private showLayer(layer: GEEMapLayerModel) {
+    this.layersService.show(layer);
+    this.mapInstance.googleMap.overlayMapTypes.push(layer.overlay);
   }
 
   private hideLayer(layer: GEEMapLayerModel) {
+    this.layersService.hide(layer);
     const mapIndex = this.mapLayers.findIndex((l) => l.label === layer.label);
-    this.mapLayers[mapIndex].visible = false;
+    this.mapLayers[mapIndex].isVisible = false;
     const index = this.mapInstance.googleMap.overlayMapTypes
       .getArray()
       .findIndex((overlay) => overlay.name === layer.label);
     this.mapInstance.googleMap.overlayMapTypes.removeAt(index);
   }
 
-  private getZoneName() {
-    const zoneName = 'ZONA-';
-    let max = 1;
-    this.definedZones.forEach((zone) => {
-      const parts = zone.name.split(zoneName);
-      // eslint-disable-next-line no-restricted-globals
-      if (parts.length === 2 && !isNaN(+parts[1])) {
-        max = max <= +parts[1] ? +parts[1] + 1 : max;
-      }
-    });
-    return `${zoneName}${max}`;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private getCoordinates(gmOverlay) {
-    const coordinates = [];
-    // console.log(gmOverlay.bounds);
-    // const bounds = gmOverlay.getBounds();
-    // const NE = bounds.getNorthEast();
-    // const SW = bounds.getSouthWest();
-    // // North West
-    // const NW = new google.maps.LatLng(NE.lat(), SW.lng());
-    // // South East
-    // const SE = new google.maps.LatLng(SW.lat(), NE.lng());
-    // gmOverlay
-    //   .getPath()
-    //   .getArray()
-    //   .forEach((coor) => {
-    //     coordinates.push(coor.toJSON());
-    //   });
-    // coordinates.push(NE.toJSON());
-    // coordinates.push(SW.toJSON());
-    // coordinates.push(NW.toJSON());
-    // coordinates.push(SE.toJSON());
-    // console.log(coordinates);
-
-    return coordinates;
+  viewZone(zone) {
+    this.router.navigate(['zone', zone.id]);
   }
 }

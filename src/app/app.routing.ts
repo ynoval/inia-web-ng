@@ -16,12 +16,6 @@ export const routes: Routes = [
         data: { breadcrumb: 'Dashboard' },
       },
       {
-        path: 'bookmarkedZones',
-        loadChildren: () =>
-          import('./pages/bookmarked-zones/bookmarked-zones.module').then((m) => m.BookmarkedZonesModule),
-        data: { breadcrumb: 'Zonas Seleccionadas' },
-      },
-      {
         path: 'communities',
         loadChildren: () => import('./pages/communities/communities.module').then((m) => m.CommunitiesModule),
         data: { breadcrumb: 'Comunidades' },

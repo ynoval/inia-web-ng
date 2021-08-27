@@ -1,3 +1,6 @@
-ZONE
+<div fxFlex fxLayout="row">
+  <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+  <h3>{{ zone.name }}</h3>
+</div>
 
 <a [routerLink]="['community/I']">Comunidad I </a>

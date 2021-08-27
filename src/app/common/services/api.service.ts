@@ -43,16 +43,15 @@ export class ApiService {
     const url = `${this.serverUrl}/gee/maps/communities`;
     return axios
       .get(url)
-      .then((response) => {
-        console.log(response);
-        return response.data.layers.map((layer: LayerData) => {
+      .then((response) =>
+        response.data.layers.map((layer: LayerData) => {
           const geeLayer = this.getGEEMapLayer(layer);
           return {
             id: layer.communityInfo.id,
             ...geeLayer,
           };
-        });
-      })
+        })
+      )
       .catch((error) => console.error(error));
   }
 
@@ -116,6 +115,7 @@ export class ApiService {
       label: layer.layerLabel,
       description: layer.layerDescription,
       isVisible: false,
+      isEditable: true,
     };
   }
 }

@@ -1,0 +1,61 @@
+<h2 mat-dialog-title>Eliminar Zonas</h2>
+<mat-dialog-content>
+  <div fxFlex fxLayout="column">
+    <div fxFlex fxLayout="row">
+      <div fxFlex="70">
+        <mat-form-field>
+          <input matInput style="padding-left: 5px" [(ngModel)]="searchText" />
+          <mat-icon matSuffix style="font-size: small" *ngIf="searchText && searchText.length > 0">close</mat-icon>
+          <mat-icon matPrefix style="font-size: small">search</mat-icon>
+        </mat-form-field>
+      </div>
+      <div fxFlex="30" fxLayout="row" fxLayoutAlign="end center">
+        <button
+          mat-icon-button
+          matTooltip="Seleccionar todas las zonas"
+          (click)="checkAll()"
+          [disabled]="selectedZones.length === data.zones.length"
+        >
+          <mat-icon>check_box</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          matTooltip="Seleccionar solo las zonas ocultas"
+          (click)="checkHidden()"
+          [disabled]="!areHiddenZones"
+        >
+          <mat-icon>visibility_off</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          matTooltip="Seleccionar solo las zonas visibles"
+          (click)="checkVisible()"
+          [disabled]="!areVisibleZones"
+        >
+          <mat-icon>visibility_on</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          matTooltip="Desmarcar todas las zonas"
+          (click)="uncheckAll()"
+          [disabled]="selectedZones.length === 0"
+        >
+          <mat-icon>check_box_outline_blank</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div fxFlex>
+      <mat-selection-list #zones [(ngModel)]="selectedZones">
+        <mat-list-option *ngFor="let zone of data.zones" [value]="zone.name">
+          {{ zone.name }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+    <span>{{ selectedZones.length }}</span>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Eliminar</button>
+</mat-dialog-actions>

@@ -40,9 +40,11 @@
       class="inner-sidenav-content transition-2"
       [disabled]="!settings.fixedHeader"
       (psScrollY)="onPsScrollY($event)"
+      fxFlex
+      fxLayout="column"
     >
       <app-breadcrumb></app-breadcrumb>
-      <div [class.has-footer]="settings.hasFooter" fxFlex>
+      <div [class.has-footer]="settings.hasFooter" fxFlex perfectScrollbar>
         <router-outlet></router-outlet>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { SharedModule } from '../../shared/shared.module';
 import { CommunitiesPageComponent } from './communities.component';
@@ -20,7 +21,14 @@ export const routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), FormsModule, PerfectScrollbarModule, SharedModule],
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    FormsModule,
+    GoogleMapsModule,
+    PerfectScrollbarModule,
+    SharedModule,
+  ],
   declarations: [CommunitiesPageComponent],
 })
 export class CommunitiesModule {}
