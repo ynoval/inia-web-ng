@@ -50,6 +50,8 @@ export class DashboardComponent implements AfterViewInit {
 
   drawingManager: google.maps.drawing.DrawingManager;
 
+  searchText: string = '';
+
   constructor(
     appSettings: AppSettings,
     private cd: ChangeDetectorRef,
@@ -141,16 +143,22 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   importZones() {
-    const dialogRef = this.dialog.open(ImportZonesComponent);
+    const dialogRef = this.dialog.open(ImportZonesComponent, { width: '50%' });
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      if (result && result.zones) {
+        this.notificationService.showAction('Importando zonas...');
+        this.zonesService.importZones(result.zones);
+        this.notificationService.snackBar.dismiss();
+      }
     });
   }
 
   exportZones() {
     const dialogRef = this.dialog.open(ExportZonesComponent);
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      if (result && result.zones.length > 0) {
+        this.zonesService.importZones(result.zones);
+      }
     });
   }
 

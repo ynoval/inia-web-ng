@@ -1,0 +1,19 @@
+@import 'variables';
+.map-layers-container {
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+.layers-btn-container {
+  background-color: #fff;
+}
+
+.layers-container {
+  background-color: azure;
+  opacity: 0.8;
+}
+
+.layers-container-title {
+  font-size: large;
+  margin-left: $flex-distance;
+}

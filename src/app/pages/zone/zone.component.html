@@ -1,6 +1,146 @@
-<div fxFlex fxLayout="row">
-  <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
-  <h3>{{ zone.name }}</h3>
+<div fxFlex fxLayout="column" *ngIf="zoneInformation$ | async as zoneInformation; else loading">
+  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
+    <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+      <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+      <h3>{{ zone.name }}</h3>
+    </div>
+    <div fxFlex fxLayout="row" fxLayoutAlign="end center">
+      <button mat-icon-button (click)="downloadZoneReport()">
+        <mat-icon>picture_as_pdf</mat-icon>
+      </button>
+      <button mat-icon-button (click)="editZone()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteZone()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div fxFlex class="flex-p">
+    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+      <mat-tab label="Información">
+        <div
+          fxFlex
+          fxLayout="row"
+          fxLayout.lt-md="column"
+          fxLayoutAlign="start start"
+          fxLayoutAlign.lt-md="start stretch"
+          class="flex-p"
+        >
+          <div fxFlex fxLayout="column" fxLayoutAlign="start stretch">
+            <div fxFlex fxFlexLayout="column" fxLayoutAlign="start center">
+              <div *ngIf="zone.type === 'marker'" class="flex-p">
+                <mat-form-field appearance="legacy" class="flex-p">
+                  <mat-label>Latitud</mat-label>
+                  <input matInput [value]="zoneInformation.latitude" [readonly]="true" />
+                </mat-form-field>
+                <mat-form-field appearance="legacy" class="flex-p">
+                  <mat-label>Longitud</mat-label>
+                  <input matInput [value]="zoneInformation.longitude" [readonly]="true" />
+                </mat-form-field>
+              </div>
+              <!-- <div *ngIf="zone.type !== 'marker'" class="flex-p">
+                <mat-form-field appearance="legacy" class="flex-p">
+                  <mat-label>Area Total (ha)</mat-label>
+                  <input matInput [value]="zoneInformation.area" [readonly]="true" />
+                </mat-form-field>
+              </div> -->
+            </div>
+            <div
+              *ngIf="zone.type === 'marker'"
+              fxflex
+              fxFlexLayout="column"
+              fxLayoutAlign="start center"
+              class="flex-p"
+            >
+              <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <p>{{ markerCommunityInfo.message }}</p>
+                <a routerLink="/communities/community/{{ markerCommunityInfo.id }}" class="flex-p">
+                  <mat-icon *ngIf="markerCommunityInfo.id !== ''">info</mat-icon>
+                </a>
+              </div>
+            </div>
+
+            <div *ngIf="zone.type !== 'marker'" fxFlex fxFlexLayout="column" fxLayoutAlign="start center">
+              <div
+                class="communities-chart"
+                echarts
+                [options]="communitiesChartOptions"
+                [merge]="updateCommunitiesOptions"
+                (chartInit)="onCommunitiesChartInit($event)"
+              ></div>
+            </div>
+          </div>
+          <div fxFlex fxLayout="column" fxLayoutAlign="center center" class="flex-p">
+            <button id="add-property-btn" mat-raised-button color="primary" (click)="addProperty()">
+              <mat-icon>add</mat-icon>
+              Adicionar propiedad
+            </button>
+            <ag-grid-angular
+              style="width: 100%; height: 500px"
+              class="ag-theme-balham"
+              [rowData]="zone.properties"
+              [gridOptions]="propertiesGridOptions"
+              [modules]="modules"
+              [frameworkComponents]="propertiesGridFrameworkComponents"
+              (gridReady)="onPropertiesGridReady($event)"
+            >
+            </ag-grid-angular>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Productividad">
+        <div fxFlex fxLayout="column" fxLayoutAlign="start">
+          <mat-radio-group
+            fxFlex
+            fxFlexLayout="row"
+            fxLayoutAlign="space-around center"
+            aria-labelledby="example-radio-group-label"
+            class="chart-options"
+            [(ngModel)]="selectedPPNAChart"
+            (change)="changePPNAChart()"
+          >
+            <mat-radio-button *ngFor="let ppnaChartsType of ppnaChartsTypes" [value]="ppnaChartsType.id">
+              {{ ppnaChartsType.label }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="selectedPPNAChart === 'HISTORICAL_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            <div
+              class="historical-chart"
+              echarts
+              [options]="historicalChartOptions"
+              [merge]="updateHistoricalOptions"
+              (chartInit)="onHistoricalChartInit($event)"
+            ></div>
+          </div>
+          <div
+            *ngIf="selectedPPNAChart === 'ANNUAL_CHART'"
+            fxFlex
+            fxLayout="row"
+            fxLayoutAlign="center center"
+            class="annual-chart"
+          >
+            <div
+              class="annual-chart"
+              echarts
+              [options]="annualChartOptions"
+              [merge]="updateAnnualOptions"
+              (chartInit)="onAnnualChartInit($event)"
+            ></div>
+          </div>
+          <div *ngIf="selectedPPNAChart === 'MONTHLY_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            <div
+              class="monthly-chart"
+              echarts
+              [options]="monthlyChartOptions"
+              [merge]="updateMonthlyOptions"
+              (chartInit)="onMonthlyChartInit($event)"
+            ></div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>
 
-<a [routerLink]="['community/I']">Comunidad I </a>
+<ng-template #loading> Espere por favor... </ng-template>

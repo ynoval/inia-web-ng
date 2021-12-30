@@ -1,81 +1,98 @@
 @use 'sass:map';
-@use '~@angular/material' as mat;
-@import "variables";
+@use '@angular/material' as mat;
+@import 'variables';
 
 @mixin theme-reset($theme) {
-    $color-config:  mat.get-color-config($theme);
-    $primary:       map.get($color-config, 'primary');
-    $accent:        map.get($color-config, 'accent');
-    $warn:          map.get($color-config, 'warn');
-    $foreground:    map.get($color-config, 'foreground');
-    $background:    map.get($color-config, 'background');
+  $color-config: mat.get-color-config($theme);
+  $primary: map.get($color-config, 'primary');
+  $accent: map.get($color-config, 'accent');
+  $warn: map.get($color-config, 'warn');
+  $foreground: map.get($color-config, 'foreground');
+  $background: map.get($color-config, 'background');
 
-    .bg-primary {
-        background: mat.get-color-from-palette($primary);
-        color: mat.get-color-from-palette($primary, default-contrast);
+  .bg-primary {
+    background: mat.get-color-from-palette($primary);
+    color: mat.get-color-from-palette($primary, default-contrast);
+  }
+  .bg-accent {
+    background: mat.get-color-from-palette($accent);
+    color: mat.get-color-from-palette($accent, default-contrast);
+  }
+  .bg-warn {
+    background: mat.get-color-from-palette($warn);
+    color: mat.get-color-from-palette($warn, default-contrast);
+  }
+  .muted-text {
+    color: mat.get-color-from-palette($foreground, secondary-text);
+  }
+  .gradient-primary {
+    background: mat.get-color-from-palette($primary, lighter);
+    background: -moz-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.5) 0%,
+      mat.get-color-from-palette($primary, lighter) 50%,
+      mat.get-color-from-palette($primary) 100%
+    );
+    background: -webkit-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.5) 0%,
+      mat.get-color-from-palette($primary, lighter) 50%,
+      mat.get-color-from-palette($primary) 100%
+    );
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.5) 0%,
+      mat.get-color-from-palette($primary, lighter) 50%,
+      mat.get-color-from-palette($primary) 100%
+    );
+  }
+  .mat-toolbar {
+    padding: 0 $flex-distance;
+    min-height: $toolbar-height;
+  }
+  .mat-toolbar-row,
+  .mat-toolbar-single-row {
+    height: $toolbar-height;
+  }
+  .mat-raised-button.small-logo {
+    color: mat.get-color-from-palette($primary);
+  }
+  .breadcrumb {
+    a {
+      color: mat.get-color-from-palette($primary);
     }
-    .bg-accent {
-        background: mat.get-color-from-palette($accent);
-        color: mat.get-color-from-palette($accent, default-contrast);
+    .breadcrumb-item + .breadcrumb-item:before {
+      color: mat.get-color-from-palette($foreground, text);
     }
-    .bg-warn {
-        background: mat.get-color-from-palette($warn);
-        color: mat.get-color-from-palette($warn, default-contrast);
-    }
-    .muted-text{
-        color: mat.get-color-from-palette($foreground, secondary-text);
-    }
-    .gradient-primary{
-        background: mat.get-color-from-palette($primary, lighter);
-        background: -moz-linear-gradient(to bottom, rgba(255,255,255, 0.5) 0%,mat.get-color-from-palette($primary, lighter)50%, mat.get-color-from-palette($primary)  100%);
-        background: -webkit-linear-gradient(to bottom, rgba(255,255,255, 0.5) 0%,mat.get-color-from-palette($primary, lighter)50%, mat.get-color-from-palette($primary)  100%);
-        background: linear-gradient(to bottom, rgba(255,255,255, 0.5) 0%,mat.get-color-from-palette($primary, lighter)50%, mat.get-color-from-palette($primary)  100%);
-    }
-    .mat-toolbar{
-        padding: 0 $flex-distance;
-        min-height: $toolbar-height;
-    }
-    .mat-toolbar-row,
-    .mat-toolbar-single-row{
-        height: $toolbar-height;
-    }
-    .mat-raised-button.small-logo{
-        color: mat.get-color-from-palette($primary);
-    }
-    .breadcrumb{
-        a{
-            color:  mat.get-color-from-palette($primary);
-        }
-        .breadcrumb-item+.breadcrumb-item:before{
-            color: mat.get-color-from-palette($foreground, text);
-        }
-    }
-    .user-block{
-         border-bottom: 1px solid mat.get-color-from-palette($foreground, divider);
-    }
-    .active-link{
-        border-radius: 0;
-        background-color: mat.get-color-from-palette($primary);
-        color: #fff;
-    }
-    .warn-color{
-        color: mat.get-color-from-palette($warn) !important;
-    }
-    .primary-color{
-        color: mat.get-color-from-palette($primary) !important;
-    }
+  }
+  .user-block {
+    border-bottom: 1px solid mat.get-color-from-palette($foreground, divider);
+  }
+  .active-link {
+    border-radius: 0;
+    // background-color: mat.get-color-from-palette($primary);
+    color: mat.get-color-from-palette($primary);
+    font-weight: bold;
+  }
+  .warn-color {
+    color: mat.get-color-from-palette($warn) !important;
+  }
+  .primary-color {
+    color: mat.get-color-from-palette($primary) !important;
+  }
 
-    /* ngx-pagination */
-    .inia-admin-pagination .ngx-pagination{
-        margin-bottom: 0;
-        padding: 4px;
-        .current {
-            background: mat.get-color-from-palette($primary);
-            color: mat.get-color-from-palette($primary, default-contrast);
-        }
-        a:hover, button:hover{
-            background: rgba(mat.get-color-from-palette($primary), 0.2);
-            color: mat.get-color-from-palette($foreground, base);
-        }
+  /* ngx-pagination */
+  .inia-admin-pagination .ngx-pagination {
+    margin-bottom: 0;
+    padding: 4px;
+    .current {
+      background: mat.get-color-from-palette($primary);
+      color: mat.get-color-from-palette($primary, default-contrast);
     }
+    a:hover,
+    button:hover {
+      background: rgba(mat.get-color-from-palette($primary), 0.2);
+      color: mat.get-color-from-palette($foreground, base);
+    }
+  }
 }

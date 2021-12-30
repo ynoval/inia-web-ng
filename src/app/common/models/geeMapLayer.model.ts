@@ -7,4 +7,5 @@ export type GEEMapLayerModel = {
   isVisible: boolean;
   isEditable: boolean;
   overlay: any;
+  properties?: any;
 };

@@ -4,7 +4,7 @@ import { Settings } from './app.settings.model';
 @Injectable()
 export class AppSettings {
   public settings = new Settings(
-    'Pastizales', // theme name
+    'Pastizales ROU', // theme name
     true, // loadingSpinner
     true, // fixedHeader
     true, // sidenavIsOpened
@@ -15,7 +15,7 @@ export class AppSettings {
     'indigo-light', // indigo-light, teal-light, red-light, blue-dark, green-dark, pink-dark
     false, // true = rtl, false = ltr
     true, // true = has footer, false = no footer
-    'http://localhost:3333/api',
+    'https://inia-server-diqgi2hzma-ue.a.run.app/api',
     'AIzaSyBcvxTFLOtacW2lt0sXn_W6QP1ypNaJIkU'
   );
 }

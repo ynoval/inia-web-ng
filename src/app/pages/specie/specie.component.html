@@ -1,1 +1,37 @@
-<div fxLayout="row wrap">Specie PAGE HERE {{ id }}</div>
+<div fxFlex fxLayout="column" *ngIf="specie$ | async as specie; else loading">
+  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
+    <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+      <h3>{{ specie.name }}</h3>
+    </div>
+    <div fxFlex fxLayout="row" fxLayoutAlign="end center">
+      <button mat-icon-button (click)="downloadReport()">
+        <mat-icon>picture_as_pdf</mat-icon>
+      </button>
+      <button mat-icon-button (click)="showImages()">
+        <mat-icon>collections</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div fxFlex class="flex-p" *ngIf="specie.etymology">
+    <span><strong>Etimología</strong></span>
+    <p>{{ specie.etymology }}</p>
+  </div>
+  <div fxFlex class="flex-p" *ngIf="specie.commonNames && specie.commonNames.length > 0">
+    <span><strong>Nombre común: </strong> {{ specie.commonNames.join(', ') }}.</span>
+  </div>
+  <div fxFlex class="flex-p" *ngIf="specie.synonyms && specie.synonyms.length > 0">
+    <span><strong>Sinónimos: </strong> {{ specie.synonyms.join(', ') }}.</span>
+  </div>
+  <div fxFlex class="flex-p" *ngIf="specie.characteristics">
+    <span><strong>Características </strong></span>
+    <p>{{ specie.characteristics }}.</p>
+  </div>
+  <div fxFlex class="flex-p" *ngIf="specie.identificationAspects && specie.identificationAspects.length > 0">
+    <span><strong>Aspectos para su identificación </strong></span>
+    <ol>
+      <li *ngFor="let aspect of specie.identificationAspects">{{ aspect }}.</li>
+    </ol>
+  </div>
+</div>
+
+<ng-template #loading> Obteniendo la información de la especie... </ng-template>

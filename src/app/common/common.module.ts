@@ -10,12 +10,13 @@ import { ConfirmDialogComponent } from './directives/confirm/confirm-dialog/conf
 import { ApiService } from './services/api.service';
 import { ZonesService } from './services/zones.service';
 import { LayersService } from './services/layers.service';
+import { CommunitiesLayersService } from './services/communities-layers.service';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule],
   declarations: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
   exports: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
-  providers: [NotificationService, ApiService, ZonesService, LayersService],
+  providers: [NotificationService, ApiService, ZonesService, LayersService, CommunitiesLayersService],
   entryComponents: [ConfirmDialogComponent],
 })
 export class AppCommonModule {}

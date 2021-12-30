@@ -20,7 +20,7 @@ export class ConfirmDirective {
     event.preventDefault();
     event.stopPropagation();
     if (this.dontAsk) {
-      this.doConfirm.next();
+      this.doConfirm.next(null);
     } else {
       this.openDialog();
     }
@@ -38,7 +38,7 @@ export class ConfirmDirective {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.doConfirm.next();
+        this.doConfirm.next(null);
       }
     });
   }

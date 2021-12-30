@@ -30,5 +30,9 @@ export class AppComponent {
       'circle',
       this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/icons/circle.svg')
     );
+    this.matIconRegistry.addSvgIcon(
+      'external-link',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/icons/external-link.svg')
+    );
   }
 }

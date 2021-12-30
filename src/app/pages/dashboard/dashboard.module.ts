@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { AppCommonModule } from '@app/common/common.module';
 import { createCustomElement } from '@angular/elements';
 import { NotificationComponent } from '@app/common/components/notification/notification.component';
@@ -36,6 +37,7 @@ export const routes = [
     HttpClientModule,
     HttpClientJsonpModule,
     PerfectScrollbarModule,
+    NgxFileDropModule,
     SharedModule,
     AppCommonModule,
   ],

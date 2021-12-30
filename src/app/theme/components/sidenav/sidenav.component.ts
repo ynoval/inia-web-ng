@@ -12,7 +12,7 @@ import { MenuService } from '../menu/menu.service';
   providers: [MenuService],
 })
 export class SidenavComponent implements OnInit {
-  public userImage = '../assets/img/inia-logo.jpeg';
+  public userImage = '../assets/img/logo.png';
 
   public menuItems: Array<any>;
 

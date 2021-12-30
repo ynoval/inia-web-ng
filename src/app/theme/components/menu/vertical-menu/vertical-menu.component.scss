@@ -1,57 +1,63 @@
-@import "../../../styles/mixins";
+@import '../../../styles/mixins';
 
-.menu-icon{
-    margin-right: 12px;
+.menu-icon {
+  margin-right: 12px;
 }
-.menu-expand-icon{
-    position: absolute;
-    right: 10px;
-    top: 10px;
-}
-
-.menu-item{
-    .mat-button{
-        padding: 0;
-        padding-top: 3px;
-        padding-bottom: 3px;
-        width: 100%;
-        font-weight: 400;
-        &.expanded{
-            .menu-expand-icon{
-                -webkit-transform: rotate(180deg);
-                -moz-transform: rotate(180deg);
-                transform: rotate(180deg);
-            }
-        }
-
-    }
-    .mat-button-wrapper{
-        padding-left: 16px;
-    }
+.menu-expand-icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
-.sub-menu{
-    @include menu-level-padding('ltr');
-    max-height: 0;
-    overflow: hidden;
-    -webkit-transition: max-height 0.25s ease-out;
-    -moz-transition: max-height 0.25s ease-out;
-    transition: max-height 0.25s ease-out;
-    .mat-button{
-        padding-left: 20px;
+.menu-item {
+  .mat-button {
+    padding: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    width: 100%;
+    font-weight: 400;
+    &.expanded {
+      .menu-expand-icon {
+        -webkit-transform: rotate(180deg);
+        -moz-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
     }
-    &.show{
-        max-height: 500px;
-        -webkit-transition: max-height 0.25s ease-in;
-        -moz-transition: max-height 0.25s ease-in;
-        transition: max-height 0.25s ease-in;
-    }
+  }
+  .mat-button-wrapper {
+    padding-left: 16px;
+  }
+}
+
+.sub-menu {
+  @include menu-level-padding('ltr');
+  max-height: 0;
+  overflow: hidden;
+  -webkit-transition: max-height 0.25s ease-out;
+  -moz-transition: max-height 0.25s ease-out;
+  transition: max-height 0.25s ease-out;
+  .mat-button {
+    padding-left: 20px;
+  }
+  &.show {
+    max-height: 500px;
+    -webkit-transition: max-height 0.25s ease-in;
+    -moz-transition: max-height 0.25s ease-in;
+    transition: max-height 0.25s ease-in;
+  }
 }
 
 .bottom-information {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: #eee;
-    height: 250px;
+  position: absolute;
+  bottom: 70px;
+  width: 100%;
+}
+
+.small-logo {
+  height: 40px;
+  width: 40px;
+}
+
+.logo-img {
+  height: 90px;
 }

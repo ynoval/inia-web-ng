@@ -55,7 +55,9 @@
 /** *************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js'; // Included with Angular CLI.
+import 'zone.js';
+
+import 'document-register-element'; // Included with Angular CLI.
 
 /** *************************************************************************************************
  * APPLICATION IMPORTS
@@ -63,4 +65,6 @@ import 'zone.js'; // Included with Angular CLI.
 
 // for ng2-dragula
 (window as any).global = window;
-import 'document-register-element';
+declare let global: any;
+declare let require: any;
+global.Buffer = global.Buffer || require('buffer').Buffer;

@@ -5,4 +5,5 @@ export type SubCommunityModel = {
   order: string;
   predominantSpecies: SpecieModel[];
   indicatorSpecies: SpecieModel[];
+  imageUrls?: string[];
 };

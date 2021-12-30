@@ -3,6 +3,7 @@ import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { ZoneModel } from '../models/zone.model';
+import { ApiService } from './api.service';
 
 export const ZONES_SERVICE_CONTEXT = new InjectionToken<string>('ZonesServiceContext');
 
@@ -10,9 +11,11 @@ export const ZONES_SERVICE_CONTEXT = new InjectionToken<string>('ZonesServiceCon
   providedIn: 'root',
 })
 export class ZonesService {
-  public unActiveMarkerIcon: string = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+  // TODO: Move to config
+  public inactiveMarkerIcon: string = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
 
   // 'https://cdn3.iconfinder.com/data/icons/musthave/32/Stock%20Index%20Down.png';
+  // TODO: Move to config
   public activeMarkerIcon: string = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 
   private _zones: BehaviorSubject<ZoneModel[]> = new BehaviorSubject<ZoneModel[]>(null);
@@ -23,7 +26,9 @@ export class ZonesService {
 
   private selectedZone: string = '';
 
-  constructor(@Inject(ZONES_SERVICE_CONTEXT) private storageKey: string) {
+  // private _viewLayer: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  constructor(@Inject(ZONES_SERVICE_CONTEXT) private storageKey: string, private apiService: ApiService) {
     this.loadZones();
   }
 
@@ -38,6 +43,7 @@ export class ZonesService {
         type: sz.type,
         visible: sz.visible,
         shape,
+        properties: sz.properties || [],
       };
       this.zones.push(zone);
     });
@@ -48,6 +54,10 @@ export class ZonesService {
     return this._zones.asObservable();
   }
 
+  // getViewLayer(): Observable<string> {
+  //   return this._viewLayer.asObservable();
+  // }
+
   getSelectedZone(): Observable<string> {
     return this._selectedZone.asObservable();
   }
@@ -55,6 +65,65 @@ export class ZonesService {
   getZone(zoneId: string) {
     const index = this.zones.findIndex((z) => z.id === zoneId);
     return index >= 0 ? this.zones[index] : undefined;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  importZones(zones) {
+    zones.forEach((zone) => {
+      const { zoneName, zoneType, zoneCoordinates, zoneProperties } = this.getImportedZoneData(zone);
+      const zoneShape = this.createShape(zoneName, zoneType, zoneCoordinates, true);
+      const importedZone = {
+        id: uuidv4(),
+        name: zoneName || this.generateZoneName(),
+        type: zoneType,
+        visible: true,
+        shape: zoneShape,
+        properties: zoneProperties || [],
+      };
+
+      this.zones.push(importedZone);
+      this._zones.next(Object.assign([], this.zones));
+      this.addStorageZone(importedZone);
+    });
+  }
+
+  getImportedZoneData(zone) {
+    const zoneProperties = [];
+    Object.keys(zone.properties).forEach((key) => {
+      zoneProperties.push({
+        propertyName: key,
+        propertyValue: zone.properties[key],
+      });
+    });
+    return {
+      zoneName: this.generateZoneName(),
+      zoneType:
+        zone.geometry.type === 'Polygon'
+          ? google.maps.drawing.OverlayType.POLYGON
+          : google.maps.drawing.OverlayType.MARKER,
+      zoneCoordinates:
+        zone.geometry.type === 'Polygon'
+          ? this.getPolygonCoordinates(zone.geometry.coordinates)
+          : this.getMarkerCoordinates(zone.geometry.coordinates),
+      zoneProperties,
+    };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getPolygonCoordinates(featureCoordinates) {
+    // TODO: Only simple polygon is supported
+    return featureCoordinates[0].map((c) => ({
+      lat: c[1],
+      lng: c[0],
+    }));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getMarkerCoordinates(featureCoordinates) {
+    return {
+      lat: featureCoordinates[1],
+      lng: featureCoordinates[0],
+    };
   }
 
   addZone(gmZone) {
@@ -68,6 +137,7 @@ export class ZonesService {
       type: gmZone.type,
       visible: true,
       shape,
+      properties: [],
     };
 
     this.zones.push(zone);
@@ -87,7 +157,7 @@ export class ZonesService {
         };
         z.shape.setOptions(options);
       } else {
-        const markerIcon = z.name === zoneName && z.visible ? this.activeMarkerIcon : this.unActiveMarkerIcon;
+        const markerIcon = z.name === zoneName && z.visible ? this.activeMarkerIcon : this.inactiveMarkerIcon;
         z.shape.setIcon(markerIcon);
       }
       z.shape.setDraggable(z.name === zoneName && z.visible);
@@ -107,7 +177,7 @@ export class ZonesService {
         };
         z.shape.setOptions(options);
       } else {
-        z.shape.setIcon(this.unActiveMarkerIcon);
+        z.shape.setIcon(this.inactiveMarkerIcon);
       }
       z.shape.setDraggable(false);
     });
@@ -144,7 +214,71 @@ export class ZonesService {
     this.selectZone(zoneName);
   }
 
-  createShape(zoneName, zoneType, coordinates, isActive = false) {
+  generateZoneName() {
+    const zoneName = 'ZONA-';
+    let max = 1;
+    this.zones.forEach((zone) => {
+      const parts = zone.name.split(zoneName);
+      // eslint-disable-next-line no-restricted-globals
+      if (parts.length === 2 && !isNaN(+parts[1])) {
+        max = max <= +parts[1] ? +parts[1] + 1 : max;
+      }
+    });
+    return `${zoneName}${max}`;
+  }
+
+  getZoneInformation(zoneId: string) {
+    const zone = this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+
+    return this.apiService.getZoneInformation({
+      type: zone.type,
+      coordinates: this.getZoneCoordinatesList(zoneId),
+    });
+  }
+
+  getZoneAnnualPPNAMean(zoneId) {
+    const zone = this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    return this.apiService.getZoneAnnualPPNAMean({
+      type: zone.type,
+      coordinates: this.getZoneCoordinatesList(zoneId),
+    });
+  }
+
+  // TODO: Define year range (2001 - Current Year)
+  getZoneAnnualPPNA(zoneId, year) {
+    const zone = this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    return this.apiService.getZoneAnnualPPNA(
+      {
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zoneId),
+      },
+      year
+    );
+  }
+
+  getZoneHistoricalPPNA(zoneId: string) {
+    const zone = this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+
+    return this.apiService.getZoneHistoricalPPNA({
+      type: zone.type,
+      coordinates: this.getZoneCoordinatesList(zoneId),
+    });
+  }
+
+  // #region Private Methods
+  private createShape(zoneName, zoneType, coordinates, isActive = false) {
     if (zoneType === google.maps.drawing.OverlayType.MARKER) {
       const marker = this.createMarker(coordinates, isActive);
       marker.addListener('dragend', () => {
@@ -161,6 +295,12 @@ export class ZonesService {
           this.selectZone(zoneName);
         }
       });
+      // marker.addListener('dblclick', () => {
+      //   if (zoneName === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //     this._viewLayer.next(this.zones[index].id);
+      //   }
+      // });
       return marker;
     }
 
@@ -191,6 +331,12 @@ export class ZonesService {
           }
         }
       });
+      // polygon.addListener('dblclick', () => {
+      //   if (zoneName === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //     this._viewLayer.next(this.zones[index].id);
+      //   }
+      // });
       return polygon;
     }
 
@@ -210,22 +356,29 @@ export class ZonesService {
           this.removeZone(zoneName);
         }
       });
+      // rectangle.addListener('dblclick', () => {
+      //   if (zoneName === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //     this._viewLayer.next(this.zones[index].id);
+      //     this._viewLayer.next('');
+      //   }
+      // });
       return rectangle;
     }
     return null;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  createMarker(position, isActive = false) {
+  private createMarker(position, isActive = false) {
     return new google.maps.Marker({
       position,
-      icon: isActive ? this.activeMarkerIcon : this.unActiveMarkerIcon,
+      icon: isActive ? this.activeMarkerIcon : this.inactiveMarkerIcon,
       draggable: false,
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
-  createPolygon(paths) {
+  private createPolygon(paths) {
     return new google.maps.Polygon({
       paths,
       draggable: false,
@@ -237,7 +390,7 @@ export class ZonesService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  createRectangle(bounds) {
+  private createRectangle(bounds) {
     return new google.maps.Rectangle({
       bounds,
       draggable: false,
@@ -288,23 +441,10 @@ export class ZonesService {
       type: zone.type,
       visible: zone.visible,
       coordinates: this.getShapeCoordinates(zone.type, zone.shape),
+      properties: zone.properties || [],
     };
   }
-
   // #endregion
-
-  generateZoneName() {
-    const zoneName = 'ZONA-';
-    let max = 1;
-    this.zones.forEach((zone) => {
-      const parts = zone.name.split(zoneName);
-      // eslint-disable-next-line no-restricted-globals
-      if (parts.length === 2 && !isNaN(+parts[1])) {
-        max = max <= +parts[1] ? +parts[1] + 1 : max;
-      }
-    });
-    return `${zoneName}${max}`;
-  }
 
   // eslint-disable-next-line class-methods-use-this
   private getShapeCoordinates(zoneType, shape) {
@@ -348,7 +488,7 @@ export class ZonesService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getOverlayRectangleCoordinates(rectangle) {
+  private getOverlayRectangleCoordinates(rectangle) {
     return rectangle.getBounds();
     // const coordinates = [];
 
@@ -370,7 +510,7 @@ export class ZonesService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getOverlayPolygonCoordinates(polygon) {
+  private getOverlayPolygonCoordinates(polygon) {
     const coordinates = [];
     polygon
       .getPath()
@@ -380,4 +520,43 @@ export class ZonesService {
       });
     return coordinates;
   }
+
+  private getZoneCoordinatesList(zoneId: string) {
+    const zone = this.getZone(zoneId);
+    const coordinates = this.getShapeCoordinates(zone.type, zone.shape);
+    // eslint-disable-next-line default-case
+    switch (zone.type) {
+      case 'marker':
+        return this.getMarkerCoodinatesList(coordinates);
+      case 'polygon':
+        return this.getPolygonCoordinatesList(coordinates);
+      case 'rectangle':
+        return this.getReactangleCoordinatesList(coordinates);
+    }
+    return [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getMarkerCoodinatesList(coordinates) {
+    return [coordinates.lng(), coordinates.lat()];
+    // return [-55.59084933038717, -33.57749649064163];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getPolygonCoordinatesList(coordinates) {
+    const result = [];
+    coordinates.forEach((coord) => {
+      result.push(coord.lng(), coord.lat());
+    });
+    return result;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getReactangleCoordinatesList(coordinates) {
+    // NOTE: JSON stringify convert to  north, east, south, west :O
+    const coords = JSON.parse(JSON.stringify(coordinates));
+    return [coords.north, coords.west, coords.south, coords.west, coords.south, coords.east, coords.north, coords.east];
+  }
+
+  // #endregion
 }

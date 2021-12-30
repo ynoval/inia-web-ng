@@ -14,6 +14,8 @@ export class DeleteZonesComponent implements OnInit {
 
   areVisibleZones: boolean;
 
+  searchText: string = '';
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: { zones: ZoneModel[] }) {}
 
   ngOnInit() {

@@ -11,9 +11,11 @@ type ZoneType = 'LOCATION' | 'MARKER' | 'POLYGON' | 'RECTANGLE';
 export class AddZoneComponent implements OnInit {
   currentLocation = null;
 
+  zoneName = '';
+
   selectedZoneType: ZoneType;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private data: { defaultZoneName: string }) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { defaultZoneName: string }) {}
 
   ngOnInit() {
     if (navigator.geolocation) {
@@ -25,5 +27,10 @@ export class AddZoneComponent implements OnInit {
       });
     }
     this.selectedZoneType = 'MARKER';
+  }
+
+  // TODO: Implements
+  generateZoneName() {
+    return '';
   }
 }

@@ -15,6 +15,11 @@ type LayerData = {
   communityInfo?: any;
 };
 
+type ZoneInformation = {
+  type: google.maps.drawing.OverlayType;
+  coordinates: number[]; // Array of number that represent coordinates
+};
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   serverUrl = '';
@@ -107,6 +112,70 @@ export class ApiService {
       .catch((error) => console.error(error));
   }
 
+  async getZoneInformation(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/information`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.zoneInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualPPNAMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/ppna/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ppnaInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualPPNA(zoneInformation: ZoneInformation, year: number) {
+    const url = `${this.serverUrl}/gee/zone/ppna/annual/${year}`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ppnaInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalPPNA(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/ppna/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.historicalPPNAInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityPPNA(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna`;
+    return axios
+      .get(url)
+      .then((response) => response.data.communityPPNAInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualPPNAMean(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/annual/mean`;
+    return axios
+      .get(url)
+      .then((response) => response.data.communityAnnualPPNAMean)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualPPNA(communityOrder: string, year: number) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/annual/${year}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.communityAnnualPPNA)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityHistoricalPPNA(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.communityHistoricalPPNA)
+      .catch((error) => console.error(error));
+  }
+
   // eslint-disable-next-line class-methods-use-this
   private getGEEMapLayer(layer: LayerData): Partial<GEEMapLayerModel> {
     return {
@@ -116,6 +185,7 @@ export class ApiService {
       description: layer.layerDescription,
       isVisible: false,
       isEditable: true,
+      properties: layer.communityInfo,
     };
   }
 }

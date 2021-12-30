@@ -1,10 +1,7 @@
-<div fxLayout="row wrap" *ngIf="router.url !== '/'">
+<div fxLayout="row wrap" *ngIf="router.url !== '/' && router.url !== '/communities'">
   <div fxFlex="100" class="flex-p">
     <mat-card fxLayout="row" class="breadcrumb">
-      <a *ngIf="router.url !== '/'" routerLink="/" class="breadcrumb-item" fxLayout="row" fxLayoutAlign="start center">
-        <mat-icon>home</mat-icon>
-        <span class="breadcrumb-title">Inicio</span>
-      </a>
+      <ng-container *ngIf="router.url.startsWith('/communities'); then communitiesHome; else zonesHome"> </ng-container>
       <div
         *ngFor="let breadcrumb of breadcrumbs; let i = index"
         class="breadcrumb-item"
@@ -17,3 +14,16 @@
     </mat-card>
   </div>
 </div>
+
+<ng-template #zonesHome>
+  <a routerLink="/" class="breadcrumb-item" fxLayout="row" fxLayoutAlign="start center">
+    <mat-icon>dashboard</mat-icon>
+    <span class="breadcrumb-title">Zonas</span>
+  </a>
+</ng-template>
+<ng-template #communitiesHome>
+  <a routerLink="/communities" class="breadcrumb-item" fxLayout="row" fxLayoutAlign="start center">
+    <mat-icon>library_books</mat-icon>
+    <span class="breadcrumb-title">Comunidades</span>
+  </a>
+</ng-template>

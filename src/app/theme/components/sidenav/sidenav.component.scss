@@ -13,13 +13,13 @@
 
 .user-block{
     height: 0;
-    position: relative;  
-    z-index: 1; 
-    overflow: hidden;  
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
     img{
-        width: 80px; 
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 50%;       
+        width: 80px;
+        // border: 1px solid rgba(0, 0, 0, 0.2);
+        // border-radius: 50%;     
     }
     .user-info-wrapper{
         padding: 0 6px;
@@ -34,19 +34,19 @@
                 font-size: 13px;
             }
         }
-    } 
+    }
     &.show{
         height: $sidenav-user-block-height;
-    }      
-} 
+    }
+}
 
 .sidenav-menu-outer{
     .ps{
-        height: calc(100% - #{$toolbar-height}); 
-    }       
+        height: calc(100% - #{$toolbar-height});
+    }
     &.user-block-show{
-        .ps{        
-            height: calc(100% - #{$toolbar-height + $sidenav-user-block-height}); 
+        .ps{
+            height: calc(100% - #{$toolbar-height + $sidenav-user-block-height});
         }
-    } 
+    }
 }

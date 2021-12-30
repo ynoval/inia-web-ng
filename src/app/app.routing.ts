@@ -13,12 +13,10 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./pages/dashboard/dashboard.module').then((m) => m.DashboardModule),
-        data: { breadcrumb: 'Dashboard' },
       },
       {
         path: 'communities',
         loadChildren: () => import('./pages/communities/communities.module').then((m) => m.CommunitiesModule),
-        data: { breadcrumb: 'Comunidades' },
       },
       {
         path: 'information',

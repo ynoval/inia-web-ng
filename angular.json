@@ -40,7 +40,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist/inia-web",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -54,7 +54,9 @@
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "dragula"
+              "dragula",
+              "js-kml-parser",
+              "shpjs"
             ],
             "aot": false,
             "vendorChunk": true,
