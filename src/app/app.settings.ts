@@ -16,6 +16,6 @@ export class AppSettings {
     false, // true = rtl, false = ltr
     true, // true = has footer, false = no footer
     'https://inia-server-diqgi2hzma-ue.a.run.app/api',
-    'AIzaSyBcvxTFLOtacW2lt0sXn_W6QP1ypNaJIkU'
+    'GEE_KEY'
   );
 }
