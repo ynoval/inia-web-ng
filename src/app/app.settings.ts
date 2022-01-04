@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Settings } from './app.settings.model';
+import { environment } from '@env/environment';
+import { Settings } from '@app/app.settings.model';
 
 @Injectable()
 export class AppSettings {
@@ -15,7 +16,7 @@ export class AppSettings {
     'indigo-light', // indigo-light, teal-light, red-light, blue-dark, green-dark, pink-dark
     false, // true = rtl, false = ltr
     true, // true = has footer, false = no footer
-    'https://inia-server-diqgi2hzma-ue.a.run.app/api',
-    'AIzaSyBcvxTFLOtacW2lt0sXn_W6QP1ypNaJIkU'
+    environment.apiUrl,
+    environment.gmKey
   );
 }

@@ -42,3 +42,6 @@ testem.log
 Thumbs.db
 package copy.json
 package-lock copy.json
+
+# API Keys
+keys.ts

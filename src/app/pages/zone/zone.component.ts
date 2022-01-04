@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption } from 'echarts';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { v4 as uuidv4 } from 'uuid';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
@@ -221,7 +222,7 @@ export class ZonePageComponent implements OnInit {
 
   communitiesChartOptions = {
     title: {
-      text: 'Distribución del área por comunidades',
+      text: 'Distribución del área.',
       subtext: 'Área total: ',
       left: 'left',
     },
@@ -595,6 +596,29 @@ export class ZonePageComponent implements OnInit {
 
   // eslint-disable-next-line class-methods-use-this
   saveCSV() {
-    alert('myToolHandler1');
+    const data = [
+      {
+        name: 'Test 1',
+        age: 13,
+        average: 8.2,
+        approved: true,
+        description: "using 'Content here, content here' ",
+      },
+      {
+        name: 'Test 2',
+        age: 11,
+        average: 8.2,
+        approved: true,
+        description: "using 'Content here, content here' ",
+      },
+      {
+        name: 'Test 4',
+        age: 10,
+        average: 8.2,
+        approved: true,
+        description: "using 'Content here, content here' ",
+      },
+    ];
+    new AngularCsv(data, 'My Report');
   }
 }
