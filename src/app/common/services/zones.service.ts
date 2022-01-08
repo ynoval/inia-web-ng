@@ -12,11 +12,11 @@ export const ZONES_SERVICE_CONTEXT = new InjectionToken<string>('ZonesServiceCon
 })
 export class ZonesService {
   // TODO: Move to config
-  public inactiveMarkerIcon: string = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+  public inactiveMarkerIcon: string = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
 
   // 'https://cdn3.iconfinder.com/data/icons/musthave/32/Stock%20Index%20Down.png';
   // TODO: Move to config
-  public activeMarkerIcon: string = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+  public activeMarkerIcon: string = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 
   private _zones: BehaviorSubject<ZoneModel[]> = new BehaviorSubject<ZoneModel[]>(null);
 

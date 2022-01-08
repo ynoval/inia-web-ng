@@ -6,7 +6,7 @@ import { keys } from './keys';
 
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:3333/api',
+  apiUrl: 'http://localhost:3333/api',
   gmKey: keys.gmKey,
 };
 
