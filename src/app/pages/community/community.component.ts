@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { CommunityModel } from '@app/common/models/community.model';
 import { SpecieModel } from '@app/common/models/specie.model';
@@ -45,9 +46,9 @@ export class CommunityPageComponent implements OnInit {
 
   annualChartInstance: any;
 
-  startPreditionMonth = (new Date().getMonth() + 6) % 12;
+  startPreditionMonth = (new Date().getMonth() + 5) % 12;
 
-  endPredictionMonth = this.startPreditionMonth + 2;
+  endPredictionMonth = this.startPreditionMonth + 3;
 
   annualChartOptions: EChartsOption = {
     title: {
@@ -97,6 +98,23 @@ export class CommunityPageComponent implements OnInit {
       },
     },
     series: [],
+    toolbox: {
+      itemSize: 24,
+      right: '12%',
+      iconStyle: { color: 'rgb(40,52,147)' },
+      feature: {
+        // dataView: { show: true, readOnly: false },
+        saveAsImage: { show: true, title: 'Imagen', icon: 'image://assets/icons/download-80.png' },
+        myExportCSV: {
+          show: true,
+          title: 'CSV',
+          icon: 'image://assets/icons/export-csv-32.png',
+          onclick: () => {
+            this.saveAnnualCSV();
+          },
+        },
+      },
+    },
   };
 
   updateAnnualOptions: any;
@@ -223,20 +241,26 @@ export class CommunityPageComponent implements OnInit {
       if (params.name === 'Media') {
         return;
       }
-      const currentYear = new Date().getFullYear();
       const year = +params.name.split(' - ')[0];
-      if (this.annualData[currentYear - year + 1].data.length === 0) {
-        this.notificationService.showAction(`Cargando la información del año ${year}`);
+      const index = this.annualData.findIndex((item) => item.name === `${year} - ${year + 1}`);
+      if (this.annualData[index].data.length === 0) {
+        this.annualChartInstance.showLoading({ text: 'Cargando datos...' });
         const result = await this.apiService.getCommunityAnnualPPNA(this.order, year);
-        this.annualData[currentYear - year + 1].data = result.values.map((value) => value.ppna);
-        this.annualData[currentYear - year + 1].emphasis = {
+        this.communityPPNAInformation.ppna.push(result);
+        this.annualData[index].data = result.values.map((value) => value.ppna);
+        this.annualData[index].emphasis = {
           itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
         };
         this.updateAnnualOptions = {
           series: this.annualData,
         };
-        this.notificationService.snackBar.dismiss();
+        this.annualChartInstance.hideLoading();
       }
+      this.updateAnnualOptions = {
+        series: this.annualData,
+        legend: { ...this.updateAnnualOptions.legend, selected: params.selected },
+      };
+      this.annualChartInstance.setOption({ ...this.annualChartOptions, ...this.updateAnnualOptions });
     });
   }
 
@@ -251,9 +275,10 @@ export class CommunityPageComponent implements OnInit {
   // eslint-disable-next-line class-methods-use-this
   private getAvailableYears() {
     const years = [];
-    const currentYear = new Date().getFullYear();
+    const currentDate = new Date();
+    const lastYear = currentDate.getMonth() > 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     const firstYear = 2001; // TODO: FIX Get from Config
-    for (let i = firstYear; i <= currentYear; i += 1) {
+    for (let i = firstYear; i <= lastYear; i += 1) {
       years.push(i);
     }
     return years;
@@ -278,7 +303,7 @@ export class CommunityPageComponent implements OnInit {
           },
           name: 'Productividad Histórica',
           large: true,
-          data: this.communityPPNAInformation.historicalInformation.map((value) => value.ppna),
+          data: this.communityPPNAInformation.historicalInformation.map((value) => (12 * value.ppna).toFixed(2)),
           markLine: {
             data: [
               {
@@ -320,9 +345,11 @@ export class CommunityPageComponent implements OnInit {
 
   async loadPPNAInformation() {
     const notification = this.notificationService.showAction('Cargando información de productividad');
+    const currentDate = new Date();
+    const lastYear = currentDate.getMonth() > 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     this.communityPPNAInformation = {
       annualPPNAMean: await this.apiService.getCommunityAnnualPPNAMean(this.order),
-      ppna: [await this.apiService.getCommunityAnnualPPNA(this.order, 2021)], // TODO: FIX
+      ppna: [await this.apiService.getCommunityAnnualPPNA(this.order, lastYear)],
     };
     // update series :
     this.annualData = [];
@@ -350,8 +377,7 @@ export class CommunityPageComponent implements OnInit {
       Media: true,
     };
     const startedDataYear = 2001; // TODO: FIX GET from config
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i >= startedDataYear; i -= 1) {
+    for (let i = lastYear; i >= startedDataYear; i -= 1) {
       this.annualData.push({
         type: 'line',
         smooth: true,
@@ -366,7 +392,8 @@ export class CommunityPageComponent implements OnInit {
       selectedYears[`${i} - ${i + 1}`] = false;
     }
     this.communityPPNAInformation.ppna.forEach((ppna) => {
-      this.annualData[currentYear - ppna.year + 1].data = ppna.values.map((value) => value?.ppna);
+      const index = this.annualData.findIndex((value) => value.name === `${ppna.year} - ${ppna.year + 1}`);
+      this.annualData[index].data = ppna.values.map((value) => value?.ppna);
       selectedYears[`${ppna.year} - ${+ppna.year + 1}`] = true;
     });
 
@@ -401,5 +428,15 @@ export class CommunityPageComponent implements OnInit {
       },
     };
     notification.dismiss();
+  }
+
+  saveAnnualCSV() {
+    const csvHeader = ['AÑO', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN'];
+    const csvData = [];
+    this.communityPPNAInformation.ppna.forEach((ppna) => {
+      const csvRow = [`${ppna.year} - ${ppna.year + 1}`, ...ppna.values.map((value) => (value ? value.ppna : ''))];
+      csvData.push(csvRow);
+    });
+    new AngularCsv(csvData, `Comunidad ${this.order} - Productividad Anual`, { headers: csvHeader });
   }
 }

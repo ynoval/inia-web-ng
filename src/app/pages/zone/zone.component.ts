@@ -29,6 +29,8 @@ export class ZonePageComponent implements OnInit {
 
   zone: ZoneModel;
 
+  zoneArea = 0;
+
   zoneInformation$: Observable<any>;
 
   zonePPNAInformation: any;
@@ -46,9 +48,9 @@ export class ZonePageComponent implements OnInit {
 
   annualChartInstance: any;
 
-  startPreditionMonth = (new Date().getMonth() + 6) % 12;
+  startPreditionMonth = (new Date().getMonth() + 5) % 12;
 
-  endPredictionMonth = this.startPreditionMonth + 2;
+  endPredictionMonth = this.startPreditionMonth + 3;
 
   annualChartOptions: EChartsOption = {
     title: {
@@ -108,6 +110,23 @@ export class ZonePageComponent implements OnInit {
       },
     ],
     series: [],
+    toolbox: {
+      itemSize: 24,
+      right: '12%',
+      iconStyle: { color: 'rgb(40,52,147)' },
+      feature: {
+        // dataView: { show: true, readOnly: false },
+        saveAsImage: { show: true, title: 'Imagen', icon: 'image://assets/icons/download-80.png' },
+        myExportCSV: {
+          show: true,
+          title: 'CSV',
+          icon: 'image://assets/icons/export-csv-32.png',
+          onclick: () => {
+            this.saveAnnualCSV();
+          },
+        },
+      },
+    },
   };
 
   updateAnnualOptions: any;
@@ -342,7 +361,7 @@ export class ZonePageComponent implements OnInit {
   }
 
   private async loadZoneInformation() {
-    const notification = this.notificationService.showAction('Cargando información sobre la zona');
+    // const notification = this.notificationService.showAction('Cargando información sobre la zona');
     this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
     this.zoneInformation$.subscribe((zoneInformation) => {
       if (this.zone.type === 'marker') {
@@ -361,21 +380,21 @@ export class ZonePageComponent implements OnInit {
       } else {
         // #region Load communities data
         let totalArea = 0;
-        const zoneArea = +zoneInformation.area;
-        this.communitiesChartOptions.title.subtext = `Area Total: ${zoneArea} ha`;
+        this.zoneArea = +zoneInformation.area;
+        this.communitiesChartOptions.title.subtext = `Area Total: ${this.zoneArea} ha`;
         zoneInformation.communitiesAreas.forEach((c) => {
           const area = +c.area;
           totalArea += area;
           this.communitiesData.push({
             name: `comunidad ${c.order}`,
-            value: ((100 * area) / zoneArea).toFixed(2),
+            value: ((100 * area) / this.zoneArea).toFixed(2),
             id: c.id,
           });
         });
-        if (totalArea < zoneArea) {
+        if (totalArea < this.zoneArea) {
           this.communitiesData.push({
             name: 'No Comunidad',
-            value: (100 - (100 * totalArea) / zoneArea).toFixed(2),
+            value: (100 - (100 * totalArea) / this.zoneArea).toFixed(2),
           });
         }
         this.updateCommunitiesOptions = {
@@ -384,30 +403,38 @@ export class ZonePageComponent implements OnInit {
           },
         };
       }
-      notification.dismiss();
+      // notification.dismiss();
     });
   }
 
   onAnnualChartInit(ec) {
     this.annualChartInstance = ec;
+    const notification = this.notificationService.showAction('inicializando chart');
+    setTimeout(() => {
+      notification.dismiss();
+    }, 1000);
+    console.log('updateAnnualOptions', this.updateAnnualOptions);
     this.annualChartInstance.on('legendselectchanged', async (params) => {
       if (params.name === 'Media') {
         return;
       }
-      const currentYear = new Date().getFullYear();
       const year = +params.name.split('-')[0].trim();
-      if (this.annualData[currentYear - year + 1].data.length === 0) {
-        this.notificationService.showAction(`Cargando la información ${year} - ${year + 1}`);
+      const index = this.annualData.findIndex((val) => +val.name.split('-')[0].trim() === year);
+      if (this.annualData[index].data.length === 0) {
+        this.annualChartInstance.showLoading({ text: 'Cargando datos...' });
         const result = await this.zonesService.getZoneAnnualPPNA(this.id, year);
-        this.annualData[currentYear - year + 1].data = result.values.map((value) => value.ppna);
-        this.annualData[currentYear - year + 1].emphasis = {
+        this.zonePPNAInformation.annualPPNA.push(result);
+        this.annualData[index].data = result.values.map((value) => value.ppna);
+        this.annualData[index].emphasis = {
           itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
         };
-        this.updateAnnualOptions = {
-          series: this.annualData,
-        };
-        this.notificationService.snackBar.dismiss();
+        this.annualChartInstance.hideLoading();
       }
+      this.updateAnnualOptions = {
+        series: this.annualData,
+        legend: { ...this.updateAnnualOptions.legend, selected: params.selected },
+      };
+      this.annualChartInstance.setOption({ ...this.annualChartOptions, ...this.updateAnnualOptions });
     });
   }
 
@@ -436,9 +463,13 @@ export class ZonePageComponent implements OnInit {
   // eslint-disable-next-line class-methods-use-this
   private getAvailableYears() {
     const years = [];
-    const currentYear = new Date().getFullYear();
+    const currentDate = new Date();
+    const lastYear =
+      currentDate.getMonth() !== 0 || currentDate.getDate() > 20
+        ? currentDate.getFullYear()
+        : currentDate.getFullYear() - 1;
     const firstYear = 2001; // TODO: FIX Get from Config
-    for (let i = firstYear; i <= currentYear; i += 1) {
+    for (let i = firstYear; i <= lastYear; i += 1) {
       years.push(i);
     }
     return years;
@@ -461,7 +492,7 @@ export class ZonePageComponent implements OnInit {
           },
           name: 'Productividad Histórica',
           large: true,
-          data: this.zonePPNAInformation.historicalPPNA.map((value) => 12 * value.ppna),
+          data: this.zonePPNAInformation.historicalPPNA.map((value) => (12 * value.ppna).toFixed(2)),
           markLine: {
             data: [
               {
@@ -511,10 +542,12 @@ export class ZonePageComponent implements OnInit {
 
   private async loadPPNA() {
     const notification = this.notificationService.showAction('Cargando información de productividad');
-    const currentYear = new Date().getFullYear();
+    const currentDate = new Date();
+    const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
+
     this.zonePPNAInformation = {
       annualPPNAMean: await this.zonesService.getZoneAnnualPPNAMean(this.id),
-      annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.id, currentYear)],
+      annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.id, lastYear)],
     };
 
     this.annualData = [];
@@ -542,7 +575,7 @@ export class ZonePageComponent implements OnInit {
     };
     const startedDataYear = 2001; // TODO: FIX GET from config
 
-    for (let i = currentYear; i >= startedDataYear; i -= 1) {
+    for (let i = lastYear; i >= startedDataYear; i -= 1) {
       this.annualData.push({
         type: 'line',
         smooth: true,
@@ -557,7 +590,8 @@ export class ZonePageComponent implements OnInit {
       selectedYears[`${i} - ${i + 1}`] = false;
     }
     this.zonePPNAInformation.annualPPNA.forEach((ppna) => {
-      this.annualData[currentYear - ppna.year + 1].data = ppna.values.map((value) => value?.ppna);
+      const index = this.annualData.findIndex((value) => value.name === `${ppna.year} - ${ppna.year + 1}`);
+      this.annualData[index].data = ppna.values.map((value) => value?.ppna);
       selectedYears[`${ppna.year} - ${ppna.year + 1}`] = true;
     });
 
@@ -596,29 +630,30 @@ export class ZonePageComponent implements OnInit {
 
   // eslint-disable-next-line class-methods-use-this
   saveCSV() {
-    const data = [
-      {
-        name: 'Test 1',
-        age: 13,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
-      {
-        name: 'Test 2',
-        age: 11,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
-      {
-        name: 'Test 4',
-        age: 10,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
-    ];
-    new AngularCsv(data, 'My Report');
+    const csvHeader = ['Comunidad', 'Área(ha)', 'Área(%)'];
+    const csvData = [];
+    this.communitiesData.forEach((community) => {
+      console.log(community);
+      csvData.push({
+        comunidad: community.name,
+        area: ((community.value * this.zoneArea) / 100).toFixed(2),
+        area_percent: community.value,
+      });
+    });
+
+    new AngularCsv(csvData, `${this.zone.name} Distribución del área por comunidades`, { headers: csvHeader });
+  }
+
+  saveAnnualCSV() {
+    const csvHeader = ['AÑO', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN'];
+    const csvData = [];
+    this.zonePPNAInformation.annualPPNA.forEach((annualPPNA) => {
+      const csvRow = [
+        `${annualPPNA.year} - ${annualPPNA.year + 1}`,
+        ...annualPPNA.values.map((value) => (value ? value.ppna : '')),
+      ];
+      csvData.push(csvRow);
+    });
+    new AngularCsv(csvData, `${this.zone.name} Productividad Anual`, { headers: csvHeader });
   }
 }

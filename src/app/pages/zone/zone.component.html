@@ -39,12 +39,6 @@
                   <input matInput [value]="zoneInformation.longitude" [readonly]="true" />
                 </mat-form-field>
               </div>
-              <!-- <div *ngIf="zone.type !== 'marker'" class="flex-p">
-                <mat-form-field appearance="legacy" class="flex-p">
-                  <mat-label>Area Total (ha)</mat-label>
-                  <input matInput [value]="zoneInformation.area" [readonly]="true" />
-                </mat-form-field>
-              </div> -->
             </div>
             <div
               *ngIf="zone.type === 'marker'"
