@@ -7,7 +7,8 @@ import { kml } from '@tmcw/togeojson';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
+import { isArray } from 'util';
 
 export type ZoneFileUploaded = {
   fileId: string;
@@ -110,22 +111,32 @@ export class ImportZonesComponent {
   }
 
   async importSHP(file: any) {
-    await this.readFileContent(file)
-      .toPromise()
-      .then((res) => {
-        shp(res).then((geojson) => {
-          geojson.forEach((dataset) => {
-            this.files = [
-              ...this.files,
-              {
-                fileId: uuidv4(),
-                fileName: dataset.fileName, // Remove extension
-                features: dataset.features,
-              },
-            ];
-          });
-        });
+    const source$ = await this.readFileContent(file);
+    const values = await lastValueFrom(source$);
+    const geoJson = await shp(values);
+    if (Array.isArray(geoJson)) {
+      //Import list of FeatureCollection
+      geoJson.forEach((featureCollection) => {
+        this.files = [
+          ...this.files,
+          {
+            fileId: uuidv4(),
+            fileName: file.name.slice(0, -4), // Remove extension
+            features: featureCollection.features,
+          },
+        ];
       });
+    } else {
+      // Import a FeatureCollection
+      this.files = [
+        ...this.files,
+        {
+          fileId: uuidv4(),
+          fileName: geoJson.fileName, // Remove extension
+          features: geoJson.features,
+        },
+      ];
+    }
   }
 
   async importGEOJSON(file: any) {

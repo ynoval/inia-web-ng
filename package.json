@@ -60,6 +60,7 @@
     "@tmcw/togeojson": "^4.5.0",
     "angular-csv-ext": "^1.0.5",
     "axios": "^0.24.0",
+    "dexie": "^3.2.0",
     "document-register-element": "^1.14.10",
     "echarts": "^5.2.2",
     "js-kml-parser": "^1.0.2",

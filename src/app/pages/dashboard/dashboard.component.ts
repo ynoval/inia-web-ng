@@ -52,6 +52,8 @@ export class DashboardComponent implements AfterViewInit {
 
   searchText: string = '';
 
+  keysToExclude: string[] = ['shape', 'visible', 'coordinates'];
+
   constructor(
     appSettings: AppSettings,
     private cd: ChangeDetectorRef,
@@ -210,7 +212,7 @@ export class DashboardComponent implements AfterViewInit {
           drawingModes: [
             google.maps.drawing.OverlayType.MARKER,
             google.maps.drawing.OverlayType.POLYGON,
-            google.maps.drawing.OverlayType.RECTANGLE,
+            // google.maps.drawing.OverlayType.RECTANGLE,
           ],
         },
         markerOptions: {

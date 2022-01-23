@@ -18,6 +18,7 @@ import { ImportZonesComponent } from './import-zones/import-zones.component';
 import { ExportZonesComponent } from './export-zones/export-zones.component';
 import { DeleteZonesComponent } from './delete-zones/delete-zones.component';
 import { AddZoneComponent } from './add-zone/add-zone.component';
+import { Ng2DeepSearchPipe } from './dashboard.pipe';
 
 export const routes = [
   { path: '', component: DashboardComponent, pathMatch: 'full' },
@@ -48,6 +49,7 @@ export const routes = [
     ExportZonesComponent,
     AddZoneComponent,
     DeleteZonesComponent,
+    Ng2DeepSearchPipe,
   ],
   entryComponents: [
     MapLayersComponent,

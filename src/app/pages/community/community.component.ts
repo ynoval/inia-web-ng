@@ -24,6 +24,8 @@ export class CommunityPageComponent implements OnInit {
 
   public order: string;
 
+  public name: string;
+
   public community$: Observable<CommunityModel>;
 
   public subcommunities$: Observable<SubCommunityModel[]>;
@@ -67,22 +69,22 @@ export class CommunityPageComponent implements OnInit {
       backgroundColor: 'rgb(238,238,238)',
     },
     tooltip: {},
-    visualMap: {
-      show: false,
-      seriesIndex: 1,
-      dimension: 0,
-      pieces: [
-        { lt: 5, color: '#096' },
-        {
-          gt: this.startPreditionMonth,
-          lte: this.endPredictionMonth,
-          color: 'white',
-        },
-      ],
-    },
+    // visualMap: {
+    //   show: false,
+    //   seriesIndex: 1,
+    //   dimension: 0,
+    //   pieces: [
+    //     { lt: 5, color: '#096' },
+    //     {
+    //       gt: this.startPreditionMonth,
+    //       lte: this.endPredictionMonth,
+    //       color: 'white',
+    //     },
+    //   ],
+    // },
     xAxis: {
       type: 'category',
-      data: ['Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+      data: this.getMonthsInfo(),
       name: 'Meses',
       nameLocation: 'middle',
       nameTextStyle: {
@@ -229,6 +231,7 @@ export class CommunityPageComponent implements OnInit {
     this.community$ = from(this.apiService.getCommunity(this.id));
     this.community$.subscribe((community) => {
       this.order = community.order;
+      this.name = community.name;
     });
     this.subcommunities$ = from(this.apiService.getSubCommunities(this.id));
     this.species$ = from(this.apiService.getCommunitySpecies(this.id));
@@ -431,12 +434,45 @@ export class CommunityPageComponent implements OnInit {
   }
 
   saveAnnualCSV() {
-    const csvHeader = ['AÑO', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN'];
+    const csvHeader = ['AÑO', ...this.getMonthsInfo()];
     const csvData = [];
     this.communityPPNAInformation.ppna.forEach((ppna) => {
       const csvRow = [`${ppna.year} - ${ppna.year + 1}`, ...ppna.values.map((value) => (value ? value.ppna : ''))];
       csvData.push(csvRow);
     });
     new AngularCsv(csvData, `Comunidad ${this.order} - Productividad Anual`, { headers: csvHeader });
+  }
+
+  getMonthsInfo() {
+    return [
+      'Jul 12',
+      'Jul 28',
+      'Ago 13',
+      'Ago 29',
+      'Sep 14',
+      'Sep 30',
+      'Oct 16',
+      'Nov 1',
+      'Nov 17',
+      'Dic 3',
+      'Dic 19',
+      'Ene 1',
+      'Ene 17',
+      'Feb 2',
+      'Feb 18',
+      'Mar 6',
+      'Mar 22',
+      'Abr 7',
+      'Abr 23',
+      'May 9',
+      'May 25',
+      'Jun 10',
+      'Jun 26',
+    ];
+  }
+
+  getCommunityTitle() {
+    // return this.order === 'VI' ? this.name : `Comunidad ${this.order} - ${this.name}`;
+    return `Comunidad ${this.order} - ${this.name}`;
   }
 }

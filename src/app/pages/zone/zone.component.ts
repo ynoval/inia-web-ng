@@ -70,11 +70,15 @@ export class ZonePageComponent implements OnInit {
     tooltip: {},
     xAxis: {
       type: 'category',
-      data: ['Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+      data: this.getMonthsInfo(),
       name: 'Meses',
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 20,
+      },
+      axisLabel: {
+        interval: 0,
+        rotate: 30, //If the label names are too long you can manage this by rotating the label.
       },
     },
     yAxis: {
@@ -85,19 +89,18 @@ export class ZonePageComponent implements OnInit {
         padding: 30,
       },
     },
-    visualMap: {
-      show: false,
-      seriesIndex: 1,
-      dimension: 0,
-      pieces: [
-        { lt: 5, color: '#096' },
-        {
-          gt: this.startPreditionMonth,
-          lte: this.endPredictionMonth,
-          color: 'white',
-        },
-      ],
-    },
+    // visualMap: {
+    //   show: false,
+    //   seriesIndex: 1,
+    //   dimension: 0,
+    //   pieces: [
+    //     { lt: 5, color: '#096' },
+    //     {
+    //       gt: this.startPreditionMonth,
+    //       lte: this.endPredictionMonth,
+    //     },
+    //   ],
+    // },
     dataZoom: [
       {
         type: 'inside',
@@ -393,7 +396,7 @@ export class ZonePageComponent implements OnInit {
         });
         if (totalArea < this.zoneArea) {
           this.communitiesData.push({
-            name: 'No Comunidad',
+            name: 'Otros usos del suelo',
             value: (100 - (100 * totalArea) / this.zoneArea).toFixed(2),
           });
         }
@@ -550,6 +553,8 @@ export class ZonePageComponent implements OnInit {
       annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.id, lastYear)],
     };
 
+    console.log({ zI: this.zonePPNAInformation });
+
     this.annualData = [];
     const legendData = [];
     this.annualData.push({
@@ -655,5 +660,33 @@ export class ZonePageComponent implements OnInit {
       csvData.push(csvRow);
     });
     new AngularCsv(csvData, `${this.zone.name} Productividad Anual`, { headers: csvHeader });
+  }
+
+  getMonthsInfo() {
+    return [
+      'Jul 12',
+      'Jul 28',
+      'Ago 13',
+      'Ago 29',
+      'Sep 14',
+      'Sep 30',
+      'Oct 16',
+      'Nov 1',
+      'Nov 17',
+      'Dic 3',
+      'Dic 19',
+      'Ene 1',
+      'Ene 17',
+      'Feb 2',
+      'Feb 18',
+      'Mar 6',
+      'Mar 22',
+      'Abr 7',
+      'Abr 23',
+      'May 9',
+      'May 25',
+      'Jun 10',
+      'Jun 26',
+    ];
   }
 }

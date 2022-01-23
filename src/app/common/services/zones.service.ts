@@ -1,9 +1,9 @@
-/* eslint-disable no-underscore-dangle */
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { ZoneModel } from '../models/zone.model';
 import { ApiService } from './api.service';
+import { db } from '@app/app.db';
 
 export const ZONES_SERVICE_CONTEXT = new InjectionToken<string>('ZonesServiceContext');
 
@@ -32,14 +32,16 @@ export class ZonesService {
     this.loadZones();
   }
 
-  loadZones() {
+  async loadZones() {
     this.zones = [];
-    const storageZones = this.getStorageZones();
-    storageZones.forEach((sz) => {
+    const storeZones = await db.storeZones.orderBy('order').toArray();
+
+    storeZones.forEach((sz) => {
       const shape = this.createShape(sz.name, sz.type, sz.coordinates);
       const zone = {
         id: sz.id,
         name: sz.name,
+        order: sz.order,
         type: sz.type,
         visible: sz.visible,
         shape,
@@ -71,14 +73,17 @@ export class ZonesService {
   importZones(zones) {
     zones.forEach((zone) => {
       const { zoneName, zoneType, zoneCoordinates, zoneProperties } = this.getImportedZoneData(zone);
+      console.log(`Importing zone: `, zoneName, zoneType, { zoneProperties }, { zoneCoordinates });
       const zoneShape = this.createShape(zoneName, zoneType, zoneCoordinates, true);
       const importedZone = {
         id: uuidv4(),
         name: zoneName || this.generateZoneName(),
+        order: this.generateZoneOrder(),
         type: zoneType,
         visible: true,
         shape: zoneShape,
         properties: zoneProperties || [],
+        coordinates: zoneCoordinates,
       };
 
       this.zones.push(importedZone);
@@ -98,11 +103,11 @@ export class ZonesService {
     return {
       zoneName: this.generateZoneName(),
       zoneType:
-        zone.geometry.type === 'Polygon'
+        zone.geometry.type === 'Polygon' || zone.geometry.type === 'MultiPolygon'
           ? google.maps.drawing.OverlayType.POLYGON
           : google.maps.drawing.OverlayType.MARKER,
       zoneCoordinates:
-        zone.geometry.type === 'Polygon'
+        zone.geometry.type === 'Polygon' || zone.geometry.type === 'MultiPolygon'
           ? this.getPolygonCoordinates(zone.geometry.coordinates)
           : this.getMarkerCoordinates(zone.geometry.coordinates),
       zoneProperties,
@@ -111,11 +116,21 @@ export class ZonesService {
 
   // eslint-disable-next-line class-methods-use-this
   getPolygonCoordinates(featureCoordinates) {
-    // TODO: Only simple polygon is supported
+    if (featureCoordinates.length > 1) {
+      return this.getMultiPolygonCoordinates(featureCoordinates);
+    }
     return featureCoordinates[0].map((c) => ({
       lat: c[1],
       lng: c[0],
     }));
+  }
+
+  getMultiPolygonCoordinates(featureCoordinates) {
+    const result = [];
+    featureCoordinates.forEach((polygonCoordinates) => {
+      result.push(polygonCoordinates.map((c) => ({ lat: c[1], lng: c[0] })));
+    });
+    return result;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -134,6 +149,7 @@ export class ZonesService {
     const zone = {
       id,
       name,
+      order: this.generateZoneOrder(),
       type: gmZone.type,
       visible: true,
       shape,
@@ -142,7 +158,7 @@ export class ZonesService {
 
     this.zones.push(zone);
     this._zones.next(Object.assign([], this.zones));
-    this.addStorageZone(zone);
+    this.addStorageZone({ ...zone, coordinates });
     this.selectZone(zone.name);
   }
 
@@ -193,7 +209,7 @@ export class ZonesService {
       }
       this.zones.splice(index, 1);
       this._zones.next(Object.assign([], this.zones));
-      this.removeStorageZone(zoneName);
+      db.deleteZone(zoneName);
     }
   }
 
@@ -205,6 +221,7 @@ export class ZonesService {
       this.selectedZone = '';
       this._selectedZone.next(this.selectedZone);
     }
+    db.hideZone(zoneName);
   }
 
   showZone(zoneName: string) {
@@ -212,6 +229,7 @@ export class ZonesService {
     this.zones[index].visible = true;
     this._zones.next(Object.assign([], this.zones));
     this.selectZone(zoneName);
+    db.showZone(zoneName);
   }
 
   generateZoneName() {
@@ -225,6 +243,11 @@ export class ZonesService {
       }
     });
     return `${zoneName}${max}`;
+  }
+
+  generateZoneOrder() {
+    const maxOrder = Math.max(...this.zones.map((o) => o.order), 0);
+    return maxOrder + 1;
   }
 
   getZoneInformation(zoneId: string) {
@@ -402,47 +425,44 @@ export class ZonesService {
   }
 
   // #region STORAGE
-  private getStorageZones() {
-    const zones = localStorage.getItem(this.storageKey);
-    return zones ? JSON.parse(zones) : [];
-  }
-
   private addStorageZone(zone) {
-    const zones = this.getStorageZones();
-    zones.push(this.createStorageZone(zone));
-    this.saveStorageZones(zones);
+    const storageZone = this.createStorageZone(zone);
+    db.addZone(storageZone);
   }
 
   private updateStorageZone(zoneName) {
     const zone = this.zones.find((z) => z.name === zoneName);
-    const storageZones = this.getStorageZones();
-    const index = storageZones.findIndex((z) => z.name === zoneName);
-    storageZones[index].coordinates = this.getShapeCoordinates(zone.type, zone.shape);
-    this.saveStorageZones(storageZones);
-  }
-
-  private removeStorageZone(zoneName) {
-    const zones = this.getStorageZones();
-    const index = zones.findIndex((z) => z.name === zoneName);
-    if (index >= 0) {
-      zones.splice(index, 1);
-      this.saveStorageZones(zones);
-    }
-  }
-
-  private saveStorageZones(zones) {
-    localStorage.setItem(this.storageKey, JSON.stringify(zones));
+    const shapeCoordinates = this.getShapeCoordinates(zone.type, zone.shape);
+    db.updateZoneCoordinates(zoneName, this.convertToStorageCoordinates(zone.type, shapeCoordinates));
   }
 
   private createStorageZone(zone) {
     return {
       id: zone.id,
       name: zone.name,
+      order: zone.order,
       type: zone.type,
       visible: zone.visible,
-      coordinates: this.getShapeCoordinates(zone.type, zone.shape),
+      coordinates: zone.coordinates,
       properties: zone.properties || [],
     };
+  }
+
+  convertToStorageCoordinates(zoneType, coordinates) {
+    switch (zoneType) {
+      case 'marker': {
+        return { lat: coordinates.lat(), lng: coordinates.lng() };
+      }
+      case 'rectangle':
+      case 'polygon': {
+        return coordinates.map((c) => {
+          return { lat: c.lat(), lng: c.lng() };
+        });
+      }
+      default: {
+        throw new Error('Solo Poligonos, Rectangulos y Marcadores son soportados');
+      }
+    }
   }
   // #endregion
 
@@ -484,7 +504,8 @@ export class ZonesService {
 
   // eslint-disable-next-line class-methods-use-this
   private getOverlayMarkerCoordinates(marker) {
-    return new google.maps.LatLng(marker.position.lat(), marker.position.lng());
+    //return  new google.maps.LatLng(marker.position.lat(), marker.position.lng());
+    return { lat: marker.position.lat(), lng: marker.position.lng() };
   }
 
   // eslint-disable-next-line class-methods-use-this

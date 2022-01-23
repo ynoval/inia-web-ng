@@ -49,7 +49,7 @@
               </mat-menu>
             </div>
           </div>
-          <div fxLayout="column" *ngFor="let zone of definedZones">
+          <div fxLayout="column" *ngFor="let zone of definedZones | deepFilter: searchText:keysToExclude">
             <div
               fxFlex
               fxLayout="row"
