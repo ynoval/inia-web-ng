@@ -4,7 +4,7 @@
   margin-right: 12px;
 }
 .menu-expand-icon {
-  position: absolute;
+  position: absolute !important;
   right: 10px;
   top: 10px;
 }
@@ -31,6 +31,7 @@
 
 .sub-menu {
   @include menu-level-padding('ltr');
+  padding-left: 1em;
   max-height: 0;
   overflow: hidden;
   -webkit-transition: max-height 0.25s ease-out;

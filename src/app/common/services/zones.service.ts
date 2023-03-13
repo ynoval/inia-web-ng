@@ -3,9 +3,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { ZoneModel } from '../models/zone.model';
 import { ApiService } from './api.service';
-import { db } from '@app/app.db';
+import { AppDB } from '@app/app.db';
 
 export const ZONES_SERVICE_CONTEXT = new InjectionToken<string>('ZonesServiceContext');
+export const ZONES_SERVICE_EDITABLE = new InjectionToken<boolean>('ZonesServiceEditable');
 
 @Injectable({
   providedIn: 'root',
@@ -26,15 +27,28 @@ export class ZonesService {
 
   private selectedZone: string = '';
 
+  private db: AppDB;
+
+  private isLoading: boolean;
+
   // private _viewLayer: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(@Inject(ZONES_SERVICE_CONTEXT) private storageKey: string, private apiService: ApiService) {
+  constructor(
+    @Inject(ZONES_SERVICE_CONTEXT) private storageKey: string,
+    @Inject(ZONES_SERVICE_EDITABLE) private isEditable: boolean,
+    private apiService: ApiService
+  ) {
+    this.db = new AppDB(this.storageKey);
+    this.isLoading = true;
+    this.isEditable = isEditable;
     this.loadZones();
   }
 
   async loadZones() {
     this.zones = [];
-    const storeZones = await db.storeZones.orderBy('order').toArray();
+    const storeZones = await this.db.storeZones.orderBy('order').toArray();
+
+    console.log({ storeZones });
 
     storeZones.forEach((sz) => {
       const shape = this.createShape(sz.name, sz.type, sz.coordinates);
@@ -49,6 +63,7 @@ export class ZonesService {
       };
       this.zones.push(zone);
     });
+    this.isLoading = false;
     this._zones.next(this.zones);
   }
 
@@ -64,16 +79,24 @@ export class ZonesService {
     return this._selectedZone.asObservable();
   }
 
-  getZone(zoneId: string) {
+  async getZone(zoneId: string) {
+    while (this.isLoading) {
+      await this.sleep(200);
+    }
     const index = this.zones.findIndex((z) => z.id === zoneId);
     return index >= 0 ? this.zones[index] : undefined;
   }
 
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   // eslint-disable-next-line class-methods-use-this
   importZones(zones) {
+    const importedZones = [];
     zones.forEach((zone) => {
+      // if (zone.geometry.type !== 'GeometryCollection') {
       const { zoneName, zoneType, zoneCoordinates, zoneProperties } = this.getImportedZoneData(zone);
-      console.log(`Importing zone: `, zoneName, zoneType, { zoneProperties }, { zoneCoordinates });
       const zoneShape = this.createShape(zoneName, zoneType, zoneCoordinates, true);
       const importedZone = {
         id: uuidv4(),
@@ -87,58 +110,16 @@ export class ZonesService {
       };
 
       this.zones.push(importedZone);
-      this._zones.next(Object.assign([], this.zones));
-      this.addStorageZone(importedZone);
+      importedZones.push(importedZone); // this._zones.next(Object.assign([], this.zones));
+      // } else {
+      //   console.log('Geometry Type', zone.geometry.type);
+      // }
     });
-  }
 
-  getImportedZoneData(zone) {
-    const zoneProperties = [];
-    Object.keys(zone.properties).forEach((key) => {
-      zoneProperties.push({
-        propertyName: key,
-        propertyValue: zone.properties[key],
-      });
-    });
-    return {
-      zoneName: this.generateZoneName(),
-      zoneType:
-        zone.geometry.type === 'Polygon' || zone.geometry.type === 'MultiPolygon'
-          ? google.maps.drawing.OverlayType.POLYGON
-          : google.maps.drawing.OverlayType.MARKER,
-      zoneCoordinates:
-        zone.geometry.type === 'Polygon' || zone.geometry.type === 'MultiPolygon'
-          ? this.getPolygonCoordinates(zone.geometry.coordinates)
-          : this.getMarkerCoordinates(zone.geometry.coordinates),
-      zoneProperties,
-    };
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getPolygonCoordinates(featureCoordinates) {
-    if (featureCoordinates.length > 1) {
-      return this.getMultiPolygonCoordinates(featureCoordinates);
-    }
-    return featureCoordinates[0].map((c) => ({
-      lat: c[1],
-      lng: c[0],
-    }));
-  }
-
-  getMultiPolygonCoordinates(featureCoordinates) {
-    const result = [];
-    featureCoordinates.forEach((polygonCoordinates) => {
-      result.push(polygonCoordinates.map((c) => ({ lat: c[1], lng: c[0] })));
-    });
-    return result;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getMarkerCoordinates(featureCoordinates) {
-    return {
-      lat: featureCoordinates[1],
-      lng: featureCoordinates[0],
-    };
+    // Save imported Zones to storage
+    console.log('imported Zones: ', importedZones.length);
+    this.addStorageZones(importedZones);
+    this._zones.next(Object.assign([], this.zones));
   }
 
   addZone(gmZone) {
@@ -163,40 +144,71 @@ export class ZonesService {
   }
 
   selectZone(zoneName: string) {
-    this.zones.forEach((z) => {
-      if (z.type !== google.maps.drawing.OverlayType.MARKER) {
-        z.shape.setEditable(z.name === zoneName && z.visible);
-        const options = {
-          fillColor: z.name === zoneName && z.visible ? '#6991FC' : '#DB2826',
-          fillOpacity: z.name === zoneName && z.visible ? 1 : 0.8,
-          strokeWeight: z.name === zoneName && z.visible ? 2 : 0.5,
-        };
-        z.shape.setOptions(options);
-      } else {
-        const markerIcon = z.name === zoneName && z.visible ? this.activeMarkerIcon : this.inactiveMarkerIcon;
-        z.shape.setIcon(markerIcon);
+    if (this.selectedZone) {
+      const zone = this.zones.find((z) => z.name === this.selectedZone);
+      if (zone) {
+        if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
+          if (this.isEditable) {
+            zone.shape.setEditable(false);
+          }
+          const options = {
+            fillColor: '#DB2826',
+            fillOpacity: 0.8,
+            strokeWeight: 0.5,
+          };
+          zone.shape.setOptions(options);
+        } else {
+          const markerIcon = this.inactiveMarkerIcon;
+          zone.shape.setIcon(markerIcon);
+        }
+
+        zone.shape.setDraggable(false);
       }
-      z.shape.setDraggable(z.name === zoneName && z.visible);
-    });
-    this.selectedZone = zoneName;
-    this._selectedZone.next(this.selectedZone);
+    }
+
+    const newSelectedZone = this.zones.find((z) => z.name === zoneName);
+    if (newSelectedZone) {
+      if (newSelectedZone.type !== google.maps.drawing.OverlayType.MARKER) {
+        if (this.isEditable) {
+          newSelectedZone.shape.setEditable(true);
+        }
+        const options = {
+          fillColor: '#222aaa',
+          fillOpacity: 1,
+          strokeWeight: 1,
+        };
+        newSelectedZone.shape.setOptions(options);
+      } else {
+        const markerIcon = this.activeMarkerIcon;
+        newSelectedZone.shape.setIcon(markerIcon);
+      }
+
+      newSelectedZone.shape.setDraggable(this.isEditable);
+      this.selectedZone = zoneName;
+      this._selectedZone.next(this.selectedZone);
+    }
   }
 
   noSelectedZone() {
-    this.zones.forEach((z) => {
-      if (z.type !== google.maps.drawing.OverlayType.MARKER) {
-        z.shape.setEditable(false);
-        const options = {
-          fillColor: '#DB2826',
-          fillOpacity: 0.8,
-          strokeWeight: 0.5,
-        };
-        z.shape.setOptions(options);
-      } else {
-        z.shape.setIcon(this.inactiveMarkerIcon);
+    if (this.selectedZone) {
+      const zone = this.zones.find((z) => z.name === this.selectedZone);
+      if (zone) {
+        if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
+          if (this.isEditable) {
+            zone.shape.setEditable(false);
+          }
+          const options = {
+            fillColor: '#DB2826',
+            fillOpacity: 0.8,
+            strokeWeight: 0.5,
+          };
+          zone.shape.setOptions(options);
+        } else {
+          zone.shape.setIcon(this.inactiveMarkerIcon);
+        }
+        zone.shape.setDraggable(false);
       }
-      z.shape.setDraggable(false);
-    });
+    }
     this.selectedZone = '';
     this._selectedZone.next(this.selectedZone);
   }
@@ -209,7 +221,7 @@ export class ZonesService {
       }
       this.zones.splice(index, 1);
       this._zones.next(Object.assign([], this.zones));
-      db.deleteZone(zoneName);
+      this.db.deleteZone(zoneName);
     }
   }
 
@@ -221,7 +233,7 @@ export class ZonesService {
       this.selectedZone = '';
       this._selectedZone.next(this.selectedZone);
     }
-    db.hideZone(zoneName);
+    this.db.hideZone(zoneName);
   }
 
   showZone(zoneName: string) {
@@ -229,7 +241,7 @@ export class ZonesService {
     this.zones[index].visible = true;
     this._zones.next(Object.assign([], this.zones));
     this.selectZone(zoneName);
-    db.showZone(zoneName);
+    this.db.showZone(zoneName);
   }
 
   generateZoneName() {
@@ -245,62 +257,490 @@ export class ZonesService {
     return `${zoneName}${max}`;
   }
 
-  generateZoneOrder() {
+  private generateZoneOrder() {
     const maxOrder = Math.max(...this.zones.map((o) => o.order), 0);
     return maxOrder + 1;
   }
 
-  getZoneInformation(zoneId: string) {
-    const zone = this.getZone(zoneId);
+  async getZoneInformation(zoneId: string) {
+    const zone = await this.getZone(zoneId);
     if (!zone) {
       throw new Error('No defined Zone');
     }
 
-    return this.apiService.getZoneInformation({
-      type: zone.type,
-      coordinates: this.getZoneCoordinatesList(zoneId),
-    });
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.generalInformation) {
+      return storeZone.generalInformation;
+    }
+
+    return this.apiService
+      .getZoneInformation({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ generalInformation: data });
+        return data;
+      });
   }
 
-  getZoneAnnualPPNAMean(zoneId) {
-    const zone = this.getZone(zoneId);
+  // #region PPNA
+  async getZoneAnnualPPNAMean(zoneId) {
+    const zone = await this.getZone(zoneId);
     if (!zone) {
       throw new Error('No defined Zone');
     }
-    return this.apiService.getZoneAnnualPPNAMean({
-      type: zone.type,
-      coordinates: this.getZoneCoordinatesList(zoneId),
-    });
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.ppnaMeanInformation) {
+      return storeZone.ppnaMeanInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualPPNAMean({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ ppnaMeanInformation: data });
+        return data;
+      });
   }
 
   // TODO: Define year range (2001 - Current Year)
-  getZoneAnnualPPNA(zoneId, year) {
-    const zone = this.getZone(zoneId);
+  async getZoneAnnualPPNA(zoneId, year) {
+    const zone = await this.getZone(zoneId);
     if (!zone) {
       throw new Error('No defined Zone');
     }
-    return this.apiService.getZoneAnnualPPNA(
-      {
-        type: zone.type,
-        coordinates: this.getZoneCoordinatesList(zoneId),
-      },
-      year
-    );
+
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    const yearPPNAInformation = storeZone.ppnaAnnualInformation?.find((info) => {
+      console.log({ info });
+      return info.year === year;
+    });
+
+    if (yearPPNAInformation) {
+      // Return load information
+      return yearPPNAInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualPPNA(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const ppnaInfo = storeZone.ppnaAnnualInformation ? storeZone.ppnaAnnualInformation : [];
+        ppnaInfo.push(data);
+        this.db.storeZones.where('name').equals(zone.name).modify({ ppnaAnnualInformation: ppnaInfo });
+        return data;
+      });
   }
 
-  getZoneHistoricalPPNA(zoneId: string) {
-    const zone = this.getZone(zoneId);
+  async getZoneHistoricalPPNA(zoneId: string) {
+    const zone = await this.getZone(zoneId);
     if (!zone) {
       throw new Error('Zone not defined');
     }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
-    return this.apiService.getZoneHistoricalPPNA({
-      type: zone.type,
-      coordinates: this.getZoneCoordinatesList(zoneId),
-    });
+    if (storeZone.historicalPPNAInformation) {
+      // Return load information
+      return storeZone.historicalPPNAInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalPPNA({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalPPNAInformation: data });
+        return data;
+      });
+  }
+  // #endregion PPNA
+
+  // #region APAR
+  async getZoneAnnualAPARMean(zoneId) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.aparMeanInformation) {
+      return storeZone.aparMeanInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualAPARMean({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ aparMeanInformation: data });
+        return data;
+      });
   }
 
+  // TODO: Define year range (2001 - Current Year)
+  async getZoneAnnualAPAR(zoneId, year) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    const yearAPARInformation = storeZone.aparAnnualInformation?.find((info) => {
+      console.log({ info });
+      return info.year === year;
+    });
+
+    if (yearAPARInformation) {
+      // Return load information
+      return yearAPARInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualAPAR(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const aparInfo = storeZone.aparAnnualInformation ? storeZone.aparAnnualInformation : [];
+        aparInfo.push(data);
+        this.db.storeZones.where('name').equals(zone.name).modify({ aparAnnualInformation: aparInfo });
+        return data;
+      });
+  }
+
+  async getZoneHistoricalAPAR(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalAPARInformation) {
+      // Return load information
+      return storeZone.historicalAPARInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalAPAR({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalAPARInformation: data });
+        return data;
+      });
+  }
+  // #endregion APAR
+
+  // #region ET
+  async getZoneAnnualETMean(zoneId) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.etMeanInformation) {
+      return storeZone.etMeanInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualETMean({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ etMeanInformation: data });
+        return data;
+      });
+  }
+
+  async getZoneAnnualET(zoneId, year) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    // const yearETInformation = storeZone.etAnnualInformation?.find((info) => {
+    //   return info.year === year;
+    // });
+
+    // if (yearETInformation && yearETInformation.length() > 0) {
+    //   // Return load information
+    //   return yearETInformation;
+    // }
+
+    console.log('api service ET');
+    return this.apiService
+      .getZoneAnnualET(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const info = storeZone.etAnnualInformation ? storeZone.etAnnualInformation : [];
+        info.push(data);
+        this.db.storeZones.where('name').equals(zone.name).modify({ etAnnualInformation: info });
+        return data;
+      });
+  }
+
+  async getZoneHistoricalET(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalETInformation) {
+      // Return load information
+      return storeZone.historicalETInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalET({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalETInformation: data });
+        return data;
+      });
+  }
+  // #endregion ET
+
+  // #region RH
+  async getZoneAnnualRHMean(zoneId) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.rhMeanInformation) {
+      return storeZone.rhMeanInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualRHMean({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ rhMeanInformation: data });
+        return data;
+      });
+  }
+
+  async getZoneAnnualRH(zoneId, year) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    const yearRHInformation = storeZone.rhAnnualInformation?.find((info) => {
+      return info.year === year;
+    });
+
+    if (yearRHInformation) {
+      return yearRHInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualRH(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const info = storeZone.rhAnnualInformation ? storeZone.rhAnnualInformation : [];
+        info.push(data);
+        this.db.storeZones.where('name').equals(zone.name).modify({ rhAnnualInformation: info });
+        return data;
+      });
+  }
+
+  async getZoneHistoricalRH(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalRHInformation) {
+      // Return load information
+      return storeZone.historicalRHInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalRH({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalRHInformation: data });
+        return data;
+      });
+  }
+  // #endregion RH
+
+  // #region RH/PPT
+  async getZoneAnnualRHPropMean(zoneId) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.rhPropMeanInformation) {
+      return storeZone.rhPropMeanInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualRHPropMean({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ rhPropMeanInformation: data });
+        return data;
+      });
+  }
+
+  async getZoneAnnualRHProp(zoneId, year) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('No defined Zone');
+    }
+
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    const yearRHPropInformation = storeZone.rhPropAnnualInformation?.find((info) => {
+      return info.year === year;
+    });
+
+    if (yearRHPropInformation) {
+      return yearRHPropInformation;
+    }
+
+    return this.apiService
+      .getZoneAnnualRHProp(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const info = storeZone.rhPropAnnualInformation ? storeZone.rhPropAnnualInformation : [];
+        info.push(data);
+        this.db.storeZones.where('name').equals(zone.name).modify({ rhPropAnnualInformation: info });
+        return data;
+      });
+  }
+
+  async getZoneHistoricalRHProp(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalRHPropInformation) {
+      // Return load information
+      return storeZone.historicalRHPropInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalRHProp({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalRHPropInformation: data });
+        return data;
+      });
+  }
+  // #endregion RH/PPT
+
+  // #region IOSE
+  async getZoneHistoricalIOSE(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.ioseInformation) {
+      // Return load information
+      return storeZone.ioseInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalIOSE({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ ioseInformation: data });
+        return data;
+      });
+  }
+  // #endregion IOSE
+
   // #region Private Methods
+  // eslint-disable-next-line class-methods-use-this
+  private getPolygonCoordinates(featureCoordinates) {
+    if (featureCoordinates.length > 1) {
+      return this.getMultiPolygonCoordinates(featureCoordinates);
+    }
+    return featureCoordinates[0].map((c) => ({
+      lat: c[1],
+      lng: c[0],
+    }));
+  }
+
+  private getMultiPolygonCoordinates(featureCoordinates) {
+    const result = [];
+    featureCoordinates.forEach((polygonCoordinates) => {
+      result.push(polygonCoordinates.map((c) => ({ lat: c[1], lng: c[0] })));
+    });
+    return result;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getMarkerCoordinates(featureCoordinates) {
+    return {
+      lat: featureCoordinates[1],
+      lng: featureCoordinates[0],
+    };
+  }
+
   private createShape(zoneName, zoneType, coordinates, isActive = false) {
     if (zoneType === google.maps.drawing.OverlayType.MARKER) {
       const marker = this.createMarker(coordinates, isActive);
@@ -425,15 +865,21 @@ export class ZonesService {
   }
 
   // #region STORAGE
+  private async addStorageZones(zones) {
+    zones.forEach((z) => {
+      this.addStorageZone(z);
+    });
+  }
+
   private addStorageZone(zone) {
     const storageZone = this.createStorageZone(zone);
-    db.addZone(storageZone);
+    this.db.addZone(storageZone);
   }
 
   private updateStorageZone(zoneName) {
     const zone = this.zones.find((z) => z.name === zoneName);
     const shapeCoordinates = this.getShapeCoordinates(zone.type, zone.shape);
-    db.updateZoneCoordinates(zoneName, this.convertToStorageCoordinates(zone.type, shapeCoordinates));
+    this.db.updateZoneCoordinates(zoneName, this.convertToStorageCoordinates(zone.type, shapeCoordinates));
   }
 
   private createStorageZone(zone) {
@@ -445,10 +891,29 @@ export class ZonesService {
       visible: zone.visible,
       coordinates: zone.coordinates,
       properties: zone.properties || [],
+      generalInformation: null,
+      ppnaAnnualInformation: [],
+      ppnaMeanInformation: null,
+      historicalPPNAInformation: null,
+      aparAnnualInformation: [],
+      aparMeanInformation: null,
+      historicalAPARInformation: null,
+      etAnnualInformation: [],
+      etMeanInformation: null,
+      historicalETInformation: null,
+      rhAnnualInformation: [],
+      rhMeanInformation: null,
+      historicalRHInformation: null,
+      rhInformation: null,
+      rhPropAnnualInformation: [],
+      rhPropMeanInformation: null,
+      historicalRHPropInformation: null,
+      rhPropInformation: null,
+      ioseInformation: null,
     };
   }
 
-  convertToStorageCoordinates(zoneType, coordinates) {
+  private convertToStorageCoordinates(zoneType, coordinates) {
     switch (zoneType) {
       case 'marker': {
         return { lat: coordinates.lat(), lng: coordinates.lng() };
@@ -542,23 +1007,22 @@ export class ZonesService {
     return coordinates;
   }
 
-  private getZoneCoordinatesList(zoneId: string) {
-    const zone = this.getZone(zoneId);
+  private getZoneCoordinatesList(zone) {
     const coordinates = this.getShapeCoordinates(zone.type, zone.shape);
     // eslint-disable-next-line default-case
     switch (zone.type) {
       case 'marker':
-        return this.getMarkerCoodinatesList(coordinates);
+        return this.getMarkerCoordinatesList(coordinates);
       case 'polygon':
         return this.getPolygonCoordinatesList(coordinates);
       case 'rectangle':
-        return this.getReactangleCoordinatesList(coordinates);
+        return this.getRectangleCoordinatesList(coordinates);
     }
     return [];
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private getMarkerCoodinatesList(coordinates) {
+  private getMarkerCoordinatesList(coordinates) {
     return [coordinates.lng(), coordinates.lat()];
     // return [-55.59084933038717, -33.57749649064163];
   }
@@ -573,10 +1037,65 @@ export class ZonesService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private getReactangleCoordinatesList(coordinates) {
+  private getRectangleCoordinatesList(coordinates) {
     // NOTE: JSON stringify convert to  north, east, south, west :O
     const coords = JSON.parse(JSON.stringify(coordinates));
     return [coords.north, coords.west, coords.south, coords.west, coords.south, coords.east, coords.north, coords.east];
+  }
+
+  private getImportedZoneData(zone) {
+    const zoneProperties = [];
+    Object.keys(zone.properties).forEach((key) => {
+      zoneProperties.push({
+        propertyName: key,
+        propertyValue: zone.properties[key],
+      });
+    });
+    const isPolygon =
+      zone.geometry.type === 'Polygon' ||
+      zone.geometry.type === 'MultiPolygon' ||
+      zone.geometry.type === 'GeometryCollection';
+
+    console.log('Geometry Coordinates', { coordinates: zone.geometry.coordinates });
+    const coordinates = this.getZoneCoordinates(zone);
+
+    return {
+      zoneName: zone.name || this.generateZoneName(),
+      zoneType: isPolygon ? google.maps.drawing.OverlayType.POLYGON : google.maps.drawing.OverlayType.MARKER,
+      zoneCoordinates: isPolygon ? this.getPolygonCoordinates(coordinates) : this.getMarkerCoordinates(coordinates),
+      zoneProperties,
+    };
+  }
+
+  private getZoneCoordinates(zone) {
+    if (zone.geometry.type === 'GeometryCollection') {
+      return this.getGeometryCollectionCoordinates(zone.geometry.geometries);
+    }
+
+    if (zone.geometry.type === 'MultiPolygon') {
+      return this.getZoneMultiPolygonCoordinates(zone.geometry.coordinates);
+    }
+
+    return zone.geometry.coordinates;
+  }
+
+  private getZoneMultiPolygonCoordinates(coordinates) {
+    const result = [];
+    coordinates.forEach((polyCoordinates) => {
+      result.push(...polyCoordinates);
+    });
+    return result;
+  }
+
+  private getGeometryCollectionCoordinates(geometries) {
+    const result = [];
+    geometries.forEach((geometry) => {
+      if (geometry.type !== 'LineString') {
+        result.push(...geometry.coordinates);
+      }
+    });
+    console.log('result', result);
+    return result;
   }
 
   // #endregion

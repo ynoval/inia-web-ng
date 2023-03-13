@@ -70,7 +70,7 @@
               <mat-icon>add</mat-icon>
               Adicionar propiedad
             </button>
-            <ag-grid-angular
+            <!-- <ag-grid-angular
               style="width: 100%; height: 500px"
               class="ag-theme-balham"
               [rowData]="zone.properties"
@@ -79,7 +79,7 @@
               [frameworkComponents]="propertiesGridFrameworkComponents"
               (gridReady)="onPropertiesGridReady($event)"
             >
-            </ag-grid-angular>
+            </ag-grid-angular> -->
           </div>
         </div>
       </mat-tab>
@@ -130,6 +130,56 @@
               [merge]="updateMonthlyOptions"
               (chartInit)="onMonthlyChartInit($event)"
             ></div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Balance Hídrico">
+        <div fxFlex fxLayout="column" fxLayoutAlign="start">
+          <mat-radio-group
+            fxFlex
+            fxFlexLayout="row"
+            fxLayoutAlign="space-around center"
+            aria-labelledby="example-radio-group-label"
+            class="chart-options"
+            [(ngModel)]="selectedRHChart"
+            (change)="changeRHChart()"
+          >
+            <mat-radio-button *ngFor="let rhChartsType of rhChartsTypes" [value]="rhChartsType.id">
+              {{ rhChartsType.label }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="selectedRHChart === 'HISTORICAL_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            {{ selectedRHChart }} here
+          </div>
+          <div *ngIf="selectedRHChart === 'ANNUAL_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            {{ selectedRHChart }} here
+          </div>
+          <div *ngIf="selectedRHChart === 'RH_PPT'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            {{ selectedRHChart }} here
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="IOSE"> IOSE gráfico (pto con dispersión) </mat-tab>
+      <mat-tab label="Evapotranspiración">
+        <div fxFlex fxLayout="column" fxLayoutAlign="start">
+          <mat-radio-group
+            fxFlex
+            fxFlexLayout="row"
+            fxLayoutAlign="space-around center"
+            aria-labelledby="example-radio-group-label"
+            class="chart-options"
+            [(ngModel)]="selectedETChart"
+            (change)="changeETChart()"
+          >
+            <mat-radio-button *ngFor="let etChartsType of etChartsTypes" [value]="etChartsType.id">
+              {{ etChartsType.label }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="selectedETChart === 'HISTORICAL_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            {{ selectedETChart }} here
+          </div>
+          <div *ngIf="selectedETChart === 'ANNUAL_CHART'" fxFlex fxLayout="row" fxLayoutAlign="center center">
+            {{ selectedETChart }} here
           </div>
         </div>
       </mat-tab>

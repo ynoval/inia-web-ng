@@ -1,0 +1,21 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="space-around center">
+  <div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between start">
+    <mat-form-field appearance="legacy" class="flex-p">
+      <mat-label>{{ texts.latitudeLabel }}</mat-label>
+      <input matInput [value]="latitude" [readonly]="true" />
+    </mat-form-field>
+    <mat-form-field appearance="legacy" class="flex-p">
+      <mat-label>{{ texts.longitudeLabel }}</mat-label>
+      <input matInput [value]="longitude" [readonly]="true" />
+    </mat-form-field>
+  </div>
+  <div fxFlex fxLayout="column">
+    <p>{{ communityMessage }}.</p>
+    <a
+      *ngIf="communityInformation && communityInformation.id"
+      routerLink="/communities/community/{{ communityInformation.id }}"
+    >
+      {{ texts.communityLinkText }}
+    </a>
+  </div>
+</div>

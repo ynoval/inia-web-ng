@@ -1,0 +1,62 @@
+<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="zones-page">
+  <div fxFlex class="flex-p" style="height: 100%">
+    <div style="height: 100%">
+      <google-map width="100%" height="100%" [options]="gmOptions"></google-map>
+    </div>
+  </div>
+  <div fxFlex fxLayout="column" class="flex-p" style="height: 100%">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <h3>Mis Zonas ({{ zones.length }})</h3>
+    </div>
+
+    <div fxLayoutAlign="space-between">
+      <div fxFlex fxLayout="row">
+        <mat-form-field fxFlex>
+          <input matInput style="padding-left: 5px" [(ngModel)]="searchText" />
+          <mat-icon matPrefix>search</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            style="font-size: small"
+            *ngIf="searchText && searchText.length > 0"
+            (click)="cleanSearch()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoadingZones" fxFlex fxLayout="column" class="zones-container">
+      <div
+        fxLayout="column"
+        *ngFor="let zone of zones | deepFilter : searchText : keysToExclude; let index = index"
+        class="row"
+        [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.name === selectedZone }"
+      >
+        <div fxFlex fxLayout="row" fxLayoutAlign="center center">
+          <div>
+            <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+          </div>
+          <div fxFlex fxLayout="column" (click)="toggleSelectZone(zone)">
+            <p fxFlex>
+              <strong>{{ getZoneName(zone) }}</strong>
+            </p>
+            <small fxFlex>{{ getZoneDescription(zone) }}</small>
+          </div>
+          <div>
+            <button mat-icon-button (click)="toggleZone(zone)">
+              <mat-icon *ngIf="zone.visible" matTooltip="Ocultar la zona">visibility_off</mat-icon>
+              <mat-icon *ngIf="!zone.visible" matTooltip="Mostrar la zona">visibility_on</mat-icon>
+            </button>
+            <button mat-icon-button (click)="viewZone(zone)">
+              <mat-icon>info</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isLoadingZones">cargando...</div>
+  </div>
+  <div id="containerLayers"></div>
+</div>

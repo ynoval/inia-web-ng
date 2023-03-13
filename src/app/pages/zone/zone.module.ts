@@ -4,17 +4,21 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AgGridModule } from '@ag-grid-community/angular';
+// import { AgGridModule } from '@ag-grid-community/angular';
+
+import { AppSharedModule } from '@app/shared.module';
+import { AppCommonModule } from '@app/common/common.module';
 import { ZONES_SERVICE_CONTEXT } from '@app/common/services/zones.service';
-import { SharedModule } from '../../shared/shared.module';
+
 import { ZonePageComponent } from './zone.component';
 import { GridDeleteButtonRendererComponent } from './grid-delete-button';
+import { PathMatch } from '@app/common/models/pathMatch.type';
 
 export const routes = [
   {
     path: '',
     component: ZonePageComponent,
-    pathMatch: 'full',
+    pathMatch: 'full' as PathMatch,
   },
   {
     path: 'community/:id',
@@ -32,8 +36,10 @@ export const routes = [
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
     }),
-    AgGridModule.withComponents([GridDeleteButtonRendererComponent]),
-    SharedModule,
+    // AgGridModule.withComponents([GridDeleteButtonRendererComponent]),
+    // AgGridModule,
+    AppSharedModule,
+    AppCommonModule,
   ],
   declarations: [ZonePageComponent, GridDeleteButtonRendererComponent],
   providers: [

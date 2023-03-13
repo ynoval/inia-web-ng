@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Importar Zonas</h2>
+<mat-dialog-content>
+  <ngx-file-drop dropZoneLabel="Arrastre el archivo hasta aqui" (onFileDrop)="dropped($event)">
+    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+      <div class="drop-info" fxFlex fxLayout="row">
+        <div fxFlex fxLayout="column">
+          <p class="flex-p">Seleccione los archivos que desea importar: Shape (archivo zip), GeoJSON, KML o KMZ.</p>
+          <div fxLayout="column" fxLayoutAlign="center center">
+            <button mat-raised-button (click)="openFileSelector()">
+              <mat-icon>attach_file</mat-icon>
+              <span>Seleccionar Archivo</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ngx-file-drop>
+
+  <span *ngIf="errorMessage" class="error-message">{{ errorMessage }}</span>
+  <div class="uploaded-files" *ngIf="files && files.length > 0">
+    <h3>Archivos seleccionados ({{ files.length }})</h3>
+    <div fxLayout="column" *ngFor="let file of files">
+      <div fxFlex fxLayout="row" fxLayoutAlign="center center">
+        <div fxFlex>{{ file.fileName }}</div>
+        <div fxFlex>{{ file.features.length }} zonas</div>
+        <div>
+          <button mat-icon-button (click)="deleteFile(file)">
+            <mat-icon color="warn">delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button cdkFocusInitial (click)="importZones()">Importar</button>
+</mat-dialog-actions>

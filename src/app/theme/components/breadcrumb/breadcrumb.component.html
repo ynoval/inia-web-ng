@@ -1,7 +1,47 @@
-<div fxLayout="row wrap" *ngIf="router.url !== '/' && router.url !== '/communities'">
+<div fxLayout="row wrap" *ngIf="showNavigator()">
   <div fxFlex="100" class="flex-p">
     <mat-card fxLayout="row" class="breadcrumb">
-      <ng-container *ngIf="router.url.startsWith('/communities'); then communitiesHome; else zonesHome"> </ng-container>
+      <a
+        *ngIf="pageSection === 'ZONES'"
+        routerLink="zones"
+        class="breadcrumb-item"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon>dashboard</mat-icon>
+        <span class="breadcrumb-title">Zonas</span>
+      </a>
+      <a
+        *ngIf="pageSection === 'POLICE_SECTIONS'"
+        routerLink="police-sectionals"
+        class="breadcrumb-item"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon>local_police</mat-icon>
+        <span class="breadcrumb-title">Seccionales Policiales</span>
+      </a>
+      <a
+        *ngIf="pageSection === 'BASINS'"
+        routerLink="basins"
+        class="breadcrumb-item"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon>water</mat-icon>
+        <span class="breadcrumb-title">Cuencas</span>
+      </a>
+      <a
+        *ngIf="pageSection === 'COMMUNITIES'"
+        routerLink="/communities"
+        class="breadcrumb-item"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon>library_books</mat-icon>
+        <span class="breadcrumb-title">Comunidades</span>
+      </a>
+
       <div
         *ngFor="let breadcrumb of breadcrumbs; let i = index"
         class="breadcrumb-item"
@@ -14,16 +54,3 @@
     </mat-card>
   </div>
 </div>
-
-<ng-template #zonesHome>
-  <a routerLink="/" class="breadcrumb-item" fxLayout="row" fxLayoutAlign="start center">
-    <mat-icon>dashboard</mat-icon>
-    <span class="breadcrumb-title">Zonas</span>
-  </a>
-</ng-template>
-<ng-template #communitiesHome>
-  <a routerLink="/communities" class="breadcrumb-item" fxLayout="row" fxLayoutAlign="start center">
-    <mat-icon>library_books</mat-icon>
-    <span class="breadcrumb-title">Comunidades</span>
-  </a>
-</ng-template>

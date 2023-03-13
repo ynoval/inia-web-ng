@@ -1,13 +1,10 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*"],
+  "plugins": ["import"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": ["tsconfig.json", "cypress/tsconfig.json"],
         "createDefaultProgram": true

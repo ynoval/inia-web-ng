@@ -12,7 +12,20 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./pages/dashboard/dashboard.module').then((m) => m.DashboardModule),
+        loadChildren: () => import('./pages/dd/dashboard.module').then((m) => m.DashboardModule),
+      },
+      {
+        path: 'zones',
+        loadChildren: () => import('./features/zones/custom-zones.module').then((m) => m.CustomZonesModule),
+      },
+      {
+        path: 'police-sectionals',
+        loadChildren: () =>
+          import('./features/police-sectionals/police-sectionals.module').then((m) => m.PoliceSectionalsModule),
+      },
+      {
+        path: 'basins',
+        loadChildren: () => import('./features/basins/basins.module').then((m) => m.BasinsModule),
       },
       {
         path: 'communities',
@@ -38,7 +51,7 @@ export const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, {
       // preloadingStrategy: PreloadAllModules, // <- comment this line for activate lazy load
-      relativeLinkResolution: 'legacy',
+      // relativeLinkResolution: 'legacy',
       // useHash: true
     }),
   ],

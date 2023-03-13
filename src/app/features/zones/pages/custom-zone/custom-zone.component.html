@@ -1,0 +1,70 @@
+<div fxFlex fxLayout="column" class="zone-title">
+  <div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+    <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+    <div fxFlex fxLayout="column" class="zone-name">
+      <h2>{{ getZoneName() }}</h2>
+      <h4>{{ getZoneDescription() }}</h4>
+    </div>
+    <div>Options here</div>
+  </div>
+  <div fxFlex class="flex-p">
+    <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
+    <mat-tab-group>
+      <mat-tab label="Información">
+        <div
+          *ngIf="zoneInformation$ | async as zoneInformation; else loading"
+          fxFlex
+          fxLayout="row"
+          fxLayout.lt-md="column"
+          fxLayoutAlign="start start"
+          fxLayoutAlign.lt-md="start stretch"
+          class="flex-p"
+        >
+          <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
+            <div *ngIf="zone.type === 'marker'" fxFlex fxFlexLayout="column" fxLayoutAlign="start center">
+              <app-zone-marker-info
+                [latitude]="zoneInformation.latitude"
+                [longitude]="zoneInformation.longitude"
+                [communityInformation]="
+                  zoneInformation.communitiesAreas && zoneInformation.communitiesAreas.length > 0
+                    ? zoneInformation.communitiesAreas[0]
+                    : null
+                "
+                (viewCommunity)="viewCommunity($event)"
+              ></app-zone-marker-info>
+            </div>
+
+            <div *ngIf="zone.type !== 'marker'" fxFlex fxFlexLayout="column" fxLayoutAlign="start center">
+              <app-zone-area-info [zoneInformation]="zoneInformation"></app-zone-area-info>
+            </div>
+          </div>
+          <div
+            *ngIf="zone.properties && zone.properties.length > 0"
+            fxLayout="column"
+            fxLayoutAlign="center center"
+            class="flex-p"
+          >
+            <app-zone-properties></app-zone-properties>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Radiación absorbida">
+        <app-apar-analysis [zone]="zone"></app-apar-analysis>
+      </mat-tab>
+      <mat-tab label="Productividad">
+        <app-ppna-analysis [zone]="zone"></app-ppna-analysis>
+      </mat-tab>
+      <mat-tab label="Rendimiento Hidrológico">
+        <app-rh-analysis [zone]="zone"></app-rh-analysis>
+      </mat-tab>
+      <mat-tab label="Evapotranspiración">
+        <app-et-analysis [zone]="zone"></app-et-analysis>
+      </mat-tab>
+      <mat-tab label="IOSE">
+        <app-iose-analysis [zone]="zone"></app-iose-analysis>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #loading> Espere por favor... </ng-template>

@@ -21,9 +21,10 @@ export class CommunitiesMapLayersComponent {
 
   public showLayers: boolean = false;
 
-  toogleLayer(event: any) {
-    const layer = this.mapLayers.find( l => l.id === event.option.value);
-    this.changeLayer.next({layer, action: event.option.selected? 'SHOW' : 'HIDE'});
+  toggleLayer(event: any) {
+    const option =  event.options[0]
+    const layer = this.mapLayers.find( l => l.id === option.value);
+    this.changeLayer.next({layer, action: option.selected? 'SHOW' : 'HIDE'});
   }
 
   showCommunity(id) {

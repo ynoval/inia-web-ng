@@ -1,0 +1,67 @@
+<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+  <div fxFlex class="flex-p" style="height: 100%">
+    <div style="height: 100%">
+      <google-map width="100%" height="100%" [options]="gmOptions"></google-map>
+    </div>
+    <!-- <div *ngIf="apiLoaded | async" style="height: 100%">
+      <google-map width="100%" height="100%" [options]="gmOptions"></google-map>
+    </div> -->
+  </div>
+  <div fxFlex class="flex-p">
+    <mat-tab-group>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>list</mat-icon>
+          Cuencas ({{ basins ? basins.length : 0 }})
+        </ng-template>
+        <div fxFlex fxLayout="column" class="zones-container">
+          <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="zones-actions">
+            <!-- <div fxFlex>
+              <mat-form-field>
+                <input matInput style="padding-left: 5px" [(ngModel)]="searchText" />
+                <mat-icon matPrefix>search</mat-icon>
+                <button mat-button matSuffix mat-icon-button (click)="cleanSearch()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </mat-form-field>
+            </div> -->
+            <div fxFlex>
+              <mat-form-field>
+                <mat-select [(ngModel)]="selectedGrade" (selectionChange)="switchGrade()">
+                  <mat-option value="I">Cuencas de grado 1</mat-option>
+                  <mat-option value="II">Cuencas de grado 2</mat-option>
+                  <mat-option value="III">Cuencas de grado 3</mat-option>
+                  <mat-option value="IV">Cuencas de grado 4</mat-option>
+                  <mat-option value="V">Cuencas de grado 5</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxLayout="column" *ngFor="let zone of basins | deepFilter : searchText : keysToExclude">
+            <div
+              fxFlex
+              fxLayout="row"
+              fxLayoutAlign="center center"
+              [ngClass]="{ 'zone-active': zone.name === selectedBasin }"
+            >
+              <div>
+                <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+              </div>
+              <div fxFlex (click)="selectZone(zone)">{{ zone.name }}</div>
+              <div>
+                <button mat-icon-button (click)="toggleZone(zone)">
+                  <mat-icon *ngIf="zone.visible" matTooltip="Ocultar la zona">visibility_off</mat-icon>
+                  <mat-icon *ngIf="!zone.visible" matTooltip="Mostrar la zona">visibility_on</mat-icon>
+                </button>
+                <button mat-icon-button (click)="viewZone(zone)">
+                  <mat-icon>info</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <div id="containerLayers"></div>
+</div>

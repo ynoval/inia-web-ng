@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>Adicionar Zona</h2>
+<mat-dialog-content>
+  <div fxFlex fxLayout="column">
+    <div fxFlex fxLayout="row" fxLayoutAlign="space-between">
+      <div fxFlex>
+        <mat-form-field class="form-field" fxFlex appearance="legacy">
+          <mat-label>Nombre de la Zona</mat-label>
+          <input matInput [(ngModel)]="zoneName" />
+          <mat-button-icon matSuffix matTooltip="Generarlo automáticamente" (click)="generateZoneName()">
+            <mat-icon style="font-size: small" (click)="zoneName = data.defaultZoneName">settings</mat-icon>
+          </mat-button-icon>
+        </mat-form-field>
+      </div>
+    </div>
+    <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+      <mat-radio-group class="form-field" [(ngModel)]="selectedZoneType" fxFlex fxLayoutAlign="star center">
+        <mat-radio-button class="shape-first-option" value="LOCATION" [disabled]="!currentLocation">
+          Ubicación
+        </mat-radio-button>
+        <mat-radio-button class="shape-option" value="MARKER">Marcador</mat-radio-button>
+        <mat-radio-button class="shape-option" value="POLYGON">Polígono</mat-radio-button>
+        <mat-radio-button class="shape-option" value="RECTANGLE">Rectángulo</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div fxFlex fxLayout="row">
+      <div fxFlex fxLayout="row" *ngIf="selectedZoneType === 'LOCATION'">
+        <mat-form-field class="form-field" fxFlex appearance="legacy">
+          <mat-label>Latitud</mat-label>
+          <input matInput [(ngModel)]="currentLocation.lat" />
+        </mat-form-field>
+        <mat-form-field class="form-field" fxFlex appearance="legacy">
+          <mat-label>Longitud</mat-label>
+          <input matInput [(ngModel)]="currentLocation.lng" />
+        </mat-form-field>
+      </div>
+      <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" *ngIf="selectedZoneType === 'MARKER'">
+        <mat-form-field class="form-field" fxFlex appearance="legacy">
+          <mat-label>Latitud</mat-label>
+          <input matInput [(ngModel)]="markerLat" />
+          <mat-hint>Valores entre xxx y yyy </mat-hint>
+        </mat-form-field>
+        <mat-form-field class="form-field" fxFlex appearance="legacy">
+          <mat-label>Longitud</mat-label>
+          <input matInput [(ngModel)]="markerLng" />
+          <mat-hint>Valores entre xxx y yyy </mat-hint>
+        </mat-form-field>
+      </div>
+      <div fxFlex fxLayout="column" *ngIf="selectedZoneType === 'POLYGON'">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Latitud</mat-label>
+            <input matInput [(ngModel)]="markerLat" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Longitud</mat-label>
+            <input matInput [(ngModel)]="markerLng" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+          <button mat-icon-button>
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <div fxFlex fxLayout="column">LISTADO DE PUNTOS</div>
+      </div>
+      <div fxFlex fxLayout="column" *ngIf="selectedZoneType === 'RECTANGLE'">
+        <div fxFlex fxLayout="row">
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Norte</mat-label>
+            <input matInput [(ngModel)]="rectangleNorth" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Sur</mat-label>
+            <input matInput [(ngModel)]="rectangleSouth" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+        </div>
+        <div fxFlex fxLayout="row">
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Este</mat-label>
+            <input matInput [(ngModel)]="rectangleEast" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+          <mat-form-field class="form-field" fxFlex appearance="legacy">
+            <mat-label>Oeste</mat-label>
+            <input matInput [(ngModel)]="rectangleWest" />
+            <mat-hint>Valores entre xxx y yyy </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Adicionar</button>
+</mat-dialog-actions>

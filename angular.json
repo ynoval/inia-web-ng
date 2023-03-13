@@ -67,7 +67,9 @@
             "namedChunks": true,
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/app/theme/styles"
+                "src/app/theme/styles",
+                "node_modules/ag-grid-community/dist/styles/ag-grid.css",
+                "node_modules/ag-grid-community/dist/styles/ag-theme-balham.css"
               ]
             }
           },

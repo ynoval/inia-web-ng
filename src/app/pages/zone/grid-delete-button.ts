@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ICellRendererAngularComp } from '@ag-grid-community/angular';
+// import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 
 @Component({
   selector: 'app-grid-delete-button',
@@ -7,7 +7,8 @@ import { ICellRendererAngularComp } from '@ag-grid-community/angular';
   template: `<mat-icon (click)="onClick($event)" color="warn" style="trasform: scale(0.5); cursor: pointer"> delete</mat-icon>
 `,
 })
-export class GridDeleteButtonRendererComponent implements ICellRendererAngularComp {
+// export class GridDeleteButtonRendererComponent implements ICellRendererAngularComp {
+export class GridDeleteButtonRendererComponent {
   params: any;
 
   agInit(params): void {

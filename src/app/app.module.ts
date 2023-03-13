@@ -12,7 +12,7 @@ import {
 } from 'ngx-perfect-scrollbar';
 
 import { CustomOverlayContainer } from './theme/utils/custom-overlay-container';
-import { SharedModule } from './shared/shared.module';
+
 import { AppRoutingModule } from './app.routing';
 
 import { AppComponent } from './app.component';
@@ -26,6 +26,7 @@ import { VerticalMenuComponent } from './theme/components/menu/vertical-menu/ver
 import { BreadcrumbComponent } from './theme/components/breadcrumb/breadcrumb.component';
 import { FullScreenComponent } from './theme/components/fullscreen/fullscreen.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AppSharedModule } from './shared.module';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   wheelPropagation: true,
@@ -40,7 +41,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     HttpClientModule,
     ReactiveFormsModule,
     PerfectScrollbarModule,
-    SharedModule,
+    AppSharedModule,
     AppRoutingModule,
   ],
   declarations: [

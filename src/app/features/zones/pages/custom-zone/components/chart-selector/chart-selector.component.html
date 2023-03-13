@@ -1,0 +1,15 @@
+<div fxFlex class="chart-selector-container">
+  <mat-radio-group
+    fxFlex
+    fxFlexLayout="row"
+    fxLayoutAlign="space-around center"
+    aria-labelledby="radio-group-label"
+    class="chart-options"
+    (change)="changeChart($event)"
+    [(ngModel)]="_selectedChart"
+  >
+    <mat-radio-button *ngFor="let chartType of chartTypes" [value]="chartType.id">
+      {{ chartType.label }}
+    </mat-radio-button>
+  </mat-radio-group>
+</div>

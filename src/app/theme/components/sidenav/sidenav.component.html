@@ -39,5 +39,13 @@
 <perfect-scrollbar class="sidenav-menu-outer" [class.user-block-show]="settings.sidenavUserBlock">
   <div id="vertical-menu">
     <app-vertical-menu [menuItems]="menuItems" [menuParentId]="0"></app-vertical-menu>
+    <div class="bottom-information" fxLayout="row" fxLayoutAlign="space-around">
+      <a style="flex: 1" mat-button routerLink="/information">
+        <mat-icon>info</mat-icon>
+      </a>
+      <a style="flex: 1" mat-button routerLink="/mobile">
+        <mat-icon>phone_android</mat-icon>
+      </a>
+    </div>
   </div>
 </perfect-scrollbar>

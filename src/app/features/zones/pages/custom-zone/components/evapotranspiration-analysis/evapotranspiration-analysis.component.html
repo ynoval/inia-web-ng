@@ -1,0 +1,9 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+  <app-chart-selector [chartTypes]="chartOptions" (selectedChartChanged)="changeChart($event)"></app-chart-selector>
+  <div *ngIf="selectedChart === 'ANNUAL'" fxFlex>
+    <app-et-annual-chart [zone]="zone"></app-et-annual-chart>
+  </div>
+  <div *ngIf="selectedChart === 'HISTORICAL'" fxFlex>
+    <app-et-historical-chart [zone]="zone"></app-et-historical-chart>
+  </div>
+</div>

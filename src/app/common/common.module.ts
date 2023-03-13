@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '@app/shared/shared.module';
+
+import { AppSharedModule } from '@app/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { NotificationComponent } from './components/notification/notification.component';
@@ -13,7 +14,7 @@ import { LayersService } from './services/layers.service';
 import { CommunitiesLayersService } from './services/communities-layers.service';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule],
+  imports: [CommonModule, ReactiveFormsModule, AppSharedModule],
   declarations: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
   exports: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
   providers: [NotificationService, ApiService, ZonesService, LayersService, CommunitiesLayersService],

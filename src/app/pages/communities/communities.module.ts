@@ -5,22 +5,25 @@ import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { createCustomElement } from '@angular/elements';
-import { COMMUNITIES_LAYERS_SERVICE_CONTEXT } from '@app/common/services/communities-layers.service';
+
+import { AppSharedModule } from '@app/shared.module';
 import { AppCommonModule } from '@app/common/common.module';
-import { SharedModule } from '../../shared/shared.module';
+import { COMMUNITIES_LAYERS_SERVICE_CONTEXT } from '@app/common/services/communities-layers.service';
+
 import { CommunitiesPageComponent } from './communities.component';
 import { CommunitiesMapLayersComponent } from './communities-map-layers/communities-map-layers.component';
+import { PathMatch } from '@app/common/models/pathMatch.type';
 
 export const routes = [
   {
     path: '',
     component: CommunitiesPageComponent,
-    pathMatch: 'full',
+    pathMatch: 'full' as PathMatch,
   },
   {
     path: 'community/:id',
     loadChildren: () => import('../community/community.module').then((m) => m.CommunityModule),
-    data: { breadcrumb: 'Comunidad' },
+    data: { breadcrumb: 'Comunidad Seleccionada' },
   },
 ];
 
@@ -31,7 +34,7 @@ export const routes = [
     FormsModule,
     GoogleMapsModule,
     PerfectScrollbarModule,
-    SharedModule,
+    AppSharedModule,
     AppCommonModule,
   ],
   declarations: [CommunitiesPageComponent, CommunitiesMapLayersComponent],

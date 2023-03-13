@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption } from 'echarts';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+// import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { v4 as uuidv4 } from 'uuid';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { NotificationService } from '@app/common/components/notification/notification.service';
@@ -19,13 +19,11 @@ import { GridDeleteButtonRendererComponent } from './grid-delete-button';
   styleUrls: ['./zone.component.scss'],
 })
 export class ZonePageComponent implements OnInit {
-  modules = [ClientSideRowModelModule];
+  // modules = [ClientSideRowModelModule];
 
   public settings: Settings;
 
   id: string;
-
-  zone$: Observable<ZoneModel>;
 
   zone: ZoneModel;
 
@@ -43,14 +41,30 @@ export class ZonePageComponent implements OnInit {
     // { id: 'MONTHLY_CHART', label: 'Análisis mensual' },
   ];
 
+  selectedRHChart = 'ANNUAL_CHART';
+
+  rhChartsTypes = [
+    { id: 'ANNUAL_CHART', label: 'Análisis por año' },
+    { id: 'HISTORICAL_CHART', label: 'Análisis Histórico' },
+    { id: 'RH_PPT', label: 'RH/PPT' },
+  ];
+
+  selectedETChart = 'ANNUAL_CHART';
+
+  etChartsTypes = [
+    { id: 'ANNUAL_CHART', label: 'Análisis por año' },
+    { id: 'HISTORICAL_CHART', label: 'Análisis Histórico' },
+    // { id: 'MONTHLY_CHART', label: 'Análisis mensual' },
+  ];
+
   // #region Annual Chart
   annualData = [];
 
   annualChartInstance: any;
 
-  startPreditionMonth = (new Date().getMonth() + 5) % 12;
+  startPredictionMonth = (new Date().getMonth() + 5) % 12;
 
-  endPredictionMonth = this.startPreditionMonth + 3;
+  endPredictionMonth = this.startPredictionMonth + 3;
 
   annualChartOptions: EChartsOption = {
     title: {
@@ -96,7 +110,7 @@ export class ZonePageComponent implements OnInit {
     //   pieces: [
     //     { lt: 5, color: '#096' },
     //     {
-    //       gt: this.startPreditionMonth,
+    //       gt: this.startPredictionMonth,
     //       lte: this.endPredictionMonth,
     //     },
     //   ],
@@ -348,7 +362,8 @@ export class ZonePageComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private zonesService: ZonesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private ngZone: NgZone
   ) {
     this.settings = this.appSettings.settings;
     this.propertiesGridFrameworkComponents = {
@@ -358,13 +373,17 @@ export class ZonePageComponent implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.zone = this.zonesService.getZone(this.id);
-    this.zone.properties = !this.zone.properties ? [] : this.zone.properties.map((prop) => ({ ...prop, id: uuidv4() }));
-    this.loadZoneInformation();
+    this.zonesService.getZone(this.id).then((zone) => {
+      this.zone = zone;
+      this.zone.properties = !this.zone.properties
+        ? []
+        : this.zone.properties.map((prop) => ({ ...prop, id: uuidv4() }));
+      this.loadZoneInformation();
+    });
   }
 
   private async loadZoneInformation() {
-    // const notification = this.notificationService.showAction('Cargando información sobre la zona');
+    const notification = this.notificationService.showAction('Cargando información sobre la zona');
     this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
     this.zoneInformation$.subscribe((zoneInformation) => {
       if (this.zone.type === 'marker') {
@@ -406,7 +425,7 @@ export class ZonePageComponent implements OnInit {
           },
         };
       }
-      // notification.dismiss();
+      notification.dismiss();
     });
   }
 
@@ -416,7 +435,6 @@ export class ZonePageComponent implements OnInit {
     setTimeout(() => {
       notification.dismiss();
     }, 1000);
-    console.log('updateAnnualOptions', this.updateAnnualOptions);
     this.annualChartInstance.on('legendselectchanged', async (params) => {
       if (params.name === 'Media') {
         return;
@@ -453,12 +471,14 @@ export class ZonePageComponent implements OnInit {
     this.communitiesChartInstance = ec;
     this.communitiesChartInstance.on('dblclick', ({ data }) => {
       if (data.id) {
-        this.router.navigate(['communities/community', data.id]);
+        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        return;
       }
     });
     this.communitiesChartInstance.on('click', ({ data }) => {
       if (data.id) {
-        this.router.navigate(['communities/community', data.id]);
+        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        return;
       }
     });
   }
@@ -467,14 +487,15 @@ export class ZonePageComponent implements OnInit {
   private getAvailableYears() {
     const years = [];
     const currentDate = new Date();
-    const lastYear =
-      currentDate.getMonth() !== 0 || currentDate.getDate() > 20
-        ? currentDate.getFullYear()
-        : currentDate.getFullYear() - 1;
+    const lastYear = currentDate.getFullYear() - 1;
+    // currentDate.getMonth() !== 0 || currentDate.getDate() > 20
+    //   ? currentDate.getFullYear()
+    //   : currentDate.getFullYear() - 1;
     const firstYear = 2001; // TODO: FIX Get from Config
     for (let i = firstYear; i <= lastYear; i += 1) {
       years.push(i);
     }
+    console.log('years:', years);
     return years;
   }
 
@@ -520,6 +541,43 @@ export class ZonePageComponent implements OnInit {
     }
   }
 
+  async changeRHChart() {
+    let message = '';
+    switch (this.selectedRHChart) {
+      case 'HISTORICAL_CHART': {
+        message = 'Cargando información histórica.';
+        break;
+      }
+      case 'ANNUAL_CHART': {
+        message = 'Cargando información anual';
+        break;
+      }
+      case 'RH_PPT': {
+        message = 'Cargando información de RH/PPT';
+      }
+    }
+
+    const notification = this.notificationService.showAction(message);
+    setTimeout(() => notification.dismiss(), 500);
+  }
+
+  async changeETChart() {
+    let message = '';
+    switch (this.selectedETChart) {
+      case 'HISTORICAL_CHART': {
+        message = 'Cargando información histórica.';
+        break;
+      }
+      case 'ANNUAL_CHART': {
+        message = 'Cargando información anual';
+        break;
+      }
+    }
+
+    const notification = this.notificationService.showAction(message);
+    setTimeout(() => notification.dismiss(), 500);
+  }
+
   private addProperty() {
     this.propertiesGridApi.applyTransaction({
       add: [{ id: uuidv4(), propertyName: '', propertyValue: '' }],
@@ -553,7 +611,7 @@ export class ZonePageComponent implements OnInit {
       annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.id, lastYear)],
     };
 
-    console.log({ zI: this.zonePPNAInformation });
+    console.log('zonInfo:', this.zonePPNAInformation);
 
     this.annualData = [];
     const legendData = [];
@@ -650,7 +708,7 @@ export class ZonePageComponent implements OnInit {
   }
 
   saveAnnualCSV() {
-    const csvHeader = ['AÑO', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN'];
+    const csvHeader = ['AÑO', ...this.getMonthsInfo()]; // 'JUL 1', 'JUL 17', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN'];
     const csvData = [];
     this.zonePPNAInformation.annualPPNA.forEach((annualPPNA) => {
       const csvRow = [

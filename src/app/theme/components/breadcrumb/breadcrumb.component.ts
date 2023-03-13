@@ -19,6 +19,8 @@ export class BreadcrumbComponent {
 
   public settings: Settings;
 
+  public pageSection = 'Zones';
+
   constructor(
     public appSettings: AppSettings,
     public router: Router,
@@ -35,8 +37,17 @@ export class BreadcrumbComponent {
           this.pageTitle += ` > ${breadcrumb.name}`;
         });
         this.title.setTitle(this.settings.name + this.pageTitle);
+        this.pageSection = this.getPageSection();
+        console.log(`route: ${this.router.url} pageSection: ${this.pageSection}`);
       }
     });
+  }
+
+  private getPageSection(): string {
+    if (this.router.url.startsWith('/communities')) return 'COMMUNITIES';
+    if (this.router.url.startsWith('/police-sectionals')) return 'POLICE_SECTIONS';
+    if (this.router.url.startsWith('/basins')) return 'BASINS';
+    return 'ZONES';
   }
 
   private parseRoute(node: ActivatedRouteSnapshot) {
@@ -56,5 +67,9 @@ export class BreadcrumbComponent {
     if (node.firstChild) {
       this.parseRoute(node.firstChild);
     }
+  }
+
+  public showNavigator() {
+    return this.router.url.match(/\//g).length !== 1;
   }
 }

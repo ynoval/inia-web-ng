@@ -3,19 +3,21 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { NgxEchartsModule } from 'ngx-echarts';
 // import { MatCarouselModule } from '@ngbmodule/material-carousel';
 // import { LazyLoadImageModule } from 'ng-lazyload-image';
-import { NgxEchartsModule } from 'ngx-echarts';
-import { SharedModule } from '../../shared/shared.module';
+
+import { AppSharedModule } from '@app/shared.module';
 import { CommunityPageComponent } from './community.component';
 import { ImageCarouselComponent } from './image-carousel/image-carousel.component';
 import { SubCommunityComponent } from './subcommunity/subcommunity.component';
+import { PathMatch } from '@app/common/models/pathMatch.type';
 
 export const routes = [
   {
     path: '',
     component: CommunityPageComponent,
-    pathMatch: 'full',
+    pathMatch: 'full' as PathMatch,
   },
   {
     path: 'specie/:idSpecie',
@@ -35,7 +37,7 @@ export const routes = [
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
     }),
-    SharedModule,
+    AppSharedModule,
   ],
   declarations: [CommunityPageComponent, SubCommunityComponent, ImageCarouselComponent],
 })
