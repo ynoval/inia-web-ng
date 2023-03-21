@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
 @Component({
@@ -13,6 +14,11 @@ export class PPNAAnnualChartComponent {
   @Input() zone: ZoneModel;
 
   chartOptions: EChartsOption = {
+    grid: {
+      left: '5%',
+      right: '10%',
+      bottom: '25%',
+    },
     title: {
       text: 'Productividad Anual',
       top: '2%',
@@ -35,18 +41,20 @@ export class PPNAAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 20,
+        fontWeight: 'bold',
       },
       axisLabel: {
         interval: 0,
-        rotate: 30, //If the label names are too long you can manage this by rotating the label.
+        rotate: 30,
       },
     },
     yAxis: {
       type: 'value',
-      name: 'PPNA (kg MS/ha por mes)',
+      name: 'PPNA (kg MS/ha por día)',
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 30,
+        fontWeight: 'bold',
       },
     },
     // visualMap: {
@@ -75,7 +83,7 @@ export class PPNAAnnualChartComponent {
     series: [],
     toolbox: {
       itemSize: 24,
-      right: '12%',
+      right: '50%',
       iconStyle: { color: 'rgb(40,52,147)' },
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -100,6 +108,8 @@ export class PPNAAnnualChartComponent {
 
   zonePPNAInformation: any;
 
+  selectedYears: any;
+
   constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
 
   onChartInit(ec) {
@@ -107,6 +117,7 @@ export class PPNAAnnualChartComponent {
       this.chartInstance = ec;
       this.chartInstance.on('legendselectchanged', async (params) => {
         if (params.name === 'Media') {
+          this.selectedYears.Media = !this.selectedYears.Media;
           return;
         }
         const year = +params.name.split('-')[0].trim();
@@ -115,7 +126,7 @@ export class PPNAAnnualChartComponent {
           this.chartInstance.showLoading({ text: 'Cargando datos...' });
           const result = await this.zonesService.getZoneAnnualPPNA(this.zone.id, year);
           this.zonePPNAInformation.annualPPNA.push(result);
-          this.data[index].data = result.values.map((value) => value.ppna);
+          this.data[index].data = result.values.map((value) => (+value.ppna / 16).toFixed(2));
           this.data[index].emphasis = {
             itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
           };
@@ -126,6 +137,8 @@ export class PPNAAnnualChartComponent {
           legend: { ...this.updateOptions.legend, selected: params.selected },
         };
         this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
+        const key = `${year} - ${year + 1}`;
+        this.selectedYears[key] = !this.selectedYears[key];
       });
       this.load();
     }
@@ -160,7 +173,29 @@ export class PPNAAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('save CSV');
+    const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
+    const csvData = [];
+    const years = Object.keys(this.selectedYears)
+      .filter((key) => this.selectedYears[key])
+      .map((key) => {
+        return key === 'Media' ? 'Media' : key.split('-')[0].trim();
+      });
+
+    years.forEach((year) => {
+      let csvRow = [];
+      if (year === 'Media') {
+        csvRow.push('Media');
+        csvRow.push(...this.zonePPNAInformation.annualPPNAMean.values.map((value) => (value ? value.ppna : '')));
+      } else {
+        const annualPPNA = this.zonePPNAInformation.annualPPNA.find((x) => x.year === +year);
+        if (annualPPNA) {
+          csvRow.push(`${annualPPNA.year} - ${annualPPNA.year + 1}`);
+          csvRow.push(...annualPPNA.values.map((value) => (value ? value.ppna : '')));
+        }
+      }
+      csvData.push(csvRow);
+    });
+    new AngularCsv(csvData, `${this.zone.name} Productividad Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
@@ -187,14 +222,11 @@ export class PPNAAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => value.ppna),
-      endLabel: {
-        show: true,
-      },
+      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => value.ppna / 16),
     });
 
     legendData.push('Media');
-    const selectedYears: any = {
+    this.selectedYears = {
       Media: true,
     };
     const startedDataYear = 2001; // TODO: FIX GET from config
@@ -211,18 +243,18 @@ export class PPNAAnnualChartComponent {
         },
       });
       legendData.push(`${i} - ${i + 1}`);
-      selectedYears[`${i} - ${i + 1}`] = false;
+      this.selectedYears[`${i} - ${i + 1}`] = false;
     }
     this.zonePPNAInformation.annualPPNA.forEach((ppna) => {
       const index = this.data.findIndex((value) => value.name === `${ppna.year} - ${ppna.year + 1}`);
-      this.data[index].data = ppna.values.map((value) => value?.ppna);
-      selectedYears[`${ppna.year} - ${ppna.year + 1}`] = true;
+      this.data[index].data = ppna.values.map((value) => value?.ppna / 16);
+      this.selectedYears[`${ppna.year} - ${ppna.year + 1}`] = true;
     });
 
     this.data.push({
       name: 'L',
       type: 'line',
-      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => value.ppna - value.ppna / 2),
+      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => value.ppna / 16 - value.ppna / 16 / 2),
       lineStyle: {
         opacity: 0,
       },
@@ -232,7 +264,7 @@ export class PPNAAnnualChartComponent {
     this.data.push({
       name: 'U',
       type: 'line',
-      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => 2 * (value.ppna / 2)),
+      data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => 2 * (value.ppna / 16 / 2)),
       lineStyle: {
         opacity: 0,
       },
@@ -246,7 +278,7 @@ export class PPNAAnnualChartComponent {
       series: this.data,
       legend: {
         data: legendData,
-        selected: selectedYears,
+        selected: this.selectedYears,
       },
     };
     notification.dismiss();

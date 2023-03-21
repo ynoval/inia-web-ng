@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
 @Component({
@@ -13,6 +14,11 @@ export class EvapotranspirationAnnualChartComponent {
   @Input() zone: ZoneModel;
 
   chartOptions: EChartsOption = {
+    grid: {
+      left: '5%',
+      right: '10%',
+      bottom: '25%',
+    },
     title: {
       text: 'Evapotranspiración Anual',
       top: '2%',
@@ -35,6 +41,7 @@ export class EvapotranspirationAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 20,
+        fontWeight: 'bold',
       },
       axisLabel: {
         interval: 1,
@@ -51,6 +58,7 @@ export class EvapotranspirationAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 30,
+        fontWeight: 'bold',
       },
     },
     dataZoom: [
@@ -67,7 +75,7 @@ export class EvapotranspirationAnnualChartComponent {
     series: [],
     toolbox: {
       itemSize: 24,
-      right: '12%',
+      right: '50%',
       iconStyle: { color: 'rgb(40,52,147)' },
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -92,32 +100,35 @@ export class EvapotranspirationAnnualChartComponent {
 
   zoneInformation: any;
 
+  selectedYears: any;
+
   constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
       this.chartInstance = ec;
       this.chartInstance.on('legendselectchanged', async (params) => {
-        if (params.name === 'Media') {
-          return;
-        }
-        const year = +params.name.split('-')[0].trim();
-        const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
-        if (this.data[index].data.length === 0) {
-          this.chartInstance.showLoading({ text: 'Cargando datos...' });
-          const result = await this.zonesService.getZoneAnnualET(this.zone.id, year);
-          this.zoneInformation.annual.push(result);
-          this.data[index].data = result.values.map((value) => value.et);
-          this.data[index].emphasis = {
-            itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+        if (params.name !== 'Media') {
+          const year = +params.name.split('-')[0].trim();
+          const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
+          if (this.data[index].data.length === 0) {
+            this.chartInstance.showLoading({ text: 'Cargando datos...' });
+            const result = await this.zonesService.getZoneAnnualET(this.zone.id, year);
+            this.zoneInformation.annual.push(result);
+            this.data[index].data = result.values.map((value) => value.et);
+            this.data[index].emphasis = {
+              itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+            };
+            this.chartInstance.hideLoading();
+          }
+          this.updateOptions = {
+            series: this.data,
+            legend: { ...this.updateOptions.legend, selected: params.selected },
           };
-          this.chartInstance.hideLoading();
+          this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
         }
-        this.updateOptions = {
-          series: this.data,
-          legend: { ...this.updateOptions.legend, selected: params.selected },
-        };
-        this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
+
+        this.selectedYears[params.name] = !this.selectedYears[params.name];
       });
       this.load();
     }
@@ -125,6 +136,7 @@ export class EvapotranspirationAnnualChartComponent {
 
   getAbscissaAxisData() {
     return [
+      'Jul 4',
       'Jul 12',
       'Jul 20',
       'Jul 28',
@@ -174,7 +186,30 @@ export class EvapotranspirationAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('save CSV');
+    console.log('ET anual Save CSV');
+    const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
+    const csvData = [];
+    const years = Object.keys(this.selectedYears)
+      .filter((key) => this.selectedYears[key])
+      .map((key) => {
+        return key === 'Media' ? 'Media' : key.split('-')[0].trim();
+      });
+
+    years.forEach((year) => {
+      let csvRow = [];
+      if (year === 'Media') {
+        csvRow.push('Media');
+        csvRow.push(...this.zoneInformation.annualMean.values.map((value) => (value ? value.et : '')));
+      } else {
+        const annualData = this.zoneInformation.annual.find((x) => x.year === +year);
+        if (annualData) {
+          csvRow.push(`${annualData.year} - ${annualData.year + 1}`);
+          csvRow.push(...annualData.values.map((value) => (value ? value.et : '')));
+        }
+      }
+      csvData.push(csvRow);
+    });
+    new AngularCsv(csvData, `${this.zone.name} Evapotranspiración Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
@@ -185,30 +220,27 @@ export class EvapotranspirationAnnualChartComponent {
     console.log('ET load');
     this.zoneInformation = {
       annual: [await this.zonesService.getZoneAnnualET(this.zone.id, lastYear)],
-      // annualMean: await this.zonesService.getZoneAnnualETMean(this.zone.id),
+      annualMean: await this.zonesService.getZoneAnnualETMean(this.zone.id),
     };
 
     this.data = [];
     const legendData = [];
-    // this.data.push({
-    //   type: 'line',
-    //   smooth: true,
-    //   emphasis: {
-    //     itemStyle: {
-    //       shadowBlur: 20,
-    //       shadowColor: 'rgba(0, 0, 0, 0.8)',
-    //     },
-    //   },
-    //   name: 'Media',
-    //   large: true,
-    //   data: this.zoneInformation.annualMean.values.map((value) => value.et),
-    //   endLabel: {
-    //     show: true,
-    //   },
-    // });
+    this.data.push({
+      type: 'line',
+      smooth: true,
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 20,
+          shadowColor: 'rgba(0, 0, 0, 0.8)',
+        },
+      },
+      name: 'Media',
+      large: true,
+      data: this.zoneInformation.annualMean.values.map((value) => value.et),
+    });
 
-    // legendData.push('Media');
-    const selectedYears: any = {
+    legendData.push('Media');
+    this.selectedYears = {
       Media: true,
     };
     const startedDataYear = 2001; // TODO: FIX GET from config
@@ -225,44 +257,21 @@ export class EvapotranspirationAnnualChartComponent {
         },
       });
       legendData.push(`${i} - ${i + 1}`);
-      selectedYears[`${i} - ${i + 1}`] = false;
+      this.selectedYears[`${i} - ${i + 1}`] = false;
     }
 
     console.log({ info: this.zoneInformation });
     this.zoneInformation.annual.forEach((elem) => {
       const index = this.data.findIndex((value) => value.name === `${elem.year} - ${elem.year + 1}`);
       this.data[index].data = elem.values.map((value) => value?.et);
-      selectedYears[`${elem.year} - ${elem.year + 1}`] = true;
+      this.selectedYears[`${elem.year} - ${elem.year + 1}`] = true;
     });
 
-    // this.data.push({
-    //   name: 'L',
-    //   type: 'line',
-    //   data: this.zoneInformation.annualMean.values.map((value) => value.et - value.et / 2),
-    //   lineStyle: {
-    //     opacity: 0,
-    //   },
-    //   stack: 'confidence-band',
-    //   symbol: 'none',
-    // });
-    // this.data.push({
-    //   name: 'U',
-    //   type: 'line',
-    //   data: this.zoneInformation.annualMean.values.map((value) => 2 * (value.et / 2)),
-    //   lineStyle: {
-    //     opacity: 0,
-    //   },
-    //   areaStyle: {
-    //     color: '#f7eed2',
-    //   },
-    //   stack: 'confidence-band',
-    //   symbol: 'none',
-    // });
     this.updateOptions = {
       series: this.data,
       legend: {
         data: legendData,
-        selected: selectedYears,
+        selected: this.selectedYears,
       },
     };
     notification.dismiss();

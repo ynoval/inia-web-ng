@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
 @Component({
@@ -13,6 +14,11 @@ export class HydrologicalPerformanceHistoricalChartComponent {
   @Input() zone: ZoneModel;
 
   chartOptions: EChartsOption = {
+    grid: {
+      left: '7%',
+      right: '7%',
+      bottom: '28%',
+    },
     title: {
       text: 'Rendimiento Hidrológico Histórico',
       top: '2%',
@@ -20,12 +26,9 @@ export class HydrologicalPerformanceHistoricalChartComponent {
     },
     legend: {
       data: [],
-      // orient: 'vertical',
-      // align: 'right',
-      // type: 'scroll',
-      // right: 10,
-      // top: 20,
-      // bottom: 20,
+      orient: 'vertical',
+      align: 'right',
+      right: 10,
       backgroundColor: 'rgb(238,238,238)',
     },
     tooltip: {},
@@ -35,7 +38,11 @@ export class HydrologicalPerformanceHistoricalChartComponent {
       name: 'Años',
       nameLocation: 'middle',
       nameTextStyle: {
-        padding: 20,
+        padding: 40,
+        fontWeight: 'bold',
+      },
+      axisLabel: {
+        rotate: 30,
       },
     },
     yAxis: [
@@ -45,14 +52,17 @@ export class HydrologicalPerformanceHistoricalChartComponent {
         nameLocation: 'middle',
         nameTextStyle: {
           padding: 30,
+          fontWeight: 'bold',
         },
       },
       {
         type: 'value',
         name: 'RH/PPT (%)',
         nameLocation: 'middle',
+        max: 100,
         nameTextStyle: {
-          padding: 30,
+          padding: 40,
+          fontWeight: 'bold',
         },
       },
     ],
@@ -68,6 +78,23 @@ export class HydrologicalPerformanceHistoricalChartComponent {
       },
     ],
     series: [],
+    toolbox: {
+      itemSize: 24,
+      right: '50%',
+      iconStyle: { color: 'rgb(40,52,147)' },
+      feature: {
+        // dataView: { show: true, readOnly: false },
+        saveAsImage: { show: true, title: 'Imagen', icon: 'image://assets/icons/download-80.png' },
+        myExportCSV: {
+          show: true,
+          title: 'CSV',
+          icon: 'image://assets/icons/export-csv-32.png',
+          onclick: () => {
+            this.saveCSV();
+          },
+        },
+      },
+    },
   };
 
   chartInstance: any;
@@ -92,19 +119,31 @@ export class HydrologicalPerformanceHistoricalChartComponent {
   getAbscissaAxisData() {
     const years = [];
     const currentDate = new Date();
-    const lastYear = currentDate.getFullYear() - 1;
+    let lastYear = currentDate.getFullYear() - 1;
+    if (currentDate.getMonth() <= 5) {
+      lastYear--;
+    }
     const firstYear = 2003; // TODO: FIX Get from Config
     for (let i = firstYear; i <= lastYear; i += 1) {
-      years.push(i);
+      years.push(`${i} - ${i + 1}`);
     }
     return years;
   }
 
   saveCSV() {
-    console.log('save CSV');
+    console.log('RH save CSV');
+    const csvHeader = ['Info', ...this.getAbscissaAxisData()];
+    const csvData = [
+      [
+        'RH (RH/PPT)',
+        ...this.historicalRHInformation.map(
+          (d, index) => `${(12 * d.rh).toFixed(2)} (${this.historicalRHPropInformation[index].rhProp})`
+        ),
+      ],
+    ];
+    new AngularCsv(csvData, `${this.zone.name} RH Histórica`, { headers: csvHeader });
   }
 
-  // TODO: Refactoring
   private async load() {
     const notification = this.notificationService.showAction(
       'Cargando información de rendimiento hidrológico histórico'
@@ -145,9 +184,6 @@ export class HydrologicalPerformanceHistoricalChartComponent {
             },
           ],
         },
-        endLabel: {
-          show: true,
-        },
       },
       legendData: 'RH Histórico',
     };
@@ -176,9 +212,6 @@ export class HydrologicalPerformanceHistoricalChartComponent {
               type: 'average',
             },
           ],
-        },
-        endLabel: {
-          show: true,
         },
       },
       legendData: 'RH/PPT Histórico',

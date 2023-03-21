@@ -12,7 +12,8 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./pages/dd/dashboard.module').then((m) => m.DashboardModule),
+        redirectTo: '/zones',
+        pathMatch: 'full',
       },
       {
         path: 'zones',

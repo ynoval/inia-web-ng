@@ -25,12 +25,10 @@ export interface StoreZone {
   rhAnnualInformation: { year: number; values: Array<any> }[];
   rhMeanInformation: any;
   historicalRHInformation: any;
-  rhInformation: any;
   // RH/PPT
   rhPropAnnualInformation: { year: number; values: Array<any> }[];
   rhPropMeanInformation: any;
   historicalRHPropInformation: any;
-  rhPropInformation: any;
 
   // IOSE
   ioseInformation: any;

@@ -1,13 +1,13 @@
 import { Directive, HostListener, Output, EventEmitter, Input } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { ConfirmInfo } from './confirm.model';
+import { ConfirmInfoModel } from './confirm.model';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @Directive({
   selector: '[appConfirm]',
 })
 export class ConfirmDirective {
-  @Input() confirmInfo: ConfirmInfo;
+  @Input() confirmInfo: ConfirmInfoModel;
 
   @Input() dontAsk: boolean = false;
 
@@ -16,30 +16,31 @@ export class ConfirmDirective {
   constructor(public dialog: MatDialog) {}
 
   @HostListener('click', ['$event'])
-  clickEvent(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (this.dontAsk) {
-      this.doConfirm.next(null);
-    } else {
-      this.openDialog();
-    }
+  onClick(clickEvent: MouseEvent) {
+    clickEvent.preventDefault();
+    clickEvent.stopPropagation();
+    // if (this.dontAsk) {
+    //   this.doConfirm.next(null);
+    //   return;
+    // }
+
+    const dialogRef = this.openDialog();
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log({ result });
+      if (result) {
+        this.doConfirm.next(null);
+        // const event = new MouseEvent('click', { bubbles: true });
+        // (clickEvent.target as HTMLElement).dispatchEvent(event);
+      }
+    });
   }
 
-  openDialog(): void {
+  openDialog(): any {
     const dialogConfig = new MatDialogConfig();
-
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.width = this.confirmInfo.width;
     dialogConfig.data = this.confirmInfo;
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogConfig);
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.doConfirm.next(null);
-      }
-    });
+    return this.dialog.open(ConfirmDialogComponent, dialogConfig);
   }
 }

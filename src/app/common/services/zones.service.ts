@@ -318,7 +318,6 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearPPNAInformation = storeZone.ppnaAnnualInformation?.find((info) => {
-      console.log({ info });
       return info.year === year;
     });
 
@@ -480,14 +479,14 @@ export class ZonesService {
 
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
-    // const yearETInformation = storeZone.etAnnualInformation?.find((info) => {
-    //   return info.year === year;
-    // });
+    const yearETInformation = storeZone.etAnnualInformation?.find((info) => {
+      return info.year === year;
+    });
 
-    // if (yearETInformation && yearETInformation.length() > 0) {
-    //   // Return load information
-    //   return yearETInformation;
-    // }
+    if (yearETInformation) {
+      // Return load information
+      return yearETInformation;
+    }
 
     console.log('api service ET');
     return this.apiService
@@ -904,11 +903,9 @@ export class ZonesService {
       rhAnnualInformation: [],
       rhMeanInformation: null,
       historicalRHInformation: null,
-      rhInformation: null,
       rhPropAnnualInformation: [],
       rhPropMeanInformation: null,
       historicalRHPropInformation: null,
-      rhPropInformation: null,
       ioseInformation: null,
     };
   }

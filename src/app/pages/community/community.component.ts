@@ -315,9 +315,6 @@ export class CommunityPageComponent implements OnInit {
               },
             ],
           },
-          endLabel: {
-            show: true,
-          },
         });
         legendData.push('Productividad Histórica');
         this.updateHistoricalOptions = {
@@ -370,9 +367,6 @@ export class CommunityPageComponent implements OnInit {
       name: 'Media',
       large: true,
       data: this.communityPPNAInformation.annualPPNAMean.values.map((value) => value.ppna),
-      endLabel: {
-        show: true,
-      },
     });
 
     legendData.push('Media');

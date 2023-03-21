@@ -52,6 +52,9 @@
             <button mat-icon-button (click)="viewZone(zone)">
               <mat-icon>info</mat-icon>
             </button>
+            <button mat-icon-button appConfirm [confirmInfo]="confirmInformation" (doConfirm)="deleteZone(zone)">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
         </div>
       </div>

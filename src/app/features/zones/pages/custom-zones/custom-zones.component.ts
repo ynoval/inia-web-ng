@@ -6,6 +6,7 @@ import { GoogleMap } from '@angular/google-maps';
 
 import { GEEMapLayerModel } from '@app/common/models/geeMapLayer.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { ConfirmInfoModel } from '@app/common/directives/confirm/confirm.model';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { LayersService } from '@app/common/services/layers.service';
 import { NotificationService } from '@app/common/components/notification/notification.service';
@@ -45,6 +46,12 @@ export class CustomZonesPageComponent implements AfterViewInit {
   public mapLayers = [];
 
   drawingManager: google.maps.drawing.DrawingManager;
+
+  confirmInformation: ConfirmInfoModel = {
+    title: 'Eliminar Zona',
+    question: 'Estas seguro que deseas eliminar la zona',
+    width: '250px',
+  };
 
   constructor(
     appSettings: AppSettings,
@@ -235,6 +242,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
       // Avoid first call with zones equal to null
       // TODO: FIX!!
       if (_zones === null || _zones.length === 0) {
+        this.zones = [];
         return;
       }
 
@@ -268,6 +276,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
 
   // eslint-disable-next-line class-methods-use-this
   deleteZone(zone: any) {
+    console.log('BORRO');
     this.zonesService.removeZone(zone.name);
   }
 

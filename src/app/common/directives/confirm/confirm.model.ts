@@ -1,4 +1,4 @@
-export class ConfirmInfo {
+export class ConfirmInfoModel {
   constructor(
     public readonly title: string,
     public readonly question: string,

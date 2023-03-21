@@ -525,9 +525,6 @@ export class ZonePageComponent implements OnInit {
               },
             ],
           },
-          endLabel: {
-            show: true,
-          },
         });
         legendData.push('Productividad Histórica');
         this.updateHistoricalOptions = {
@@ -627,9 +624,6 @@ export class ZonePageComponent implements OnInit {
       name: 'Media',
       large: true,
       data: this.zonePPNAInformation.annualPPNAMean.values.map((value) => value.ppna),
-      endLabel: {
-        show: true,
-      },
     });
 
     legendData.push('Media');

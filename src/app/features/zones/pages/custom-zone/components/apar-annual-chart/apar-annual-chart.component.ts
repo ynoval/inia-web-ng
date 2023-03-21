@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
 @Component({
@@ -13,6 +14,11 @@ export class APARAnnualChartComponent {
   @Input() zone: ZoneModel;
 
   chartOptions: EChartsOption = {
+    grid: {
+      left: '5%',
+      right: '10%',
+      bottom: '25%',
+    },
     title: {
       text: 'Radiación absorbida Anual',
       top: '2%',
@@ -35,10 +41,11 @@ export class APARAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 20,
+        fontWeight: 'bold',
       },
       axisLabel: {
         interval: 0,
-        rotate: 30, //If the label names are too long you can manage this by rotating the label.
+        rotate: 30,
       },
     },
     yAxis: {
@@ -47,6 +54,7 @@ export class APARAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 30,
+        fontWeight: 'bold',
       },
     },
     // visualMap: {
@@ -75,7 +83,7 @@ export class APARAnnualChartComponent {
     series: [],
     toolbox: {
       itemSize: 24,
-      right: '12%',
+      right: '50%',
       iconStyle: { color: 'rgb(40,52,147)' },
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -100,32 +108,35 @@ export class APARAnnualChartComponent {
 
   zoneAPARInformation: any;
 
+  selectedYears: any;
+
   constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
       this.chartInstance = ec;
       this.chartInstance.on('legendselectchanged', async (params) => {
-        if (params.name === 'Media') {
-          return;
-        }
-        const year = +params.name.split('-')[0].trim();
-        const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
-        if (this.data[index].data.length === 0) {
-          this.chartInstance.showLoading({ text: 'Cargando datos...' });
-          const result = await this.zonesService.getZoneAnnualAPAR(this.zone.id, year);
-          this.zoneAPARInformation.annualAPAR.push(result);
-          this.data[index].data = result.values.map((value) => value.apar);
-          this.data[index].emphasis = {
-            itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+        if (params.name !== 'Media') {
+          const year = +params.name.split('-')[0].trim();
+          const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
+          if (this.data[index].data.length === 0) {
+            this.chartInstance.showLoading({ text: 'Cargando datos...' });
+            const result = await this.zonesService.getZoneAnnualAPAR(this.zone.id, year);
+            this.zoneAPARInformation.annualAPAR.push(result);
+            this.data[index].data = result.values.map((value) => value.apar / 16);
+            this.data[index].emphasis = {
+              itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+            };
+            this.chartInstance.hideLoading();
+          }
+
+          this.updateOptions = {
+            series: this.data,
+            legend: { ...this.updateOptions.legend, selected: params.selected },
           };
-          this.chartInstance.hideLoading();
+          this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
         }
-        this.updateOptions = {
-          series: this.data,
-          legend: { ...this.updateOptions.legend, selected: params.selected },
-        };
-        this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
+        this.selectedYears[params.name] = !this.selectedYears[params.name];
       });
       this.load();
     }
@@ -160,7 +171,29 @@ export class APARAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('save CSV');
+    const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
+    const csvData = [];
+    const years = Object.keys(this.selectedYears)
+      .filter((key) => this.selectedYears[key])
+      .map((key) => {
+        return key === 'Media' ? 'Media' : key.split('-')[0].trim();
+      });
+
+    years.forEach((year) => {
+      let csvRow = [];
+      if (year === 'Media') {
+        csvRow.push('Media');
+        csvRow.push(...this.zoneAPARInformation.annualAPARMean.values.map((value) => (value ? value.apar : '')));
+      } else {
+        const annualAPAR = this.zoneAPARInformation.annualAPAR.find((x) => x.year === +year);
+        if (annualAPAR) {
+          csvRow.push(`${annualAPAR.year} - ${annualAPAR.year + 1}`);
+          csvRow.push(...annualAPAR.values.map((value) => (value ? value.apar : '')));
+        }
+      }
+      csvData.push(csvRow);
+    });
+    new AngularCsv(csvData, `${this.zone.name} Radiación Absorbida Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
@@ -187,14 +220,11 @@ export class APARAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar),
-      endLabel: {
-        show: true,
-      },
+      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar / 16),
     });
 
     legendData.push('Media');
-    const selectedYears: any = {
+    this.selectedYears = {
       Media: true,
     };
     const startedDataYear = 2001; // TODO: FIX GET from config
@@ -211,18 +241,18 @@ export class APARAnnualChartComponent {
         },
       });
       legendData.push(`${i} - ${i + 1}`);
-      selectedYears[`${i} - ${i + 1}`] = false;
+      this.selectedYears[`${i} - ${i + 1}`] = false;
     }
     this.zoneAPARInformation.annualAPAR.forEach((apar) => {
       const index = this.data.findIndex((value) => value.name === `${apar.year} - ${apar.year + 1}`);
-      this.data[index].data = apar.values.map((value) => value?.apar);
-      selectedYears[`${apar.year} - ${apar.year + 1}`] = true;
+      this.data[index].data = apar.values.map((value) => value?.apar / 16);
+      this.selectedYears[`${apar.year} - ${apar.year + 1}`] = true;
     });
 
     this.data.push({
       name: 'L',
       type: 'line',
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar - value.apar / 2),
+      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar / 16 - value.apar / 16 / 2),
       lineStyle: {
         opacity: 0,
       },
@@ -232,7 +262,7 @@ export class APARAnnualChartComponent {
     this.data.push({
       name: 'U',
       type: 'line',
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => 2 * (value.apar / 2)),
+      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => 2 * (value.apar / 16 / 2)),
       lineStyle: {
         opacity: 0,
       },
@@ -246,7 +276,7 @@ export class APARAnnualChartComponent {
       series: this.data,
       legend: {
         data: legendData,
-        selected: selectedYears,
+        selected: this.selectedYears,
       },
     };
     notification.dismiss();

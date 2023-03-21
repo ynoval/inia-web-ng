@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
+import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
 @Component({
@@ -13,6 +14,11 @@ export class HydrologicalPerformanceAnnualChartComponent {
   @Input() zone: ZoneModel;
 
   chartOptions: EChartsOption = {
+    grid: {
+      left: '5%',
+      right: '10%',
+      bottom: '25%',
+    },
     title: {
       text: 'Rendimiento Hidrológico Anual',
       top: '2%',
@@ -35,6 +41,7 @@ export class HydrologicalPerformanceAnnualChartComponent {
       nameLocation: 'middle',
       nameTextStyle: {
         padding: 20,
+        fontWeight: 'bold',
       },
       axisLabel: {
         interval: 0,
@@ -48,16 +55,19 @@ export class HydrologicalPerformanceAnnualChartComponent {
         nameLocation: 'middle',
         nameTextStyle: {
           padding: 30,
+          fontWeight: 'bold',
         },
       },
-      {
-        type: 'value',
-        name: 'RH/PPT (%)',
-        nameLocation: 'middle',
-        nameTextStyle: {
-          padding: 30,
-        },
-      },
+      // {
+      //   type: 'value',
+      //   name: 'RH/PPT (%)',
+      //   nameLocation: 'middle',
+      //   nameTextStyle: {
+      //     padding: 30,
+      //   },
+      //   min: 0,
+      //   max: 100,
+      // },
     ],
     dataZoom: [
       {
@@ -73,7 +83,7 @@ export class HydrologicalPerformanceAnnualChartComponent {
     series: [],
     toolbox: {
       itemSize: 24,
-      right: '12%',
+      right: '50%',
       iconStyle: { color: 'rgb(40,52,147)' },
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -98,32 +108,37 @@ export class HydrologicalPerformanceAnnualChartComponent {
 
   zoneInformation: any;
 
+  selectedYears: any;
+
   constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
       this.chartInstance = ec;
       this.chartInstance.on('legendselectchanged', async (params) => {
-        if (params.name === 'Media') {
-          return;
-        }
-        const year = +params.name.split('-')[0].trim();
-        const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
-        if (this.data[index].data.length === 0) {
-          this.chartInstance.showLoading({ text: 'Cargando datos...' });
-          const result = await this.zonesService.getZoneAnnualRH(this.zone.id, year);
-          this.zoneInformation.annual.push(result);
-          this.data[index].data = result.values.map((value) => value.rh);
-          this.data[index].emphasis = {
-            itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+        if (params.name !== 'Media') {
+          const year = +params.name.split('-')[0].trim();
+          const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
+          if (this.data[index].data.length === 0) {
+            this.chartInstance.showLoading({ text: 'Cargando datos...' });
+            const results = await this.getRHData(year);
+            this.zoneInformation.annualRH.push(results);
+            const values = results.values.map((item, pos) => {
+              return { value: [pos, item.rh, item.rhProp] };
+            });
+            this.data[index].data = values;
+            this.data[index].emphasis = {
+              itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
+            };
+            this.chartInstance.hideLoading();
+          }
+          this.updateOptions = {
+            series: this.data,
+            legend: { ...this.updateOptions.legend, selected: params.selected },
           };
-          this.chartInstance.hideLoading();
+          this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
         }
-        this.updateOptions = {
-          series: this.data,
-          legend: { ...this.updateOptions.legend, selected: params.selected },
-        };
-        this.chartInstance.setOption({ ...this.chartOptions, ...this.updateOptions });
+        this.selectedYears[params.name] = !this.selectedYears[params.name];
       });
       this.load();
     }
@@ -158,22 +173,77 @@ export class HydrologicalPerformanceAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('save CSV');
+    console.log('RH Anual save CSV');
+    const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
+    const csvData = [];
+    const years = Object.keys(this.selectedYears)
+      .filter((key) => this.selectedYears[key])
+      .map((key) => {
+        return key === 'Media' ? 'Media' : key.split('-')[0].trim();
+      });
+
+    years.forEach((year) => {
+      let csvRHRow = [];
+      let csvRHPropRow = [];
+      if (year === 'Media') {
+        csvRHRow.push('RH Media');
+        csvRHRow.push(...this.zoneInformation.annualRHMean.map((value) => (value ? value.rh : '')));
+        csvRHPropRow.push('RH/PPT Media');
+        csvRHPropRow.push(...this.zoneInformation.annualRHMean.map((value) => (value ? value.rhProp : '')));
+      } else {
+        const annualData = this.zoneInformation.annualRH.find((x) => x.year === +year);
+        if (annualData) {
+          csvRHRow.push(`RH ${annualData.year} - ${annualData.year + 1}`);
+          // csvRHRow.push(...annualData.values.map((value) => (value ? `${value.rh} (${value.rhProp})` : '')));
+          csvRHRow.push(...annualData.values.map((value) => (value ? value.rh : '')));
+          csvRHPropRow.push(`RH/PPT ${annualData.year} - ${annualData.year + 1}`);
+          csvRHPropRow.push(...annualData.values.map((value) => (value ? value.rhProp : '')));
+        }
+      }
+      csvData.push(csvRHRow, csvRHPropRow);
+    });
+    new AngularCsv(csvData, `${this.zone.name} Rendimiento Hidrológico Anual`, { headers: csvHeader });
   }
 
-  // TODO: Refactoring
+  private async getRHData(year) {
+    const rhResults = await this.zonesService.getZoneAnnualRH(this.zone.id, year);
+    const rhPropResults = await this.zonesService.getZoneAnnualRHProp(this.zone.id, year);
+
+    const values = rhResults.values.map((value, index) => ({
+      rh: value.rh,
+      rhProp: rhPropResults.values[index].rhProp,
+    }));
+    return { year: rhResults.year, values };
+  }
+
+  private async getRHMeanData() {
+    const rhMean = await this.zonesService.getZoneAnnualRHMean(this.zone.id);
+    const rhPropMean = await this.zonesService.getZoneAnnualRHPropMean(this.zone.id);
+    const values = rhMean.values.map((value, index) => ({ rh: value.rh, rhProp: rhPropMean.values[index].rhProp }));
+    console.log(values);
+    return values;
+  }
+
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de productividad');
+    const notification = this.notificationService.showAction('Cargando información de rendimiento hidrológico');
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
+    const result = await this.getRHData(lastYear);
+    const resultMean = await this.getRHMeanData();
+    console.log('result', { result });
+
     this.zoneInformation = {
-      annualMean: await this.zonesService.getZoneAnnualRHMean(this.zone.id),
-      annual: [await this.zonesService.getZoneAnnualRH(this.zone.id, lastYear)],
+      annualRHMean: resultMean,
+      annualRH: [result],
     };
+
+    // this.zoneInformation.annualRH.push(result);
 
     this.data = [];
     const legendData = [];
+
+    // Insert Media
     this.data.push({
       type: 'line',
       smooth: true,
@@ -185,18 +255,49 @@ export class HydrologicalPerformanceAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zoneInformation.annualMean.values.map((value) => value.rh),
-      endLabel: {
-        show: true,
+      data: this.zoneInformation.annualRHMean.map((item, pos) => {
+        return { value: [pos, item.rh, item.rhProp] };
+      }),
+      tooltip: {
+        trigger: 'item',
+        formatter: function (param) {
+          var displayName = `${param.seriesName}`;
+          var xAxisValue = param.name;
+          var rh = param.value[1];
+          var rhProp = param.value[2];
+          var circleStyles = `"display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color:${param.color}; margin-right: 5px;"`;
+
+          return `
+              <p>
+                <span style=${circleStyles}></span>
+                <strong> ${displayName} </strong>
+              </p>
+              <p>
+                <em>${xAxisValue}</em>
+              </p>
+                <p>
+                  <strong>RH:</strong>
+                  <span style="text-align: right;">${rh} mm </span>
+                </p>
+                <p>
+                  <strong>RH/PPT: </strong>
+                  <span style="text-align: right;">${rhProp} % </span>
+                </p>
+
+              `;
+        },
+      },
+      encode: {
+        y: 1, // Show the 'RH' field as the value
+        tooltip: [1, 2], // Show the 'RH/PPT' field only in the tooltip
       },
     });
-
     legendData.push('Media');
-    const selectedYears: any = {
+    this.selectedYears = {
       Media: true,
     };
-    const startedDataYear = 2001; // TODO: FIX GET from config
 
+    const startedDataYear = 2003; // TODO: FIX GET from config
     for (let i = lastYear; i >= startedDataYear; i -= 1) {
       this.data.push({
         type: 'line',
@@ -204,47 +305,61 @@ export class HydrologicalPerformanceAnnualChartComponent {
         name: `${i} - ${i + 1}`,
         large: true,
         data: [],
+        tooltip: {
+          trigger: 'item',
+          formatter: function (param) {
+            var displayName = `${param.seriesName}`;
+            var xAxisValue = param.name;
+            var rh = param.value[1];
+            var rhProp = param.value[2];
+            var circleStyles = `"display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color:${param.color}; margin-right: 5px;"`;
+
+            return `
+              <p>
+                <span style=${circleStyles}></span>
+                <strong> ${displayName} </strong>
+              </p>
+              <p>
+                <em>${xAxisValue}</em>
+              </p>
+                <p>
+                  <strong>RH:</strong>
+                  <span style="text-align: right;">${rh} mm </span>
+                </p>
+                <p>
+                  <strong>RH/PPT: </strong>
+                  <span style="text-align: right;">${rhProp} % </span>
+                </p>
+
+              `;
+          },
+        },
         emphasis: {
           itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
         },
+        encode: {
+          y: 1, // Show the 'RH' field as the value
+          tooltip: [1, 2], // Show the 'RH/PPT' field only in the tooltip
+        },
       });
       legendData.push(`${i} - ${i + 1}`);
-      selectedYears[`${i} - ${i + 1}`] = false;
+      this.selectedYears[`${i} - ${i + 1}`] = false;
     }
-    this.zoneInformation.annual.forEach((elem) => {
-      const index = this.data.findIndex((value) => value.name === `${elem.year} - ${elem.year + 1}`);
-      this.data[index].data = elem.values.map((value) => value?.rh);
-      selectedYears[`${elem.year} - ${elem.year + 1}`] = true;
+
+    this.zoneInformation.annualRH.forEach((d) => {
+      const index = this.data.findIndex((value) => value.name === `${d.year} - ${d.year + 1}`);
+      const values = d.values.map((item, pos) => {
+        return { value: [pos, item.rh, item.rhProp] };
+      });
+      this.data[index].data = values;
+      this.selectedYears[`${d.year} - ${d.year + 1}`] = true;
     });
 
-    this.data.push({
-      name: 'L',
-      type: 'line',
-      data: this.zoneInformation.annualMean.values.map((value) => value.rh - value.rh / 2),
-      lineStyle: {
-        opacity: 0,
-      },
-      stack: 'confidence-band',
-      symbol: 'none',
-    });
-    this.data.push({
-      name: 'U',
-      type: 'line',
-      data: this.zoneInformation.annualMean.values.map((value) => 2 * (value.rh / 2)),
-      lineStyle: {
-        opacity: 0,
-      },
-      areaStyle: {
-        color: '#f7eed2',
-      },
-      stack: 'confidence-band',
-      symbol: 'none',
-    });
     this.updateOptions = {
       series: this.data,
       legend: {
         data: legendData,
-        selected: selectedYears,
+        selected: this.selectedYears,
       },
     };
     notification.dismiss();

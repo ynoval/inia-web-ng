@@ -47,6 +47,7 @@ import { EvapotranspirationHistoricalChartComponent } from './pages/custom-zone/
 
 import { IOSEAnalysisComponent } from './pages/custom-zone/components/iose-analysis/iose-analysis.component';
 import { IOSEChartComponent } from './pages/custom-zone/components/iose-chart/iose-chart.component';
+import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   imports: [
@@ -104,6 +105,7 @@ import { IOSEChartComponent } from './pages/custom-zone/components/iose-chart/io
     ExportZonesComponent,
     AddZoneComponent,
     DeleteZonesComponent,
+    ConfirmDialogComponent,
   ],
   providers: [
     {
