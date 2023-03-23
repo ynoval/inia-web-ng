@@ -225,7 +225,7 @@ export class HydrologicalPerformanceAnnualChartComponent {
   }
 
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de rendimiento hidrológico');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
@@ -362,6 +362,6 @@ export class HydrologicalPerformanceAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

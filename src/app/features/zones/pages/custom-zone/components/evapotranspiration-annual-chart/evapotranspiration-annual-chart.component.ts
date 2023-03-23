@@ -214,7 +214,7 @@ export class EvapotranspirationAnnualChartComponent {
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de evapotranspiración');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     console.log('ET load');
@@ -274,6 +274,6 @@ export class EvapotranspirationAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

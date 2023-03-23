@@ -199,7 +199,7 @@ export class BasinAPARAnnualChartComponent {
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de APAR');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
@@ -280,6 +280,6 @@ export class BasinAPARAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

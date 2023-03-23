@@ -35,6 +35,7 @@ import { CommunityIOSEChartComponent } from './pages/community/components/commun
 import { CommunityPPNAAnalysisComponent } from './pages/community/components/community-ppna-analysis/community-ppna-analysis.component';
 import { CommunityPPNAAnnualChartComponent } from './pages/community/components/community-ppna-annual-chart/community-ppna-annual-chart.component';
 import { CommunityPPNAHistoricalChartComponent } from './pages/community/components/community-ppna-historical-chart/community-ppna-historical-chart.component';
+import { CommunityChartSelectorComponent } from './pages/community/components/community-chart-selector/community-chart-selector.component';
 
 @NgModule({
   imports: [
@@ -57,6 +58,7 @@ import { CommunityPPNAHistoricalChartComponent } from './pages/community/compone
     CommunitiesMapLayersComponent,
     CommunityPageComponent,
     SubCommunityComponent,
+    CommunityChartSelectorComponent,
     CommunityAPARAnalysisComponent,
     CommunityAPARAnnualChartComponent,
     CommunityAPARHistoricalChartComponent,

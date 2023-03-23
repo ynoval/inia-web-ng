@@ -152,7 +152,7 @@ export class APARHistoricalChartComponent {
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de APAR histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const legendData = [];
     this.historicalAPARInformation = await this.zonesService.getZoneHistoricalAPAR(this.zone.id);
     const data = this.historicalAPARInformation.map((value) => (12 * value.apar).toFixed(2));
@@ -190,6 +190,6 @@ export class APARHistoricalChartComponent {
         max: maxValue > this.defaultMaxValue ? maxValue : this.defaultMaxValue,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

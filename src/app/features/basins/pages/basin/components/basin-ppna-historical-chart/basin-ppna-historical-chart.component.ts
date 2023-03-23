@@ -149,7 +149,7 @@ export class BasinPPNAHistoricalChartComponent {
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de productividad histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const legendData = [];
     this.historicalPPNAInformation = await this.zonesService.getZoneHistoricalPPNA(this.zone.id);
     const data = this.historicalPPNAInformation.map((value) => (23 * value.ppna).toFixed(2));
@@ -187,6 +187,6 @@ export class BasinPPNAHistoricalChartComponent {
         max: maxValue,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

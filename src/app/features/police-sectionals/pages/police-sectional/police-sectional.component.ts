@@ -15,7 +15,7 @@ import { from, Observable } from 'rxjs';
 })
 export class PoliceSectionalPageComponent implements OnInit {
   texts = {
-    loadingMessage: 'Cargando información de la zona, espere por favor... ',
+    loadingMessage: 'Cargando información de la Seccional Policial, espere por favor... ',
   };
 
   public settings: Settings;

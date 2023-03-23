@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppSettings } from '@app/app.settings';
 import { Settings } from '@app/app.settings.model';
 
-import { NotificationService } from '@app/common/components/notification/notification.service';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { from, Observable } from 'rxjs';
@@ -13,9 +12,9 @@ import { from, Observable } from 'rxjs';
   templateUrl: './custom-zone.component.html',
   styleUrls: ['./custom-zone.component.scss'],
 })
-export class CustomZonePageComponent implements OnInit, AfterViewInit {
+export class CustomZonePageComponent implements OnInit {
   texts = {
-    loadingMessage: 'Cargando información de la zona',
+    loadingMessage: 'Cargando información de la zona, espere por favor... ',
   };
 
   public settings: Settings;
@@ -36,9 +35,7 @@ export class CustomZonePageComponent implements OnInit, AfterViewInit {
     public appSettings: AppSettings,
     private router: Router,
     private route: ActivatedRoute,
-    private zonesService: ZonesService,
-    private notificationService: NotificationService,
-    private ngZone: NgZone
+    private zonesService: ZonesService
   ) {
     this.settings = this.appSettings.settings;
   }
@@ -48,28 +45,8 @@ export class CustomZonePageComponent implements OnInit, AfterViewInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.zonesService.getZone(this.id).then((zone) => {
       this.zone = zone;
-
-      // this.zone.properties = !this.zone.properties
-      //   ? []
-      //   : this.zone.properties.map((prop) => ({ ...prop, id: uuidv4() }));
-      this.loadZoneInformation();
-    });
-  }
-
-  ngAfterViewInit() {
-    this.notificationService.showAction(this.texts.loadingMessage);
-    setTimeout(() => this.notificationService.snackBar.dismiss(), 1000);
-  }
-
-  private async loadZoneInformation() {
-    const notification = this.notificationService.showAction('Cargando información sobre la zona');
-    this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
-    this.zoneInformation$.subscribe(() => {
-      this.notificationService.confirmAction('Zona cargada!');
-      setTimeout(() => {
-        this.isLoadingZone = false;
-        notification.dismiss();
-      }, 200);
+      this.isLoadingZone = false;
+      this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
     });
   }
 

@@ -145,9 +145,8 @@ export class BasinHydrologicalPerformanceHistoricalChartComponent {
   }
 
   private async load() {
-    const notification = this.notificationService.showAction(
-      'Cargando información de rendimiento hidrológico histórico'
-    );
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
+
     const rhData = await this.loadRH();
     const rhPropData = await this.loadRHProp();
     this.data.push(rhData.data, rhPropData.data);
@@ -158,7 +157,7 @@ export class BasinHydrologicalPerformanceHistoricalChartComponent {
         data: [rhData.legendData, rhPropData.legendData],
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 
   private async loadRH() {

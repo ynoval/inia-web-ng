@@ -147,7 +147,7 @@ export class EvapotranspirationHistoricalChartComponent {
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de evapotranspiración histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const legendData = [];
     this.historicalInformation = await this.zonesService.getZoneHistoricalET(this.zone.id);
     const data = this.historicalInformation.map((value) => (365 * value.et).toFixed(2));
@@ -185,6 +185,6 @@ export class EvapotranspirationHistoricalChartComponent {
         max: maxValue,
       },
     };
-    notification.dismiss();
+    this.chartInstance.historical();
   }
 }

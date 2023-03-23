@@ -52,19 +52,24 @@
         <app-apar-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-apar-analysis>
       </mat-tab>
       <mat-tab label="Productividad">
-        <app-ppna-analysis [zone]="zone"></app-ppna-analysis>
+        <app-ppna-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-ppna-analysis>
       </mat-tab>
       <mat-tab label="Rendimiento Hidrológico">
-        <app-rh-analysis [zone]="zone"></app-rh-analysis>
+        <app-rh-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-rh-analysis>
       </mat-tab>
       <mat-tab label="Evapotranspiración">
-        <app-et-analysis [zone]="zone"></app-et-analysis>
+        <app-et-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-et-analysis>
       </mat-tab>
       <mat-tab label="IOSE">
-        <app-iose-analysis [zone]="zone"></app-iose-analysis>
+        <app-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-iose-analysis>
       </mat-tab>
     </mat-tab-group>
   </div>
 </div>
 
-<ng-template #loading> Espere por favor... </ng-template>
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>

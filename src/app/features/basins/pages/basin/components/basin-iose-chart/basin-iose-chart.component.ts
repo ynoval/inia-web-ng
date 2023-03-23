@@ -221,7 +221,7 @@ export class BasinIOSEChartComponent {
   }
 
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de IOSE histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
 
     this.historicalIOSEInformation = await this.zonesService.getZoneHistoricalIOSE(this.zone.id);
 
@@ -265,6 +265,6 @@ export class BasinIOSEChartComponent {
       ],
     };
 
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }
