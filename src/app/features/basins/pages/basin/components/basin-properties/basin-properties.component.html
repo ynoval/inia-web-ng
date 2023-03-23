@@ -1,0 +1,13 @@
+<table mat-table [dataSource]="properties" class="mat-elevation-z8">
+  <ng-container matColumnDef="propertyName">
+    <th mat-header-cell *matHeaderCellDef>Propiedad</th>
+    <td mat-cell *matCellDef="let element">{{ element.propertyName }}</td>
+  </ng-container>
+  <ng-container matColumnDef="propertyValue">
+    <th mat-header-cell *matHeaderCellDef>Valor</th>
+    <td mat-cell *matCellDef="let element">{{ element.propertyValue }}</td>
+  </ng-container>
+
+  <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> -->
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>

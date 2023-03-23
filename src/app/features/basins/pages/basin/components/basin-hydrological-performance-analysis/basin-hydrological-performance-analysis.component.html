@@ -1,0 +1,12 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+  <app-basin-chart-selector [chartTypes]="chartOptions" (selectedChartChanged)="changeChart($event)"></app-basin-chart-selector>
+  <div *ngIf="selectedChart === 'ANNUAL'">
+    <app-basin-rh-annual-chart [zone]="zone"></app-basin-rh-annual-chart>
+  </div>
+  <div *ngIf="selectedChart === 'HISTORICAL'">
+    <app-basin-rh-historical-chart [zone]="zone"></app-basin-rh-historical-chart>
+  </div>
+  <!-- <div *ngIf="selectedChart === 'RH_PPT'">
+    <app-rh-chart [zone]="zone"></app-rh-chart>
+  </div> -->
+</div>

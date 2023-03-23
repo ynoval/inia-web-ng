@@ -1,22 +1,88 @@
-import { AfterViewInit, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppSettings } from '@app/app.settings';
+import { Settings } from '@app/app.settings.model';
 
 import { NotificationService } from '@app/common/components/notification/notification.service';
+import { ZoneModel } from '@app/common/models/zone.model';
+import { ZonesService } from '@app/common/services/zones.service';
+import { from, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-basin',
   templateUrl: './basin.component.html',
   styleUrls: ['./basin.component.scss'],
 })
-export class BasinPageComponent implements AfterViewInit {
+export class BasinPageComponent implements OnInit, AfterViewInit {
   texts = {
-    loadingMessage: 'Cargando información de la cuenca',
+    loadingMessage: 'Cargando información de la zona',
   };
 
-  constructor(private notificationService: NotificationService, public router: Router) {}
+  public settings: Settings;
+
+  id: string;
+
+  zone$: Observable<ZoneModel>;
+
+  zone: ZoneModel;
+
+  zoneArea = 0;
+
+  zoneInformation$: Observable<any>;
+
+  constructor(
+    public appSettings: AppSettings,
+    private router: Router,
+    private route: ActivatedRoute,
+    private zonesService: ZonesService,
+    private notificationService: NotificationService,
+    private ngZone: NgZone
+  ) {
+    this.settings = this.appSettings.settings;
+  }
+
+  ngOnInit() {
+    this.id = this.route.snapshot.paramMap.get('id');
+    this.zonesService.getZone(this.id).then((zone) => {
+      this.zone = zone;
+      // this.zone.properties = !this.zone.properties
+      //   ? []
+      //   : this.zone.properties.map((prop) => ({ ...prop, id: uuidv4() }));
+      this.loadZoneInformation();
+    });
+  }
 
   ngAfterViewInit() {
     this.notificationService.showAction(this.texts.loadingMessage);
     setTimeout(() => this.notificationService.snackBar.dismiss(), 1000);
+  }
+
+  private async loadZoneInformation() {
+    const notification = this.notificationService.showAction('Cargando información sobre la zona');
+    this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
+    this.zoneInformation$.subscribe(() => {
+      this.notificationService.confirmAction('Zona cargada!');
+      setTimeout(() => notification.dismiss(), 300);
+    });
+  }
+
+  getZoneName() {
+    if (!this.zone) {
+      return '';
+    }
+    const propertyName = this.zone.properties.find((prop) => prop.propertyName === 'name');
+    return propertyName ? propertyName.propertyValue : this.zone.name;
+  }
+
+  getZoneDescription() {
+    if (!this.zone) {
+      return '';
+    }
+    const propertyDescription = this.zone.properties.find((prop) => prop.propertyName === 'description');
+    return propertyDescription ? propertyDescription.propertyValue : '';
+  }
+
+  viewCommunity(communityId: string) {
+    this.router.navigate(['community', communityId]);
   }
 }

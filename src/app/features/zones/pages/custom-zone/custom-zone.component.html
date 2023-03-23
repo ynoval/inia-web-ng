@@ -5,7 +5,7 @@
       <h2>{{ getZoneName() }}</h2>
       <h4>{{ getZoneDescription() }}</h4>
     </div>
-    <div>Options here</div>
+    <!-- <div>Options here</div> -->
   </div>
   <div fxFlex class="flex-p">
     <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
@@ -49,7 +49,7 @@
         </div>
       </mat-tab>
       <mat-tab label="Radiación absorbida">
-        <app-apar-analysis [zone]="zone"></app-apar-analysis>
+        <app-apar-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-apar-analysis>
       </mat-tab>
       <mat-tab label="Productividad">
         <app-ppna-analysis [zone]="zone"></app-ppna-analysis>

@@ -1,0 +1,15 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+  <app-police-sectional-chart-selector
+    [chartTypes]="chartOptions"
+    (selectedChartChanged)="changeChart($event)"
+  ></app-police-sectional-chart-selector>
+  <div *ngIf="selectedChart === 'ANNUAL'">
+    <app-police-sectional-rh-annual-chart [zone]="zone"></app-police-sectional-rh-annual-chart>
+  </div>
+  <div *ngIf="selectedChart === 'HISTORICAL'">
+    <app-police-sectional-rh-historical-chart [zone]="zone"></app-police-sectional-rh-historical-chart>
+  </div>
+  <!-- <div *ngIf="selectedChart === 'RH_PPT'">
+    <app-rh-chart [zone]="zone"></app-rh-chart>
+  </div> -->
+</div>

@@ -30,6 +30,8 @@ export class CustomZonePageComponent implements OnInit, AfterViewInit {
 
   zoneInformation$: Observable<any>;
 
+  isLoadingZone: boolean = true;
+
   constructor(
     public appSettings: AppSettings,
     private router: Router,
@@ -42,9 +44,11 @@ export class CustomZonePageComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.isLoadingZone = true;
     this.id = this.route.snapshot.paramMap.get('id');
     this.zonesService.getZone(this.id).then((zone) => {
       this.zone = zone;
+
       // this.zone.properties = !this.zone.properties
       //   ? []
       //   : this.zone.properties.map((prop) => ({ ...prop, id: uuidv4() }));
@@ -62,7 +66,10 @@ export class CustomZonePageComponent implements OnInit, AfterViewInit {
     this.zoneInformation$ = from(this.zonesService.getZoneInformation(this.id));
     this.zoneInformation$.subscribe(() => {
       this.notificationService.confirmAction('Zona cargada!');
-      setTimeout(() => notification.dismiss(), 300);
+      setTimeout(() => {
+        this.isLoadingZone = false;
+        notification.dismiss();
+      }, 200);
     });
   }
 

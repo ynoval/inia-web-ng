@@ -30,7 +30,8 @@ export const routes: Routes = [
       },
       {
         path: 'communities',
-        loadChildren: () => import('./pages/communities/communities.module').then((m) => m.CommunitiesModule),
+        // loadChildren: () => import('./pages/communities/communities.module').then((m) => m.CommunitiesModule),
+        loadChildren: () => import('./features/communities/communities.module').then((m) => m.CommunitiesModule),
       },
       {
         path: 'information',

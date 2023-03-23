@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { AppSharedModule } from '@app/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
+import { AppSharedModule } from '@app/shared.module';
 import { NotificationComponent } from './components/notification/notification.component';
 import { NotificationService } from './components/notification/notification.service';
 import { ConfirmDirective } from './directives/confirm/confirm.directive';

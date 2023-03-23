@@ -77,6 +77,7 @@ import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-d
     ZoneAreaDistributionComponent,
     ZoneMarkerInformationComponent,
     ZonePropertiesComponent,
+
     ChartSelectorComponent,
 
     APARAnalysisComponent,

@@ -125,7 +125,7 @@ export class BasinsPageComponent implements AfterViewInit {
           properties.name = basinInformation.name;
           properties.grade = basinInformation.grade;
           properties.description = basinInformation.description;
-          return { ...zone, properties: properties };
+          return { ...zone, name: basinInformation.name, properties: properties };
         });
 
         try {
@@ -181,8 +181,11 @@ export class BasinsPageComponent implements AfterViewInit {
   }
 
   private getBasinName(basin) {
+    if (basin.name) {
+      return basin.name;
+    }
     const name = basin.properties.find((p) => p.propertyName === 'name');
-    return name ? name.propertyValue : ' Cuenca_??';
+    return name ? name.propertyValue : ' Cuenca_NO_COD';
   }
 
   private getBasinDescription(basin) {

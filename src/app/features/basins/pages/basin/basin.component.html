@@ -1,1 +1,57 @@
-<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">Cuenca xxx</div>
+<div fxFlex fxLayout="column" class="zone-title">
+  <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+    <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+    <div fxFlex fxLayout="column" class="zone-name">
+      <h2>{{ getZoneName() }}</h2>
+      <h4>{{ getZoneDescription() }}</h4>
+    </div>
+    <!-- <div>Options here</div> -->
+  </div>
+  <div fxFlex class="flex-p">
+    <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
+    <mat-tab-group>
+      <mat-tab label="Información">
+        <div
+          *ngIf="zoneInformation$ | async as zoneInformation; else loading"
+          fxFlex
+          fxLayout="row"
+          fxLayout.lt-md="column"
+          fxLayoutAlign="start start"
+          fxLayoutAlign.lt-md="start stretch"
+          class="flex-p"
+        >
+          <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
+            <app-basin-area-info [zoneInformation]="zoneInformation"></app-basin-area-info>
+          </div>
+          <div
+            fxFlex
+            fxFill
+            *ngIf="zone.properties && zone.properties.length > 0"
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            class="flex-p"
+          >
+            <app-basin-properties [properties]="zone.properties"></app-basin-properties>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Radiación absorbida">
+        <app-basin-apar-analysis [zone]="zone"></app-basin-apar-analysis>
+      </mat-tab>
+      <mat-tab label="Productividad">
+        <app-basin-ppna-analysis [zone]="zone"></app-basin-ppna-analysis>
+      </mat-tab>
+      <mat-tab label="Rendimiento Hidrológico">
+        <app-basin-rh-analysis [zone]="zone"></app-basin-rh-analysis>
+      </mat-tab>
+      <mat-tab label="Evapotranspiración">
+        <app-basin-et-analysis [zone]="zone"></app-basin-et-analysis>
+      </mat-tab>
+      <mat-tab label="IOSE">
+        <app-basin-iose-analysis [zone]="zone"></app-basin-iose-analysis>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #loading> Espere por favor... </ng-template>

@@ -1,1 +1,77 @@
-<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">Police Sectional XXX</div>
+<div fxFlex fxLayout="column" class="zone-title">
+  <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+    <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+    <div fxFlex fxLayout="column" class="zone-name">
+      <h2>{{ getZoneName() }}</h2>
+      <h4>{{ getZoneDescription() }}</h4>
+    </div>
+    <!-- <div>Options here</div> -->
+  </div>
+  <div fxFlex class="flex-p">
+    <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
+    <mat-tab-group>
+      <mat-tab label="Información">
+        <div
+          *ngIf="zoneInformation$ | async as zoneInformation; else loading"
+          fxFlex
+          fxLayout="row"
+          fxLayout.lt-md="column"
+          fxLayoutAlign="start start"
+          fxLayoutAlign.lt-md="start stretch"
+          class="flex-p"
+        >
+          <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
+            <app-police-sectional-area-info [zoneInformation]="zoneInformation"></app-police-sectional-area-info>
+          </div>
+          <div
+            fxFlex
+            fxFill
+            *ngIf="zone.properties && zone.properties.length > 0"
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            class="flex-p"
+          >
+            <app-police-sectional-properties [properties]="zone.properties"></app-police-sectional-properties>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Radiación absorbida">
+        <app-police-sectional-apar-analysis
+          *ngIf="!isLoadingZone; else loading"
+          [zone]="zone"
+        ></app-police-sectional-apar-analysis>
+      </mat-tab>
+      <mat-tab label="Productividad">
+        <app-police-sectional-ppna-analysis
+          *ngIf="!isLoadingZone; else loading"
+          [zone]="zone"
+        ></app-police-sectional-ppna-analysis>
+      </mat-tab>
+      <mat-tab label="Rendimiento Hidrológico">
+        <app-police-sectional-rh-analysis
+          *ngIf="!isLoadingZone; else loading"
+          [zone]="zone"
+        ></app-police-sectional-rh-analysis>
+      </mat-tab>
+      <mat-tab label="Evapotranspiración">
+        <app-police-sectional-et-analysis
+          *ngIf="!isLoadingZone; else loading"
+          [zone]="zone"
+        ></app-police-sectional-et-analysis>
+      </mat-tab>
+      <mat-tab label="IOSE">
+        <app-police-sectional-iose-analysis
+          *ngIf="!isLoadingZone; else loading"
+          [zone]="zone"
+        ></app-police-sectional-iose-analysis>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>
