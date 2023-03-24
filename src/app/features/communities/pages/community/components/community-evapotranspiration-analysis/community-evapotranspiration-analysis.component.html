@@ -4,9 +4,9 @@
     (selectedChartChanged)="changeChart($event)"
   ></app-community-chart-selector>
   <div *ngIf="selectedChart === 'ANNUAL'" fxFlex>
-    <app-community-et-annual-chart [zone]="zone"></app-community-et-annual-chart>
+    <app-community-et-annual-chart [communityId]="communityId"></app-community-et-annual-chart>
   </div>
   <div *ngIf="selectedChart === 'HISTORICAL'" fxFlex>
-    <app-community-et-historical-chart [zone]="zone"></app-community-et-historical-chart>
+    <app-community-et-historical-chart [communityId]="communityId"></app-community-et-historical-chart>
   </div>
 </div>

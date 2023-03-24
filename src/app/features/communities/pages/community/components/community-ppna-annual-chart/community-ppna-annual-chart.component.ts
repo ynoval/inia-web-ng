@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
+import { CommunitiesService } from '@app/common/services/communities.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
 
 @Component({
   selector: 'app-community-ppna-annual-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-ppna-annual-chart.component.scss'],
 })
 export class CommunityPPNAAnnualChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions: EChartsOption = {
     grid: {
@@ -110,7 +109,7 @@ export class CommunityPPNAAnnualChartComponent {
 
   selectedYears: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -124,7 +123,7 @@ export class CommunityPPNAAnnualChartComponent {
         const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
         if (this.data[index].data.length === 0) {
           this.chartInstance.showLoading({ text: 'Cargando datos...' });
-          const result = await this.zonesService.getZoneAnnualPPNA(this.zone.id, year);
+          const result = await this.communitiesService.getAnnualPPNA(this.communityId, year);
           this.zonePPNAInformation.annualPPNA.push(result);
           this.data[index].data = result.values.map((value) => (+value.ppna / 16).toFixed(2));
           this.data[index].emphasis = {
@@ -195,18 +194,18 @@ export class CommunityPPNAAnnualChartComponent {
       }
       csvData.push(csvRow);
     });
-    new AngularCsv(csvData, `${this.zone.name} Productividad Anual`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} Productividad Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de productividad');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
     this.zonePPNAInformation = {
-      annualPPNAMean: await this.zonesService.getZoneAnnualPPNAMean(this.zone.id),
-      annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.zone.id, lastYear)],
+      annualPPNAMean: await this.communitiesService.getPPNAMean(this.communityId),
+      annualPPNA: [await this.communitiesService.getAnnualPPNA(this.communityId, lastYear)],
     };
 
     this.data = [];
@@ -281,6 +280,6 @@ export class CommunityPPNAAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

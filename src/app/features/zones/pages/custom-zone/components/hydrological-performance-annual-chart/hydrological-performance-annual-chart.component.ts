@@ -15,7 +15,7 @@ export class HydrologicalPerformanceAnnualChartComponent {
 
   chartOptions: EChartsOption = {
     grid: {
-      left: '5%',
+      left: '10%',
       right: '10%',
       bottom: '25%',
     },

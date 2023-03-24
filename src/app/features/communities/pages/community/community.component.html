@@ -1,4 +1,4 @@
-<div fxFlex fxLayout="column" *ngIf="community$ | async as community; else loading">
+<div fxFlex fxLayout="column" *ngIf="communityInformation$ | async as communityInformation; else loading">
   <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
     <div fxFlex fxLayout="column" fxLayoutAlign="start start" class="flex-p">
       <h3>
@@ -10,26 +10,31 @@
     </button>
   </div>
   <div fxFlex class="flex-p">
-    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+    <mat-tab-group>
       <mat-tab label="Información">
         <div fxFlex fxLayout="column" class="flex-p">
           <div fxFlex>
-            <p>{{ community?.description }}</p>
-            <p *ngIf="order === 'VI'">La información de los <em>Pastizales del Este</em> aun no esta disponible.</p>
+            <p>{{ communityInformation.description }}</p>
+            <p *ngIf="communityInformation.order === 'VI'">
+              La información de los <em>Pastizales del Este</em> aun no esta disponible.
+            </p>
           </div>
-          <div fxFlex fxLayout="column" *ngIf="species$ | async as species" class="flex-p">
+          <div fxFlex fxLayout="column" class="flex-p">
             <span>
               <strong *ngIf="species && species.length > 0">Especies Indicadoras:</strong>
-              <a *ngFor="let specie of species; let i = index" [routerLink]="['specie', specie.id]">
+              <a
+                *ngFor="let specie of communityInformation.species; let i = index"
+                [routerLink]="['specie', specie.id]"
+              >
                 <span>{{ i === 0 ? ' ' : ', ' }}</span>
                 <span>{{ specie.name }}</span>
               </a>
             </span>
           </div>
-          <div fxFlex fxLayout="column" *ngIf="subcommunities$ | async as subcommunities">
+          <div fxFlex fxLayout="column">
             <app-subcommunity
               fxFlex
-              *ngFor="let subcommunity of subcommunities"
+              *ngFor="let subcommunity of communityInformation.subcommunities"
               [communityId]="id"
               [subcommunity]="subcommunity"
             ></app-subcommunity>
@@ -37,19 +42,34 @@
         </div>
       </mat-tab>
       <mat-tab label="Radiación absorbida">
-        <app-community-apar-analysis [zone]="zone"></app-community-apar-analysis>
+        <app-community-apar-analysis
+          *ngIf="!isLoading; else loading"
+          [communityId]="communityInformation.id"
+        ></app-community-apar-analysis>
       </mat-tab>
       <mat-tab label="Productividad">
-        <app-community-ppna-analysis [zone]="zone"></app-community-ppna-analysis>
+        <app-community-ppna-analysis
+          *ngIf="!isLoading; else loading"
+          [communityId]="communityInformation.id"
+        ></app-community-ppna-analysis>
       </mat-tab>
       <mat-tab label="Rendimiento Hidrológico">
-        <app-community-rh-analysis [zone]="zone"></app-community-rh-analysis>
+        <app-community-rh-analysis
+          *ngIf="!isLoading; else loading"
+          [communityId]="communityInformation.id"
+        ></app-community-rh-analysis>
       </mat-tab>
       <mat-tab label="Evapotranspiración">
-        <app-community-et-analysis [zone]="zone"></app-community-et-analysis>
+        <app-community-et-analysis
+          *ngIf="!isLoading; else loading"
+          [communityId]="communityInformation.id"
+        ></app-community-et-analysis>
       </mat-tab>
       <mat-tab label="IOSE">
-        <app-community-iose-analysis [zone]="zone"></app-community-iose-analysis>
+        <app-community-iose-analysis
+          *ngIf="!isLoading; else loading"
+          [communityId]="communityInformation.id"
+        ></app-community-iose-analysis>
       </mat-tab>
     </mat-tab-group>
   </div>

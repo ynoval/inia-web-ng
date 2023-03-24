@@ -7,7 +7,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   styleUrls: ['./community-evapotranspiration-analysis.component.scss'],
 })
 export class CommunityEvapotranspirationAnalysisComponent implements OnInit {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions = [
     {

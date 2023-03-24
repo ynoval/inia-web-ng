@@ -11,12 +11,20 @@ import { ApiService } from './services/api.service';
 import { ZonesService } from './services/zones.service';
 import { LayersService } from './services/layers.service';
 import { CommunitiesLayersService } from './services/communities-layers.service';
+import { CommunitiesService } from './services/communities.service';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, AppSharedModule],
   declarations: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
   exports: [NotificationComponent, ConfirmDirective, ConfirmDialogComponent],
-  providers: [NotificationService, ApiService, ZonesService, LayersService, CommunitiesLayersService],
+  providers: [
+    NotificationService,
+    ApiService,
+    ZonesService,
+    CommunitiesService,
+    LayersService,
+    CommunitiesLayersService,
+  ],
   entryComponents: [ConfirmDialogComponent],
 })
 export class AppCommonModule {}

@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
+import { CommunitiesService } from '@app/common/services/communities.service';
 
 @Component({
   selector: 'app-community-et-historical-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-evapotranspiration-historical-chart.component.scss'],
 })
 export class CommunityEvapotranspirationHistoricalChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   yInterval = 100;
 
@@ -115,7 +114,7 @@ export class CommunityEvapotranspirationHistoricalChartComponent {
 
   historicalInformation: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -142,14 +141,14 @@ export class CommunityEvapotranspirationHistoricalChartComponent {
     console.log('ET save CSV');
     const csvHeader = ['Info', ...this.getAbscissaAxisData()];
     const csvData = [['ET Histórica', ...this.historicalInformation.map((value) => (365 * value.et).toFixed(2))]];
-    new AngularCsv(csvData, `${this.zone.name} Evapotranspiración Histórica`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} Evapotranspiración Histórica`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de evapotranspiración histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const legendData = [];
-    this.historicalInformation = await this.zonesService.getZoneHistoricalET(this.zone.id);
+    this.historicalInformation = await this.communitiesService.getHistoricalET(this.communityId);
     const data = this.historicalInformation.map((value) => (365 * value.et).toFixed(2));
     const minValue = Math.floor(Math.min(...data) / this.yInterval) * this.yInterval;
     const maxValue = Math.ceil(Math.max(...data) / this.yInterval) * this.yInterval;
@@ -185,6 +184,6 @@ export class CommunityEvapotranspirationHistoricalChartComponent {
         max: maxValue,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

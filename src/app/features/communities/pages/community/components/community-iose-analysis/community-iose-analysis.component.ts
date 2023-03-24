@@ -7,7 +7,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   styleUrls: ['./community-iose-analysis.component.scss'],
 })
 export class CommunityIOSEAnalysisComponent implements OnInit {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   ngOnInit() {
     console.log('IOSE Analysis Component initialized');

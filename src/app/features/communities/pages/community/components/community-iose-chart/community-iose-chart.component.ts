@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
+import { CommunitiesService } from '@app/common/services/communities.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
@@ -11,35 +9,11 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-iose-chart.component.scss'],
 })
 export class CommunityIOSEChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   dimensions = ['Año', 'Media', 'Desviación estándar', 'Nombre'];
 
   data = [];
-  // [
-  //   [2000, 0.748039770832004, 0.03256465678882184, '2000-2001'],
-  //   [2001, 0.763695289564798, 0.03346213519940505],
-  //   [2002, 0.7559004683729068, 0.036920905977168614],
-  //   [2003, 0.7246005000728338, 0.033355497912705236],
-  //   [2004, 0.7050854376039816, 0.03224198378466213],
-  //   [2005, 0.6698614803698208, 0.036968676857193516],
-  //   [2006, 0.7480610830344175, 0.033616442602547286],
-  //   [2007, 0.6504021435494565, 0.03597376489202562],
-  //   [2008, 0.6270194730869351, 0.03491400907724701],
-  //   [2009, 0.751972012019186, 0.029124208667576774],
-  //   [2010, 0.6513895022520513, 0.030711598288477655],
-  //   [2011, 0.7002054193554768, 0.0286010941311772],
-  //   [2012, 0.7402352386853258, 0.030722501639679194],
-  //   [2013, 0.7246522235735148, 0.0340420416427791],
-  //   [2014, 0.7519288231430243, 0.03190581764553141],
-  //   [2015, 0.7363397986225245, 0.03532938639151732],
-  //   [2016, 0.7324377380609438, 0.03411544645858529],
-  //   [2017, 0.7089686027808928, 0.04209356528416233],
-  //   [2018, 0.7675879169110649, 0.03313937734544379],
-  //   [2019, 0.6933284410426139, 0.034697758770264764],
-  //   [2020, 0.744150745662676, 0.031245802146515816],
-  //   [2021, 0.6581899738514433, 0.03558705664053226],
-  // ];
 
   renderItem(
     params: echarts.CustomSeriesRenderItemParams,
@@ -204,7 +178,7 @@ export class CommunityIOSEChartComponent {
 
   historicalIOSEInformation: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -217,13 +191,13 @@ export class CommunityIOSEChartComponent {
     console.log('IOSE CSV');
     const csvHeader = ['Info', ...this.historicalIOSEInformation.map((d) => `${d.year} - ${+d.year + 1}`)];
     const csvData = [['IOSE (Des Est.)', ...this.historicalIOSEInformation.map((d) => `${d.iose} (± ${d.stdDev})`)]];
-    new AngularCsv(csvData, `${this.zone.name} IOSE Histórica`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} IOSE Histórica`, { headers: csvHeader });
   }
 
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de IOSE histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
 
-    this.historicalIOSEInformation = await this.zonesService.getZoneHistoricalIOSE(this.zone.id);
+    this.historicalIOSEInformation = await this.communitiesService.getHistoricalIOSE(this.communityId);
 
     this.data = this.historicalIOSEInformation.map((value) => {
       return [parseInt(value.year), value.iose, value.stdDev, `${value.year} - ${parseInt(value.year) + 1}`];
@@ -265,6 +239,6 @@ export class CommunityIOSEChartComponent {
       ],
     };
 
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

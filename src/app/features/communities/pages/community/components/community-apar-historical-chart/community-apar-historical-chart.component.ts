@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
+import { CommunitiesService } from '@app/common/services/communities.service';
 
 @Component({
   selector: 'app-community-apar-historical-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-apar-historical-chart.component.scss'],
 })
 export class CommunityAPARHistoricalChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   defaultMinValue = 600;
 
@@ -117,9 +116,9 @@ export class CommunityAPARHistoricalChartComponent {
 
   data = [];
 
-  historicalAPARInformation: any;
+  aparInformation: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -144,18 +143,16 @@ export class CommunityAPARHistoricalChartComponent {
 
   saveCSV() {
     const csvHeader = ['Info', ...this.getAbscissaAxisData()];
-    const csvData = [
-      ['APAR Histórica', ...this.historicalAPARInformation.map((value) => (23 * value.apar).toFixed(2))],
-    ];
-    new AngularCsv(csvData, `${this.zone.name} Radiación Absorbida Histórica`, { headers: csvHeader });
+    const csvData = [['APAR Histórica', ...this.aparInformation.map((value) => (23 * value.apar).toFixed(2))]];
+    new AngularCsv(csvData, `${this.communityId} Radiación Absorbida Histórica`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de APAR histórica');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const legendData = [];
-    this.historicalAPARInformation = await this.zonesService.getZoneHistoricalAPAR(this.zone.id);
-    const data = this.historicalAPARInformation.map((value) => (12 * value.apar).toFixed(2));
+    this.aparInformation = await this.communitiesService.getHistoricalAPAR(this.communityId);
+    const data = this.aparInformation.map((value) => (12 * value.apar).toFixed(2));
     const minValue = Math.floor(Math.min(...data) / this.yInterval) * this.yInterval;
     const maxValue = Math.ceil(Math.max(...data) / this.yInterval) * this.yInterval;
     this.data.push({
@@ -190,6 +187,6 @@ export class CommunityAPARHistoricalChartComponent {
         max: maxValue > this.defaultMaxValue ? maxValue : this.defaultMaxValue,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

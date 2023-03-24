@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
+import { CommunitiesService } from '@app/common/services/communities.service';
 
 @Component({
   selector: 'app-community-rh-annual-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-hydrological-performance-annual-chart.component.scss'],
 })
 export class CommunityHydrologicalPerformanceAnnualChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions: EChartsOption = {
     grid: {
@@ -106,11 +105,11 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
 
   data = [];
 
-  zoneInformation: any;
+  rhInformation: any;
 
   selectedYears: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -122,7 +121,7 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
           if (this.data[index].data.length === 0) {
             this.chartInstance.showLoading({ text: 'Cargando datos...' });
             const results = await this.getRHData(year);
-            this.zoneInformation.annualRH.push(results);
+            this.rhInformation.annualRH.push(results);
             const values = results.values.map((item, pos) => {
               return { value: [pos, item.rh, item.rhProp] };
             });
@@ -187,11 +186,11 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
       let csvRHPropRow = [];
       if (year === 'Media') {
         csvRHRow.push('RH Media');
-        csvRHRow.push(...this.zoneInformation.annualRHMean.map((value) => (value ? value.rh : '')));
+        csvRHRow.push(...this.rhInformation.annualRHMean.map((value) => (value ? value.rh : '')));
         csvRHPropRow.push('RH/PPT Media');
-        csvRHPropRow.push(...this.zoneInformation.annualRHMean.map((value) => (value ? value.rhProp : '')));
+        csvRHPropRow.push(...this.rhInformation.annualRHMean.map((value) => (value ? value.rhProp : '')));
       } else {
-        const annualData = this.zoneInformation.annualRH.find((x) => x.year === +year);
+        const annualData = this.rhInformation.annualRH.find((x) => x.year === +year);
         if (annualData) {
           csvRHRow.push(`RH ${annualData.year} - ${annualData.year + 1}`);
           // csvRHRow.push(...annualData.values.map((value) => (value ? `${value.rh} (${value.rhProp})` : '')));
@@ -202,12 +201,12 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
       }
       csvData.push(csvRHRow, csvRHPropRow);
     });
-    new AngularCsv(csvData, `${this.zone.name} Rendimiento Hidrológico Anual`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} Rendimiento Hidrológico Anual`, { headers: csvHeader });
   }
 
   private async getRHData(year) {
-    const rhResults = await this.zonesService.getZoneAnnualRH(this.zone.id, year);
-    const rhPropResults = await this.zonesService.getZoneAnnualRHProp(this.zone.id, year);
+    const rhResults = await this.communitiesService.getAnnualRH(this.communityId, year);
+    const rhPropResults = await this.communitiesService.getAnnualRHProp(this.communityId, year);
 
     const values = rhResults.values.map((value, index) => ({
       rh: value.rh,
@@ -217,15 +216,15 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
   }
 
   private async getRHMeanData() {
-    const rhMean = await this.zonesService.getZoneAnnualRHMean(this.zone.id);
-    const rhPropMean = await this.zonesService.getZoneAnnualRHPropMean(this.zone.id);
+    const rhMean = await this.communitiesService.getRHMean(this.communityId);
+    const rhPropMean = await this.communitiesService.getRHPropMean(this.communityId);
     const values = rhMean.values.map((value, index) => ({ rh: value.rh, rhProp: rhPropMean.values[index].rhProp }));
     console.log(values);
     return values;
   }
 
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de rendimiento hidrológico');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
@@ -233,7 +232,7 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
     const resultMean = await this.getRHMeanData();
     console.log('result', { result });
 
-    this.zoneInformation = {
+    this.rhInformation = {
       annualRHMean: resultMean,
       annualRH: [result],
     };
@@ -255,7 +254,7 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zoneInformation.annualRHMean.map((item, pos) => {
+      data: this.rhInformation.annualRHMean.map((item, pos) => {
         return { value: [pos, item.rh, item.rhProp] };
       }),
       tooltip: {
@@ -346,7 +345,7 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
       this.selectedYears[`${i} - ${i + 1}`] = false;
     }
 
-    this.zoneInformation.annualRH.forEach((d) => {
+    this.rhInformation.annualRH.forEach((d) => {
       const index = this.data.findIndex((value) => value.name === `${d.year} - ${d.year + 1}`);
       const values = d.values.map((item, pos) => {
         return { value: [pos, item.rh, item.rhProp] };
@@ -362,6 +361,6 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

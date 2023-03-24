@@ -7,7 +7,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   styleUrls: ['./community-hydrological-performance-analysis.component.scss'],
 })
 export class CommunityHydrologicalPerformanceAnalysisComponent implements OnInit {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions = [
     {

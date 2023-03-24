@@ -7,7 +7,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   styleUrls: ['./community-apar-analysis.component.scss'],
 })
 export class CommunityAPARAnalysisComponent implements OnInit {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions = [
     {

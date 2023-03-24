@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
+import { CommunitiesService } from '@app/common/services/communities.service';
 
 @Component({
   selector: 'app-community-apar-annual-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-apar-annual-chart.component.scss'],
 })
 export class CommunityAPARAnnualChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions: EChartsOption = {
     grid: {
@@ -106,11 +105,11 @@ export class CommunityAPARAnnualChartComponent {
 
   data = [];
 
-  zoneAPARInformation: any;
+  aparInformation: any;
 
   selectedYears: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -121,8 +120,8 @@ export class CommunityAPARAnnualChartComponent {
           const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
           if (this.data[index].data.length === 0) {
             this.chartInstance.showLoading({ text: 'Cargando datos...' });
-            const result = await this.zonesService.getZoneAnnualAPAR(this.zone.id, year);
-            this.zoneAPARInformation.annualAPAR.push(result);
+            const result = await this.communitiesService.getAnnualAPAR(this.communityId, year);
+            this.aparInformation.annualAPAR.push(result);
             this.data[index].data = result.values.map((value) => value.apar / 16);
             this.data[index].emphasis = {
               itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
@@ -183,9 +182,9 @@ export class CommunityAPARAnnualChartComponent {
       let csvRow = [];
       if (year === 'Media') {
         csvRow.push('Media');
-        csvRow.push(...this.zoneAPARInformation.annualAPARMean.values.map((value) => (value ? value.apar : '')));
+        csvRow.push(...this.aparInformation.annualAPARMean.values.map((value) => (value ? value.apar : '')));
       } else {
-        const annualAPAR = this.zoneAPARInformation.annualAPAR.find((x) => x.year === +year);
+        const annualAPAR = this.aparInformation.annualAPAR.find((x) => x.year === +year);
         if (annualAPAR) {
           csvRow.push(`${annualAPAR.year} - ${annualAPAR.year + 1}`);
           csvRow.push(...annualAPAR.values.map((value) => (value ? value.apar : '')));
@@ -193,18 +192,18 @@ export class CommunityAPARAnnualChartComponent {
       }
       csvData.push(csvRow);
     });
-    new AngularCsv(csvData, `${this.zone.name} Radiación Absorbida Anual`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} Radiación Absorbida Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de APAR');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
 
-    this.zoneAPARInformation = {
-      annualAPARMean: await this.zonesService.getZoneAnnualAPARMean(this.zone.id),
-      annualAPAR: [await this.zonesService.getZoneAnnualAPAR(this.zone.id, lastYear)],
+    this.aparInformation = {
+      annualAPARMean: await this.communitiesService.getAPARMean(this.communityId),
+      annualAPAR: [await this.communitiesService.getAnnualAPAR(this.communityId, lastYear)],
     };
 
     this.data = [];
@@ -220,7 +219,7 @@ export class CommunityAPARAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar / 16),
+      data: this.aparInformation.annualAPARMean.values.map((value) => value.apar / 16),
     });
 
     legendData.push('Media');
@@ -243,7 +242,7 @@ export class CommunityAPARAnnualChartComponent {
       legendData.push(`${i} - ${i + 1}`);
       this.selectedYears[`${i} - ${i + 1}`] = false;
     }
-    this.zoneAPARInformation.annualAPAR.forEach((apar) => {
+    this.aparInformation.annualAPAR.forEach((apar) => {
       const index = this.data.findIndex((value) => value.name === `${apar.year} - ${apar.year + 1}`);
       this.data[index].data = apar.values.map((value) => value?.apar / 16);
       this.selectedYears[`${apar.year} - ${apar.year + 1}`] = true;
@@ -252,7 +251,7 @@ export class CommunityAPARAnnualChartComponent {
     this.data.push({
       name: 'L',
       type: 'line',
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => value.apar / 16 - value.apar / 16 / 2),
+      data: this.aparInformation.annualAPARMean.values.map((value) => value.apar / 16 - value.apar / 16 / 2),
       lineStyle: {
         opacity: 0,
       },
@@ -262,7 +261,7 @@ export class CommunityAPARAnnualChartComponent {
     this.data.push({
       name: 'U',
       type: 'line',
-      data: this.zoneAPARInformation.annualAPARMean.values.map((value) => 2 * (value.apar / 16 / 2)),
+      data: this.aparInformation.annualAPARMean.values.map((value) => 2 * (value.apar / 16 / 2)),
       lineStyle: {
         opacity: 0,
       },
@@ -279,6 +278,6 @@ export class CommunityAPARAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }

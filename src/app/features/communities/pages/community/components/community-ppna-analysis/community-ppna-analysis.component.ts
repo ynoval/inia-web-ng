@@ -7,7 +7,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   styleUrls: ['./community-ppna-analysis.component.scss'],
 })
 export class CommunityPPNAAnalysisComponent implements OnInit {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions = [
     {

@@ -61,6 +61,163 @@ export class ApiService {
       .catch((error) => console.error(error));
   }
 
+  //#region  Zone
+  async getZoneInformation(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/information`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.zoneInformation)
+      .catch((error) => console.error(error));
+  }
+
+  // #region PPNA
+  async getZoneAnnualPPNAMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/ppna/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ppnaInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualPPNA(zoneInformation: ZoneInformation, year: number) {
+    console.log({ year });
+    const url = `${this.serverUrl}/gee/zone/ppna/annual/${year}`;
+    console.log('url', url);
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ppnaInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalPPNA(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/ppna/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ppnaInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion
+
+  // #region APAR
+  async getZoneAnnualAPARMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/apar/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualAPAR(zoneInformation: ZoneInformation, year: number) {
+    console.log({ year });
+    const url = `${this.serverUrl}/gee/zone/apar/annual/${year}`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalAPAR(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/apar/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion
+
+  // #region ET
+  async getZoneAnnualETMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/et/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualET(zoneInformation: ZoneInformation, year: number) {
+    console.log('ET', { year });
+    const url = `${this.serverUrl}/gee/zone/et/annual/${year}`;
+    console.log('ET url', url);
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalET(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/et/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion ET
+
+  // #region RH
+  async getZoneAnnualRHMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/rh/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualRH(zoneInformation: ZoneInformation, year: number) {
+    const url = `${this.serverUrl}/gee/zone/rh/annual/${year}`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalRH(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/rh/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion RH
+
+  // #region RH/PPT
+  async getZoneAnnualRHPropMean(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/rhProp/annual/mean`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualRHProp(zoneInformation: ZoneInformation, year: number) {
+    const url = `${this.serverUrl}/gee/zone/rhProp/annual/${year}`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneHistoricalRHProp(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/rhProp/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion RH
+
+  //#region IOSE
+  async getZoneHistoricalIOSE(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/iose/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ioseInformation)
+      .catch((error) => console.error(error));
+  }
+
+  // #endregion IOSE
+  // #endregion Zone
+
+  // #region Community
   // eslint-disable-next-line class-methods-use-this
   async getCommunity(communityId: string): Promise<CommunityModel> {
     const url = `${this.serverUrl}/communities/${communityId}`;
@@ -113,173 +270,12 @@ export class ApiService {
       .catch((error) => console.error(error));
   }
 
-  async getZoneInformation(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/information`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.zoneInformation)
-      .catch((error) => console.error(error));
-  }
-
   // #region PPNA
-  async getZoneAnnualPPNAMean(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/ppna/annual/mean`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.ppnaInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneAnnualPPNA(zoneInformation: ZoneInformation, year: number) {
-    console.log({ year });
-    const url = `${this.serverUrl}/gee/zone/ppna/annual/${year}`;
-    console.log('url', url);
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.ppnaInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneHistoricalPPNA(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/ppna/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalPPNAInformation)
-      .catch((error) => console.error(error));
-  }
-  // #endregion
-
-  // #region APAR
-  async getZoneAnnualAPARMean(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/apar/annual/mean`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.aparInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneAnnualAPAR(zoneInformation: ZoneInformation, year: number) {
-    console.log({ year });
-    const url = `${this.serverUrl}/gee/zone/apar/annual/${year}`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.aparInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneHistoricalAPAR(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/apar/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalAPARInformation)
-      .catch((error) => console.error(error));
-  }
-  // #endregion
-
-  // #region ET
-  async getZoneAnnualETMean(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/et/annual/mean`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.etInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneAnnualET(zoneInformation: ZoneInformation, year: number) {
-    console.log('ET', { year });
-    const url = `${this.serverUrl}/gee/zone/et/annual/${year}`;
-    console.log('ET url', url);
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.etInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneHistoricalET(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/et/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalETInformation)
-      .catch((error) => console.error(error));
-  }
-  // #endregion ET
-
-  // #region RH
-  async getZoneAnnualRHMean(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/rh/annual/mean`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.rhInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneAnnualRH(zoneInformation: ZoneInformation, year: number) {
-    const url = `${this.serverUrl}/gee/zone/rh/annual/${year}`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.rhInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneHistoricalRH(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/rh/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalRHInformation)
-      .catch((error) => console.error(error));
-  }
-  // #endregion RH
-
-  // #region RH/PPT
-  async getZoneAnnualRHPropMean(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/rhProp/annual/mean`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.rhPropInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneAnnualRHProp(zoneInformation: ZoneInformation, year: number) {
-    const url = `${this.serverUrl}/gee/zone/rhProp/annual/${year}`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.rhPropInformation)
-      .catch((error) => console.error(error));
-  }
-
-  async getZoneHistoricalRHProp(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/rhProp/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalRHPropInformation)
-      .catch((error) => console.error(error));
-  }
-  // #endregion RH
-
-  //#region IOSE
-  async getZoneHistoricalIOSE(zoneInformation: ZoneInformation) {
-    const url = `${this.serverUrl}/gee/zone/iose/historical/`;
-    return axios
-      .post(url, zoneInformation)
-      .then((response) => response.data.historicalIOSEInformation)
-      .catch((error) => console.error(error));
-  }
-
-  // #endregion IOSE
-
-  async getCommunityPPNA(communityOrder: string) {
-    const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna`;
-    return axios
-      .get(url)
-      .then((response) => response.data.communityPPNAInformation)
-      .catch((error) => console.error(error));
-  }
-
   async getCommunityAnnualPPNAMean(communityOrder: string) {
     const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/annual/mean`;
     return axios
       .get(url)
-      .then((response) => response.data.communityAnnualPPNAMean)
+      .then((response) => response.data.ppnaInformation)
       .catch((error) => console.error(error));
   }
 
@@ -287,7 +283,7 @@ export class ApiService {
     const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/annual/${year}`;
     return axios
       .get(url)
-      .then((response) => response.data.communityAnnualPPNA)
+      .then((response) => response.data.ppnaInformation)
       .catch((error) => console.error(error));
   }
 
@@ -295,9 +291,127 @@ export class ApiService {
     const url = `${this.serverUrl}/gee/community/${communityOrder}/ppna/historical/`;
     return axios
       .get(url)
-      .then((response) => response.data.communityHistoricalPPNA)
+      .then((response) => response.data.ppnaInformation)
       .catch((error) => console.error(error));
   }
+  // #endregion PPNA
+
+  // #region APAR
+  async getCommunityAnnualAPARMean(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/apar/annual/mean`;
+    return axios
+      .get(url)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualAPAR(communityOrder: string, year: number) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/apar/annual/${year}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityHistoricalAPAR(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/apar/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.aparInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion APAR
+
+  // #region ET
+  async getCommunityAnnualETMean(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/et/annual/mean`;
+    return axios
+      .get(url)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualET(communityOrder: string, year: number) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/et/annual/${year}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityHistoricalET(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/et/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.etInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion ET
+
+  // #region RH
+  async getCommunityAnnualRHMean(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rh/annual/mean`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualRH(communityOrder: string, year: number) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rh/annual/${year}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityHistoricalRH(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rh/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion RH
+
+  // #region RHProp
+  async getCommunityAnnualRHPropMean(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rhProp/annual/mean`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityAnnualRHProp(communityOrder: string, year: number) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rhProp/annual/${year}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getCommunityHistoricalRHProp(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/rhProp/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.rhPropInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion RHProp
+
+  //#region IOSE
+  async getCommunityHistoricalIOSE(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/iose/historical/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.ioseInformation)
+      .catch((error) => console.error(error));
+  }
+
+  // #endregion IOSE
+
+  // #endregion Community
 
   async getPoliceSectionals() {
     const url = `${this.serverUrl}/gee/police-sectionals`;

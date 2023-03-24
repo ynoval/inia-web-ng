@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
+import { CommunitiesService } from '@app/common/services/communities.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
 
@@ -11,7 +9,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-hydrological-performance-historical-chart.component.scss'],
 })
 export class CommunityHydrologicalPerformanceHistoricalChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions: EChartsOption = {
     grid: {
@@ -107,7 +105,7 @@ export class CommunityHydrologicalPerformanceHistoricalChartComponent {
 
   historicalRHPropInformation: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -141,13 +139,11 @@ export class CommunityHydrologicalPerformanceHistoricalChartComponent {
         ),
       ],
     ];
-    new AngularCsv(csvData, `${this.zone.name} RH Histórica`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} RH Histórica`, { headers: csvHeader });
   }
 
   private async load() {
-    const notification = this.notificationService.showAction(
-      'Cargando información de rendimiento hidrológico histórico'
-    );
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const rhData = await this.loadRH();
     const rhPropData = await this.loadRHProp();
     this.data.push(rhData.data, rhPropData.data);
@@ -158,11 +154,11 @@ export class CommunityHydrologicalPerformanceHistoricalChartComponent {
         data: [rhData.legendData, rhPropData.legendData],
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 
   private async loadRH() {
-    this.historicalRHInformation = await this.zonesService.getZoneHistoricalRH(this.zone.id);
+    this.historicalRHInformation = await this.communitiesService.getHistoricalRH(this.communityId);
     return {
       data: {
         type: 'bar',
@@ -190,7 +186,7 @@ export class CommunityHydrologicalPerformanceHistoricalChartComponent {
   }
 
   private async loadRHProp() {
-    this.historicalRHPropInformation = await this.zonesService.getZoneHistoricalRHProp(this.zone.id);
+    this.historicalRHPropInformation = await this.communitiesService.getHistoricalRHProp(this.communityId);
     return {
       data: {
         type: 'bar',

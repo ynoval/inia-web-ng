@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { NotificationService } from '@app/common/components/notification/notification.service';
-import { ZoneModel } from '@app/common/models/zone.model';
-import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
 import { EChartsOption } from 'echarts';
+
+import { CommunitiesService } from '@app/common/services/communities.service';
 
 @Component({
   selector: 'app-community-et-annual-chart',
@@ -11,7 +10,7 @@ import { EChartsOption } from 'echarts';
   styleUrls: ['./community-evapotranspiration-annual-chart.component.scss'],
 })
 export class CommunityEvapotranspirationAnnualChartComponent {
-  @Input() zone: ZoneModel;
+  @Input() communityId: string;
 
   chartOptions: EChartsOption = {
     grid: {
@@ -98,11 +97,11 @@ export class CommunityEvapotranspirationAnnualChartComponent {
 
   data = [];
 
-  zoneInformation: any;
+  etInformation: any;
 
   selectedYears: any;
 
-  constructor(private zonesService: ZonesService, private notificationService: NotificationService) {}
+  constructor(private communitiesService: CommunitiesService) {}
 
   onChartInit(ec) {
     if (!this.chartInstance) {
@@ -113,8 +112,8 @@ export class CommunityEvapotranspirationAnnualChartComponent {
           const index = this.data.findIndex((val) => +val.name.split('-')[0].trim() === year);
           if (this.data[index].data.length === 0) {
             this.chartInstance.showLoading({ text: 'Cargando datos...' });
-            const result = await this.zonesService.getZoneAnnualET(this.zone.id, year);
-            this.zoneInformation.annual.push(result);
+            const result = await this.communitiesService.getAnnualET(this.communityId, year);
+            this.etInformation.annual.push(result);
             this.data[index].data = result.values.map((value) => value.et);
             this.data[index].emphasis = {
               itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
@@ -199,9 +198,9 @@ export class CommunityEvapotranspirationAnnualChartComponent {
       let csvRow = [];
       if (year === 'Media') {
         csvRow.push('Media');
-        csvRow.push(...this.zoneInformation.annualMean.values.map((value) => (value ? value.et : '')));
+        csvRow.push(...this.etInformation.annualMean.values.map((value) => (value ? value.et : '')));
       } else {
-        const annualData = this.zoneInformation.annual.find((x) => x.year === +year);
+        const annualData = this.etInformation.annual.find((x) => x.year === +year);
         if (annualData) {
           csvRow.push(`${annualData.year} - ${annualData.year + 1}`);
           csvRow.push(...annualData.values.map((value) => (value ? value.et : '')));
@@ -209,18 +208,18 @@ export class CommunityEvapotranspirationAnnualChartComponent {
       }
       csvData.push(csvRow);
     });
-    new AngularCsv(csvData, `${this.zone.name} Evapotranspiración Anual`, { headers: csvHeader });
+    new AngularCsv(csvData, `${this.communityId} Evapotranspiración Anual`, { headers: csvHeader });
   }
 
   // TODO: Refactoring
   private async load() {
-    const notification = this.notificationService.showAction('Cargando información de evapotranspiración');
+    this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     console.log('ET load');
-    this.zoneInformation = {
-      annual: [await this.zonesService.getZoneAnnualET(this.zone.id, lastYear)],
-      annualMean: await this.zonesService.getZoneAnnualETMean(this.zone.id),
+    this.etInformation = {
+      annual: [await this.communitiesService.getAnnualET(this.communityId, lastYear)],
+      annualMean: await this.communitiesService.getETMean(this.communityId),
     };
 
     this.data = [];
@@ -236,7 +235,7 @@ export class CommunityEvapotranspirationAnnualChartComponent {
       },
       name: 'Media',
       large: true,
-      data: this.zoneInformation.annualMean.values.map((value) => value.et),
+      data: this.etInformation.annualMean.values.map((value) => value.et),
     });
 
     legendData.push('Media');
@@ -260,8 +259,7 @@ export class CommunityEvapotranspirationAnnualChartComponent {
       this.selectedYears[`${i} - ${i + 1}`] = false;
     }
 
-    console.log({ info: this.zoneInformation });
-    this.zoneInformation.annual.forEach((elem) => {
+    this.etInformation.annual.forEach((elem) => {
       const index = this.data.findIndex((value) => value.name === `${elem.year} - ${elem.year + 1}`);
       this.data[index].data = elem.values.map((value) => value?.et);
       this.selectedYears[`${elem.year} - ${elem.year + 1}`] = true;
@@ -274,6 +272,6 @@ export class CommunityEvapotranspirationAnnualChartComponent {
         selected: this.selectedYears,
       },
     };
-    notification.dismiss();
+    this.chartInstance.hideLoading();
   }
 }
