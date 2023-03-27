@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
 import { Router } from '@angular/router';
 
@@ -34,6 +42,10 @@ export class PoliceSectionalsPageComponent implements AfterViewInit {
 
   isLoadingZones: boolean = false;
 
+  @ViewChild('zonesContainer') listContainer: ElementRef;
+
+  @ViewChildren('zoneItem') listItems: QueryList<ElementRef>;
+
   constructor(
     appSettings: AppSettings,
     private cd: ChangeDetectorRef,
@@ -64,6 +76,14 @@ export class PoliceSectionalsPageComponent implements AfterViewInit {
     // Load Selected Zone
     this.zonesService.getSelectedZone().subscribe((zone) => {
       this.selectedZone = zone;
+
+      const listItem = this.listItems.find((listItemRef) => {
+        return listItemRef.nativeElement.getAttribute('data-zone-id') === `${this.selectedZone}`;
+      });
+      if (listItem) {
+        // this.listContainer.nativeElement.scrollTop = listItem.nativeElement.offsetTop;
+        listItem.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      }
       this.cd.detectChanges();
     });
   }

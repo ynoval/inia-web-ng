@@ -1,5 +1,5 @@
 <div fxFlex fxLayout="column" *ngIf="communityInformation$ | async as communityInformation; else loading">
-  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
+  <div *ngIf="!isLoading; else loading" fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
     <div fxFlex fxLayout="column" fxLayoutAlign="start start" class="flex-p">
       <h3>
         {{ getCommunityTitle() }}
@@ -12,7 +12,7 @@
   <div fxFlex class="flex-p">
     <mat-tab-group>
       <mat-tab label="Información">
-        <div fxFlex fxLayout="column" class="flex-p">
+        <div *ngIf="!isLoading; else loading" fxFlex fxLayout="column" class="flex-p">
           <div fxFlex>
             <p>{{ communityInformation.description }}</p>
             <p *ngIf="communityInformation.order === 'VI'">
@@ -22,13 +22,13 @@
           <div fxFlex fxLayout="column" class="flex-p">
             <span>
               <strong *ngIf="species && species.length > 0">Especies Indicadoras:</strong>
-              <a
+              <!-- <a
                 *ngFor="let specie of communityInformation.species; let i = index"
                 [routerLink]="['specie', specie.id]"
-              >
-                <span>{{ i === 0 ? ' ' : ', ' }}</span>
-                <span>{{ specie.name }}</span>
-              </a>
+              > -->
+              <span>{{ i === 0 ? ' ' : ', ' }}</span>
+              <span>{{ specie.name }}</span>
+              <!-- </a> -->
             </span>
           </div>
           <div fxFlex fxLayout="column">

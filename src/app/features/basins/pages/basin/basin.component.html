@@ -1,6 +1,6 @@
 <div fxFlex fxLayout="column" class="zone-title">
   <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
-    <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+    <!-- <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon> -->
     <div fxFlex fxLayout="column" class="zone-name">
       <h2>{{ getZoneName() }}</h2>
       <h4>{{ getZoneDescription() }}</h4>
@@ -10,7 +10,7 @@
   <div fxFlex class="flex-p">
     <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
     <mat-tab-group>
-      <mat-tab label="Información">
+      <mat-tab label="Cobertura del suelo">
         <div
           *ngIf="zoneInformation$ | async as zoneInformation; else loading"
           fxFlex
@@ -26,7 +26,7 @@
               [zoneInformation]="zoneInformation"
             ></app-basin-area-info>
           </div>
-          <div
+          <!-- <div
             fxFlex
             fxFill
             *ngIf="zone.properties && zone.properties.length > 0"
@@ -35,7 +35,7 @@
             class="flex-p"
           >
             <app-basin-properties [properties]="zone.properties"></app-basin-properties>
-          </div>
+          </div> -->
         </div>
       </mat-tab>
       <mat-tab label="Radiación absorbida">

@@ -1,6 +1,6 @@
 <div fxFlex fxLayout="column" class="zone-title">
   <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
-    <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+    <!-- <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon> -->
     <div fxFlex fxLayout="column" class="zone-name">
       <h2>{{ getZoneName() }}</h2>
       <h4>{{ getZoneDescription() }}</h4>
@@ -23,7 +23,7 @@
           <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
             <app-police-sectional-area-info [zoneInformation]="zoneInformation"></app-police-sectional-area-info>
           </div>
-          <div
+          <!-- <div
             fxFlex
             fxFill
             *ngIf="zone.properties && zone.properties.length > 0"
@@ -32,7 +32,7 @@
             class="flex-p"
           >
             <app-police-sectional-properties [properties]="zone.properties"></app-police-sectional-properties>
-          </div>
+          </div> -->
         </div>
       </mat-tab>
       <mat-tab label="Radiación absorbida">

@@ -117,13 +117,13 @@ export class ZoneAreaDistributionComponent implements OnInit {
     this.communitiesChartInstance = ec;
     this.communitiesChartInstance.on('dblclick', ({ data }) => {
       if (data.id) {
-        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        this.ngZone.run(() => this.router.navigate(['communities/', data.id]));
         return;
       }
     });
     this.communitiesChartInstance.on('click', ({ data }) => {
       if (data.id) {
-        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        this.ngZone.run(() => this.router.navigate(['communities/', data.id]));
         return;
       }
     });

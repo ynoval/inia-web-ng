@@ -36,14 +36,14 @@
       </mat-form-field>
     </div>
 
-    <div *ngIf="!isLoadingZones" fxFlex fxLayout="column" class="zones-container">
+    <div #zonesContainer *ngIf="!isLoadingZones" fxFlex fxLayout="column" class="zones-container">
       <div
         fxLayout="column"
         *ngFor="let zone of basins | deepFilter : searchText : keysToExclude; let index = index"
         class="row"
         [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.name === selectedBasin }"
       >
-        <div fxFlex fxLayout="row" fxLayoutAlign="center center">
+        <div #zoneItem [attr.data-zone-id]="zone.name" fxFlex fxLayout="row" fxLayoutAlign="center center">
           <div>
             <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
           </div>

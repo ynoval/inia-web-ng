@@ -106,7 +106,7 @@ export class IOSEChartComponent {
     ],
     grid: {
       left: '2%',
-      right: '1%',
+      right: '3%',
       bottom: '15%',
       show: true,
       borderWidth: 0,
@@ -222,6 +222,14 @@ export class IOSEChartComponent {
             color: '#77bef7',
           },
           z: 100,
+          markLine: {
+            data: [
+              {
+                name: 'media histórica',
+                type: 'average',
+              },
+            ],
+          },
         },
         {
           type: 'custom',

@@ -104,7 +104,7 @@ export class CommunityIOSEChartComponent {
     ],
     grid: {
       left: '2%',
-      right: '1%',
+      right: '3%',
       bottom: '15%',
       show: true,
       borderWidth: 0,
@@ -218,6 +218,14 @@ export class CommunityIOSEChartComponent {
           },
           itemStyle: {
             color: '#77bef7',
+          },
+           markLine: {
+            data: [
+              {
+                name: 'media histórica',
+                type: 'average',
+              },
+            ],
           },
           z: 100,
         },

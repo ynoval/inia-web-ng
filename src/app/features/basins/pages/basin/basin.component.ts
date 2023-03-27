@@ -55,7 +55,9 @@ export class BasinPageComponent implements OnInit {
       return '';
     }
     const propertyName = this.zone.properties.find((prop) => prop.propertyName === 'name');
-    return propertyName ? propertyName.propertyValue : this.zone.name;
+    const propertyHeader = this.zone.properties.find((prop) => prop.propertyName === 'cabecera');
+    const name = propertyName ? propertyName.propertyValue : this.zone.name;
+    return propertyHeader ? `${name} (cabecera ${propertyHeader.propertyValue})` : name;
   }
 
   getZoneDescription() {

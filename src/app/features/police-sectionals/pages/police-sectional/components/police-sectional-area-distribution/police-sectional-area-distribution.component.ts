@@ -29,6 +29,7 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
     },
     toolbox: {
       itemSize: 24,
+      right: '50%',
       iconStyle: { color: 'rgb(40,52,147)' },
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -49,8 +50,7 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
     },
     legend: {
       orient: 'vertical',
-      left: 'left',
-      bottom: 0,
+      right: 'right',
     },
     // legend: {
     //   top: '5%',
@@ -117,13 +117,13 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
     this.communitiesChartInstance = ec;
     this.communitiesChartInstance.on('dblclick', ({ data }) => {
       if (data.id) {
-        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        this.ngZone.run(() => this.router.navigate(['communities/', data.id]));
         return;
       }
     });
     this.communitiesChartInstance.on('click', ({ data }) => {
       if (data.id) {
-        this.ngZone.run(() => this.router.navigate(['communities/community', data.id]));
+        this.ngZone.run(() => this.router.navigate(['communities/', data.id]));
         return;
       }
     });

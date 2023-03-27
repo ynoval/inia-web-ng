@@ -153,7 +153,7 @@ export class ZonesService {
           }
           const options = {
             fillColor: '#DB2826',
-            fillOpacity: 0.8,
+            fillOpacity: 0.5,
             strokeWeight: 0.5,
           };
           zone.shape.setOptions(options);
@@ -174,7 +174,7 @@ export class ZonesService {
         }
         const options = {
           fillColor: '#222aaa',
-          fillOpacity: 1,
+          fillOpacity: 0.5,
           strokeWeight: 1,
         };
         newSelectedZone.shape.setOptions(options);
@@ -318,7 +318,7 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearPPNAInformation = storeZone.ppnaAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearPPNAInformation) {
@@ -335,6 +335,11 @@ export class ZonesService {
         year
       )
       .then((data) => {
+        if (!data) {
+          // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+          console.log('CHECK THIS ERROR!!!');
+          return [];
+        }
         const ppnaInfo = storeZone.ppnaAnnualInformation ? storeZone.ppnaAnnualInformation : [];
         ppnaInfo.push(data);
         this.db.storeZones.where('name').equals(zone.name).modify({ ppnaAnnualInformation: ppnaInfo });
@@ -400,7 +405,7 @@ export class ZonesService {
 
     const yearAPARInformation = storeZone.aparAnnualInformation?.find((info) => {
       console.log({ info });
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearAPARInformation) {
@@ -417,6 +422,11 @@ export class ZonesService {
         year
       )
       .then((data) => {
+        if (!data) {
+          // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+          console.log('CHECK THIS ERROR!!!');
+          return [];
+        }
         const aparInfo = storeZone.aparAnnualInformation ? storeZone.aparAnnualInformation : [];
         aparInfo.push(data);
         this.db.storeZones.where('name').equals(zone.name).modify({ aparAnnualInformation: aparInfo });
@@ -480,7 +490,7 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearETInformation = storeZone.etAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearETInformation) {
@@ -498,6 +508,11 @@ export class ZonesService {
         year
       )
       .then((data) => {
+        if (!data) {
+          // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+          console.log('CHECK THIS ERROR!!!');
+          return [];
+        }
         const info = storeZone.etAnnualInformation ? storeZone.etAnnualInformation : [];
         info.push(data);
         this.db.storeZones.where('name').equals(zone.name).modify({ etAnnualInformation: info });
@@ -561,7 +576,7 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearRHInformation = storeZone.rhAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearRHInformation) {
@@ -577,6 +592,11 @@ export class ZonesService {
         year
       )
       .then((data) => {
+        if (!data) {
+          // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+          console.log('CHECK THIS ERROR!!!');
+          return [];
+        }
         const info = storeZone.rhAnnualInformation ? storeZone.rhAnnualInformation : [];
         info.push(data);
         this.db.storeZones.where('name').equals(zone.name).modify({ rhAnnualInformation: info });
@@ -640,7 +660,7 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearRHPropInformation = storeZone.rhPropAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearRHPropInformation) {
@@ -656,6 +676,11 @@ export class ZonesService {
         year
       )
       .then((data) => {
+        if (!data) {
+          // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+          console.log('CHECK THIS ERROR!!!');
+          return [];
+        }
         const info = storeZone.rhPropAnnualInformation ? storeZone.rhPropAnnualInformation : [];
         info.push(data);
         this.db.storeZones.where('name').equals(zone.name).modify({ rhPropAnnualInformation: info });
@@ -845,7 +870,7 @@ export class ZonesService {
       paths,
       draggable: false,
       strokeWeight: 0.5,
-      fillOpacity: 0.8,
+      fillOpacity: 0.5,
       fillColor: '#DB2826',
       strokeColor: '#FFF',
     });

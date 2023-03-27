@@ -46,7 +46,7 @@ export class CommunitiesService {
       };
 
       this.addStorageCommunity(community);
-      return community;
+      return community.generalInformation;
     });
   }
 
@@ -76,7 +76,7 @@ export class CommunitiesService {
     }
 
     const yearPPNAInformation = storeCommunity.ppnaAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearPPNAInformation) {
@@ -85,6 +85,11 @@ export class CommunitiesService {
     }
 
     return this.apiService.getCommunityAnnualPPNA(storeCommunity.order, year).then((data) => {
+      if (!data) {
+        // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+        console.log('CHECK THIS ERROR!!!');
+        return [];
+      }
       const ppnaInfo = storeCommunity.ppnaAnnualInformation ? storeCommunity.ppnaAnnualInformation : [];
       ppnaInfo.push(data);
       this.db.storeCommunities.where('id').equals(id).modify({ ppnaAnnualInformation: ppnaInfo });
@@ -136,7 +141,7 @@ export class CommunitiesService {
     }
 
     const yearAPARInformation = storeCommunity.aparAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearAPARInformation) {
@@ -145,6 +150,11 @@ export class CommunitiesService {
     }
 
     return this.apiService.getCommunityAnnualAPAR(storeCommunity.order, year).then((data) => {
+      if (!data) {
+        // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+        console.log('CHECK THIS ERROR!!!');
+        return [];
+      }
       const aparInfo = storeCommunity.aparAnnualInformation ? storeCommunity.aparAnnualInformation : [];
       aparInfo.push(data);
       this.db.storeCommunities.where('id').equals(id).modify({ aparAnnualInformation: aparInfo });
@@ -196,7 +206,7 @@ export class CommunitiesService {
     }
 
     const yearETInformation = storeCommunity.etAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearETInformation) {
@@ -205,6 +215,11 @@ export class CommunitiesService {
     }
 
     return this.apiService.getCommunityAnnualET(storeCommunity.order, year).then((data) => {
+      if (!data) {
+        // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+        console.log('CHECK THIS ERROR!!!');
+        return [];
+      }
       const etInfo = storeCommunity.etAnnualInformation ? storeCommunity.etAnnualInformation : [];
       etInfo.push(data);
       this.db.storeCommunities.where('id').equals(id).modify({ etAnnualInformation: etInfo });
@@ -256,7 +271,7 @@ export class CommunitiesService {
     }
 
     const yearRHInformation = storeCommunity.rhAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
     if (yearRHInformation) {
@@ -265,6 +280,11 @@ export class CommunitiesService {
     }
 
     return this.apiService.getCommunityAnnualRH(storeCommunity.order, year).then((data) => {
+      if (!data) {
+        // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+        console.log('CHECK THIS ERROR!!!');
+        return [];
+      }
       const rhInfo = storeCommunity.rhAnnualInformation ? storeCommunity.rhAnnualInformation : [];
       rhInfo.push(data);
       this.db.storeCommunities.where('id').equals(id).modify({ rhAnnualInformation: rhInfo });
@@ -316,15 +336,21 @@ export class CommunitiesService {
     }
 
     const yearRHPropInformation = storeCommunity.rhPropAnnualInformation?.find((info) => {
-      return info.year === year;
+      return info && info.year === year;
     });
 
+    console.log({ yearRHPropInformation });
     if (yearRHPropInformation) {
       // Return stored information
       return yearRHPropInformation;
     }
 
     return this.apiService.getCommunityAnnualRHProp(storeCommunity.order, year).then((data) => {
+      if (!data) {
+        // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
+        console.log('CHECK THIS ERROR!!!');
+        return [];
+      }
       const rhPropInfo = storeCommunity.rhPropAnnualInformation ? storeCommunity.rhPropAnnualInformation : [];
       rhPropInfo.push(data);
       this.db.storeCommunities.where('id').equals(id).modify({ rhPropAnnualInformation: rhPropInfo });

@@ -10,6 +10,11 @@ import { SubCommunityModel } from '@app/common/models/subcommunity.model';
 import { CommunitiesService } from '@app/common/services/communities.service';
 
 export interface CommunityInformationModel extends CommunityModel {
+  id: string;
+  order: string;
+  name: string;
+  description: string;
+  link: string;
   species: SpecieModel[];
   subCommunities: SubCommunityModel[];
 }
@@ -47,6 +52,7 @@ export class CommunityPageComponent implements OnInit {
     this.isLoading = true;
     this.communityInformation$ = from(this.communitiesService.getCommunityInformation(this.id));
     this.communityInformation$.subscribe((communityInformation) => {
+      console.log({ communityInformation });
       this.communityInformation = communityInformation;
       this.isLoading = false;
     });
@@ -58,7 +64,8 @@ export class CommunityPageComponent implements OnInit {
     window.open(this.communityInformation.link, '_blank');
   }
 
-  getCommunityTitle() {
+  private getCommunityTitle() {
+    console.log({ info: this.communityInformation });
     return `Comunidad ${this.communityInformation.order} - ${this.communityInformation.name}`;
   }
 }

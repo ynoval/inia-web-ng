@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { NgElement, WithProperties } from '@angular/elements';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -53,6 +61,10 @@ export class CustomZonesPageComponent implements AfterViewInit {
     width: '250px',
   };
 
+  @ViewChild('zonesContainer') listContainer: ElementRef;
+
+  @ViewChildren('zoneItem') listItems: QueryList<ElementRef>;
+
   constructor(
     appSettings: AppSettings,
     private cd: ChangeDetectorRef,
@@ -87,6 +99,15 @@ export class CustomZonesPageComponent implements AfterViewInit {
     // Load Selected Zone
     this.zonesService.getSelectedZone().subscribe((zone) => {
       this.selectedZone = zone;
+
+      const listItem = this.listItems.find((listItemRef) => {
+        return listItemRef.nativeElement.getAttribute('data-zone-id') === `${this.selectedZone}`;
+      });
+      if (listItem) {
+        // this.listContainer.nativeElement.scrollTop = listItem.nativeElement.offsetTop;
+        listItem.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      }
+
       this.cd.detectChanges();
     });
   }
@@ -152,7 +173,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
         },
         polygonOptions: {
           strokeWeight: 1,
-          fillOpacity: 0.6,
+          fillOpacity: 0.5,
           editable: true,
           fillColor: '#EA4435',
           strokeColor: '#FFF',
@@ -161,7 +182,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
         },
         rectangleOptions: {
           strokeWeight: 1,
-          fillOpacity: 0.6,
+          fillOpacity: 0.5,
           editable: true,
           fillColor: '#EA4435',
           strokeColor: '#FFF',
@@ -242,6 +263,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
       // Avoid first call with zones equal to null
       // TODO: FIX!!
       if (_zones === null || _zones.length === 0) {
+        this.isLoadingZones = false;
         this.zones = [];
         return;
       }
@@ -258,9 +280,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
       this.zones = _zones;
       this.cd.detectChanges();
       notification.dismiss();
-      setTimeout(() => {
-        this.isLoadingZones = false;
-      }, 300);
+      this.isLoadingZones = false;
     });
   }
 
