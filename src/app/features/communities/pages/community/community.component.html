@@ -22,13 +22,13 @@
           <div fxFlex fxLayout="column" class="flex-p">
             <span>
               <strong *ngIf="species && species.length > 0">Especies Indicadoras:</strong>
-              <!-- <a
+              <span
                 *ngFor="let specie of communityInformation.species; let i = index"
                 [routerLink]="['specie', specie.id]"
-              > -->
-              <span>{{ i === 0 ? ' ' : ', ' }}</span>
-              <span>{{ specie.name }}</span>
-              <!-- </a> -->
+              >
+                <span>{{ i === 0 ? ' ' : ', ' }}</span>
+                <span>{{ specie.name }}</span>
+              </span>
             </span>
           </div>
           <div fxFlex fxLayout="column">
