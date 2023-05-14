@@ -47,6 +47,7 @@ export class BreadcrumbComponent {
     if (this.router.url.startsWith('/communities')) return 'COMMUNITIES';
     if (this.router.url.startsWith('/police-sectionals')) return 'POLICE_SECTIONS';
     if (this.router.url.startsWith('/basins')) return 'BASINS';
+    if (this.router.url.startsWith('/padrones')) return 'PADRONES';
     return 'ZONES';
   }
 

@@ -77,6 +77,33 @@ export class BasinAreaDistributionComponent implements OnInit {
   // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   updateCommunitiesOptions: any;
 
+  noCommunityColor = '#ca8622';
+
+  communityColors = [
+    {
+      order: 'I',
+      color: '#7ed3f4',
+    },
+    {
+      order: 'II',
+      color: '#5c7ad9',
+    },
+    {
+      order: 'III',
+      color: '#9fe080',
+    },
+    {
+      order: 'IV',
+      color: '#ee6666',
+    },
+    {
+      order: 'VI',
+      color: '#fddc61',
+    },
+  ];
+
+  selectedColors: Array<string> = [];
+
   constructor(private router: Router, private ngZone: NgZone) {}
 
   ngOnInit() {
@@ -86,11 +113,13 @@ export class BasinAreaDistributionComponent implements OnInit {
 
   processCommunityInformation() {
     let totalArea = 0;
+    this.selectedColors = [];
     this.zoneArea = +this.zoneInformation.area;
     this.communitiesChartOptions.title.subtext = `Area Total: ${this.zoneArea} ha`;
     this.zoneInformation.communitiesAreas.forEach((c) => {
       const area = +c.area;
       totalArea += area;
+      this.selectedColors.push(this.communityColors.find((communityColor) => communityColor.order === c.order).color);
       this.communitiesData.push({
         name: `comunidad ${c.order}`,
         value: ((100 * area) / this.zoneArea).toFixed(2),
@@ -99,6 +128,7 @@ export class BasinAreaDistributionComponent implements OnInit {
     });
 
     if (totalArea < this.zoneArea) {
+      this.selectedColors.push(this.noCommunityColor);
       this.communitiesData.push({
         name: 'Otros usos del suelo',
         value: (100 - (100 * totalArea) / this.zoneArea).toFixed(2),
@@ -107,6 +137,7 @@ export class BasinAreaDistributionComponent implements OnInit {
 
     console.log({ data: this.communitiesData });
     this.updateCommunitiesOptions = {
+      color: this.selectedColors,
       series: {
         data: this.communitiesData,
       },

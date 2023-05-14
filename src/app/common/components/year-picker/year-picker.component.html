@@ -1,0 +1,6 @@
+<mat-form-field appearance="outline">
+  <mat-label>Año</mat-label>
+  <input [(ngModel)]="selectedYear" matInput [matDatepicker]="picker" [min]="minDate" [max]="maxDate" readonly />
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker startView="multi-year" (yearSelected)="chosenYearHandler($event, picker)"> </mat-datepicker>
+</mat-form-field>

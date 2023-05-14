@@ -32,6 +32,16 @@
         <span class="breadcrumb-title">Cuencas</span>
       </a>
       <a
+        *ngIf="pageSection === 'PADRONES'"
+        routerLink="/padrones"
+        class="breadcrumb-item"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon>select_all</mat-icon>
+        <span class="breadcrumb-title">Padrones</span>
+      </a>
+      <a
         *ngIf="pageSection === 'COMMUNITIES'"
         routerLink="/communities"
         class="breadcrumb-item"

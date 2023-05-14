@@ -27,7 +27,7 @@ import { ZoneAreaDistributionComponent } from './pages/custom-zone/components/zo
 import { ZoneMarkerInformationComponent } from './pages/custom-zone/components/zone-marker-information/zone-marker-information.component';
 import { ZonePropertiesComponent } from './pages/custom-zone/components/zone-properties/zone-properties.component';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { ChartSelectorComponent } from './pages/custom-zone/components/chart-selector/chart-selector.component';
+import { ZoneChartSelectorComponent } from './pages/custom-zone/components/zone-chart-selector/zone-chart-selector.component';
 
 import { PPNAAnalysisComponent } from './pages/custom-zone/components/ppna-analysis/ppna-analysis.component';
 import { PPNAAnnualChartComponent } from './pages/custom-zone/components/ppna-annual-chart/ppna-annual-chart.component';
@@ -48,6 +48,7 @@ import { EvapotranspirationHistoricalChartComponent } from './pages/custom-zone/
 import { IOSEAnalysisComponent } from './pages/custom-zone/components/iose-analysis/iose-analysis.component';
 import { IOSEChartComponent } from './pages/custom-zone/components/iose-chart/iose-chart.component';
 import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-dialog/confirm-dialog.component';
+// import { MapbiomasHistoricalChartComponent } from '../../common/components/indicators/mapbiomas/mapbiomas-historical-chart/mapbiomas-historical-chart.component';
 
 @NgModule({
   imports: [
@@ -78,7 +79,7 @@ import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-d
     ZoneMarkerInformationComponent,
     ZonePropertiesComponent,
 
-    ChartSelectorComponent,
+    ZoneChartSelectorComponent,
 
     APARAnalysisComponent,
     APARAnnualChartComponent,
@@ -98,6 +99,7 @@ import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-d
 
     IOSEAnalysisComponent,
     IOSEChartComponent,
+    // MapbiomasHistoricalChartComponent,
   ],
   entryComponents: [
     MapLayersComponent,

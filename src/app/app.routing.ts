@@ -29,6 +29,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/basins/basins.module').then((m) => m.BasinsModule),
       },
       {
+        path: 'padrones',
+        loadChildren: () => import('./features/padrones/padrones.module').then((m) => m.PadronesModule),
+      },
+      {
         path: 'communities',
         // loadChildren: () => import('./pages/communities/communities.module').then((m) => m.CommunitiesModule),
         loadChildren: () => import('./features/communities/communities.module').then((m) => m.CommunitiesModule),

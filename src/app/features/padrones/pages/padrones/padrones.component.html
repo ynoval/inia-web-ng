@@ -1,0 +1,27 @@
+<div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="padrones-page">
+  <div fxFlex class="flex-p" style="height: 100%">
+    <div style="height: 100%">
+      <google-map width="100%" height="100%" [options]="gmOptions"></google-map>
+    </div>
+  </div>
+  <div fxFlex fxLayout="column" class="flex-p" style="height: 100%">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <h3>Padrones ({{ padrones.length }})</h3>
+      <button mat-flat-button color="primary" (click)="onAddPadron()">
+        <mat-icon>add</mat-icon>
+        Adicionar Padrón...
+      </button>
+    </div>
+    <div class="flex-p">
+      <app-search [placeholder]="searchPlaceholder" (search)="onSearch($event)" />
+    </div>
+    <div class="flex-p">
+      <app-zone-list
+        [zones]="padronesZones"
+        [selectedZoneId]="selectedPadronId"
+        (action)="onAction($event)"
+        (toggleSelect)="onToggleSelect($event)"
+      />
+    </div>
+  </div>
+</div>

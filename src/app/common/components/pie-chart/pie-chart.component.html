@@ -1,0 +1,10 @@
+<div
+  fxFlex
+  fxFlexLayout="column"
+  fxLayoutAlign="start center"
+  class="pie-chart"
+  echarts
+  [options]="options"
+  [merge]="updateOptions"
+  (chartInit)="onChartInit($event)"
+></div>

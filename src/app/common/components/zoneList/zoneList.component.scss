@@ -1,0 +1,27 @@
+@import 'variables';
+
+.zones-container {
+  overflow-y: auto;
+}
+
+.zones-btn {
+  margin: $flex-distance;
+}
+.zone-active {
+  background-color: #2229aa !important;
+  color: white;
+  font-weight: bold;
+}
+
+.zone-type-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: $flex-distance;
+}
+
+.row {
+  padding: 0 0.4em;
+}
+.even-row {
+  background-color: #eee;
+}

@@ -1,0 +1,9 @@
+<div class="flex-p">
+  <mat-form-field fxFlex class="flex-p" appearance="outline">
+    <input matInput [(ngModel)]="searchTerm" (ngModelChange)="searchTerm$.next($event)" [placeholder]="placeholder" />
+    <mat-icon matPrefix>search</mat-icon>
+    <button mat-icon-button matSuffix class="search-icons" (click)="onClearSearch()" *ngIf="searchTerm$.getValue()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>

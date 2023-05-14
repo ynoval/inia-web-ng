@@ -51,7 +51,7 @@ export class ZonesService {
     console.log({ storeZones });
 
     storeZones.forEach((sz) => {
-      const shape = this.createShape(sz.name, sz.type, sz.coordinates);
+      const shape = this.createShape(sz.id, sz.type, sz.coordinates);
       const zone = {
         id: sz.id,
         name: sz.name,
@@ -95,11 +95,12 @@ export class ZonesService {
   importZones(zones) {
     const importedZones = [];
     zones.forEach((zone) => {
+      const zoneId = uuidv4();
       // if (zone.geometry.type !== 'GeometryCollection') {
       const { zoneName, zoneType, zoneCoordinates, zoneProperties } = this.getImportedZoneData(zone);
-      const zoneShape = this.createShape(zoneName, zoneType, zoneCoordinates, true);
+      const zoneShape = this.createShape(zoneId, zoneType, zoneCoordinates, true);
       const importedZone = {
-        id: uuidv4(),
+        id: zoneId,
         name: zoneName || this.generateZoneName(),
         order: this.generateZoneOrder(),
         type: zoneType,
@@ -126,7 +127,7 @@ export class ZonesService {
     const id = uuidv4();
     const name = this.generateZoneName();
     const coordinates = this.getOverlayCoordinates(gmZone);
-    const shape = this.createShape(name, gmZone.type, coordinates, true);
+    const shape = this.createShape(id, gmZone.type, coordinates, true);
     const zone = {
       id,
       name,
@@ -143,9 +144,9 @@ export class ZonesService {
     this.selectZone(zone.name);
   }
 
-  selectZone(zoneName: string) {
+  selectZone(zoneId: string) {
     if (this.selectedZone) {
-      const zone = this.zones.find((z) => z.name === this.selectedZone);
+      const zone = this.zones.find((z) => z.id === this.selectedZone);
       if (zone) {
         if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
           if (this.isEditable) {
@@ -166,7 +167,7 @@ export class ZonesService {
       }
     }
 
-    const newSelectedZone = this.zones.find((z) => z.name === zoneName);
+    const newSelectedZone = this.zones.find((z) => z.id === zoneId);
     if (newSelectedZone) {
       if (newSelectedZone.type !== google.maps.drawing.OverlayType.MARKER) {
         if (this.isEditable) {
@@ -184,14 +185,14 @@ export class ZonesService {
       }
 
       newSelectedZone.shape.setDraggable(this.isEditable);
-      this.selectedZone = zoneName;
+      this.selectedZone = zoneId;
       this._selectedZone.next(this.selectedZone);
     }
   }
 
   noSelectedZone() {
     if (this.selectedZone) {
-      const zone = this.zones.find((z) => z.name === this.selectedZone);
+      const zone = this.zones.find((z) => z.id === this.selectedZone);
       if (zone) {
         if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
           if (this.isEditable) {
@@ -213,35 +214,35 @@ export class ZonesService {
     this._selectedZone.next(this.selectedZone);
   }
 
-  removeZone(zoneName) {
-    const index = this.zones.findIndex((z) => z.name === zoneName);
+  removeZone(zoneId) {
+    const index = this.zones.findIndex((z) => z.id === zoneId);
     if (index >= 0) {
       if (this.zones[index].shape) {
         this.zones[index].shape.setMap(null);
       }
       this.zones.splice(index, 1);
       this._zones.next(Object.assign([], this.zones));
-      this.db.deleteZone(zoneName);
+      this.db.deleteZone(zoneId);
     }
   }
 
-  hideZone(zoneName: string) {
-    const index = this.zones.findIndex((z) => z.name === zoneName);
+  hideZone(zoneId: string) {
+    const index = this.zones.findIndex((z) => z.id === zoneId);
     this.zones[index].visible = false;
     this._zones.next(Object.assign([], this.zones));
-    if (zoneName === this.selectedZone) {
+    if (zoneId === this.selectedZone) {
       this.selectedZone = '';
       this._selectedZone.next(this.selectedZone);
     }
-    this.db.hideZone(zoneName);
+    this.db.hideZone(zoneId);
   }
 
-  showZone(zoneName: string) {
-    const index = this.zones.findIndex((z) => z.name === zoneName);
+  showZone(zoneId: string) {
+    const index = this.zones.findIndex((z) => z.id === zoneId);
     this.zones[index].visible = true;
     this._zones.next(Object.assign([], this.zones));
-    this.selectZone(zoneName);
-    this.db.showZone(zoneName);
+    this.selectZone(zoneId);
+    this.db.showZone(zoneId);
   }
 
   generateZoneName() {
@@ -737,6 +738,71 @@ export class ZonesService {
   }
   // #endregion IOSE
 
+  // #region Mapbiomas
+  async getZoneHistoricalMapbiomas(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalMapbiomasInformation) {
+      // Return load information
+      return storeZone.historicalMapbiomasInformation;
+    }
+
+    return this.apiService
+      .getZoneHistoricalMapbiomas({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ historicalMapbiomasInformation: data });
+        return data;
+      });
+  }
+
+  async getZoneAnnualMapbiomas(zoneId, year) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.historicalMapbiomasInformation) {
+      // Return loaded information
+      const data = [];
+      for (let cover in storeZone.historicalMapbiomasInformation) {
+        data.push({
+          classId: cover,
+          area: storeZone.historicalMapbiomasInformation[cover][year - 1985],
+        });
+      }
+      return data;
+    }
+
+    return this.apiService
+      .getZoneAnnualMapbiomas(
+        {
+          type: zone.type,
+          coordinates: this.getZoneCoordinatesList(zone),
+        },
+        year
+      )
+      .then((data) => {
+        const results = [];
+        for (const cover in data) {
+          results.push({
+            classId: cover,
+            area: data[cover],
+          });
+        }
+        return results;
+      });
+  }
+
+  // #endregion Mapbiomas
+
   // #region Private Methods
   // eslint-disable-next-line class-methods-use-this
   private getPolygonCoordinates(featureCoordinates) {
@@ -765,26 +831,26 @@ export class ZonesService {
     };
   }
 
-  private createShape(zoneName, zoneType, coordinates, isActive = false) {
+  private createShape(zoneId, zoneType, coordinates, isActive = false) {
     if (zoneType === google.maps.drawing.OverlayType.MARKER) {
       const marker = this.createMarker(coordinates, isActive);
       marker.addListener('dragend', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       marker.addListener('click', () => {
-        this.selectZone(zoneName);
+        this.selectZone(zoneId);
       });
       // allow right-click deletion
       marker.addListener('rightclick', () => {
-        if (zoneName === this.selectedZone) {
-          this.removeZone(zoneName);
+        if (zoneId === this.selectedZone) {
+          this.removeZone(zoneId);
         } else {
-          this.selectZone(zoneName);
+          this.selectZone(zoneId);
         }
       });
       // marker.addListener('dblclick', () => {
-      //   if (zoneName === this.selectedZone) {
-      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //   if (zoneId === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.id === zoneId);
       //     this._viewLayer.next(this.zones[index].id);
       //   }
       // });
@@ -794,19 +860,19 @@ export class ZonesService {
     if (zoneType === google.maps.drawing.OverlayType.POLYGON) {
       const polygon = this.createPolygon(coordinates);
       polygon.getPath().addListener('insert_at', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       polygon.getPath().addListener('set_at', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       polygon.getPath().addListener('remove_at', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       polygon.addListener('dragend', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       polygon.addListener('click', () => {
-        this.selectZone(zoneName);
+        this.selectZone(zoneId);
       });
       polygon.addListener('rightclick', (e) => {
         if (polygon.getEditable()) {
@@ -814,13 +880,13 @@ export class ZonesService {
           if (polygon.getPath().getLength() > 3) {
             polygon.getPath().removeAt(e.vertex);
           } else {
-            this.removeZone(zoneName);
+            this.removeZone(zoneId);
           }
         }
       });
       // polygon.addListener('dblclick', () => {
-      //   if (zoneName === this.selectedZone) {
-      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //   if (zoneId === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.id === zoneId);
       //     this._viewLayer.next(this.zones[index].id);
       //   }
       // });
@@ -830,22 +896,22 @@ export class ZonesService {
     if (zoneType === google.maps.drawing.OverlayType.RECTANGLE) {
       const rectangle = this.createRectangle(coordinates);
       rectangle.addListener('bounds_changed', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       rectangle.addListener('dragend', () => {
-        this.updateStorageZone(zoneName);
+        this.updateStorageZone(zoneId);
       });
       rectangle.addListener('click', () => {
-        this.selectZone(zoneName);
+        this.selectZone(zoneId);
       });
       rectangle.addListener('rightclick', () => {
         if (rectangle.getEditable()) {
-          this.removeZone(zoneName);
+          this.removeZone(zoneId);
         }
       });
       // rectangle.addListener('dblclick', () => {
-      //   if (zoneName === this.selectedZone) {
-      //     const index = this.zones.findIndex((zone) => zone.name === zoneName);
+      //   if (zoneId === this.selectedZone) {
+      //     const index = this.zones.findIndex((zone) => zone.id === zoneId);
       //     this._viewLayer.next(this.zones[index].id);
       //     this._viewLayer.next('');
       //   }
@@ -900,10 +966,10 @@ export class ZonesService {
     this.db.addZone(storageZone);
   }
 
-  private updateStorageZone(zoneName) {
-    const zone = this.zones.find((z) => z.name === zoneName);
+  private updateStorageZone(zoneId) {
+    const zone = this.zones.find((z) => z.id === zoneId);
     const shapeCoordinates = this.getShapeCoordinates(zone.type, zone.shape);
-    this.db.updateZoneCoordinates(zoneName, this.convertToStorageCoordinates(zone.type, shapeCoordinates));
+    this.db.updateZoneCoordinates(zoneId, this.convertToStorageCoordinates(zone.type, shapeCoordinates));
   }
 
   private createStorageZone(zone) {
@@ -932,6 +998,7 @@ export class ZonesService {
       rhPropMeanInformation: null,
       historicalRHPropInformation: null,
       ioseInformation: null,
+      historicalMapbiomasInformation: null,
     };
   }
 

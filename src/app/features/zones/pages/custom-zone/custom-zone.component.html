@@ -63,6 +63,9 @@
       <mat-tab label="IOSE">
         <app-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-iose-analysis>
       </mat-tab>
+      <mat-tab label="Cobertura">
+        <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
+      </mat-tab>
     </mat-tab-group>
   </div>
 </div>

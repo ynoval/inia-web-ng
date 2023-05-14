@@ -1,0 +1,8 @@
+<div fxFlex fxLayout="column">
+  <div fxFlex fxLayoutAlign="end center" class="year-picker-container">
+    <app-year-picker [initialYear]="2021" [minYear]="1985" [maxYear]="2021" (pick)="onYearChange($event)" />
+  </div>
+  <div fxFlex>
+    <app-pie-chart [pieChartOptions$]="options$" [pieChartData$]="mapbiomasData$" [isLoading$]="isLoading$" />
+  </div>
+</div>

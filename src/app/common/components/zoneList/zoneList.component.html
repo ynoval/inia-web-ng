@@ -1,0 +1,36 @@
+<div #zonesContainer fxFlex fxLayout="column" class="zones-container">
+  <div
+    fxLayout="column"
+    *ngFor="let zone of zones; let index = index"
+    class="row"
+    [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.id === selectedZoneId }"
+  >
+    <div #zoneItem [attr.data-zone-id]="zone.id" fxFlex fxLayout="row" fxLayoutAlign="center center">
+      <div>
+        <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
+      </div>
+      <div fxFlex fxLayout="column" (click)="toggleSelectZone(zone)">
+        <div fxFlex>
+          <strong>{{ zone.name }}</strong>
+        </div>
+        <small fxFlex>{{ zone.description }}</small>
+      </div>
+      <div fxLayout="row">
+        <div *ngFor="let action of zone.actions">
+          <button *ngIf="!action.confirmInformation" mat-icon-button (click)="doAction(zone.id, action.id)">
+            <mat-icon>{{ action.icon }}</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            *ngIf="action.confirmInformation"
+            appConfirm
+            [confirmInfo]="action.confirmInformation"
+            (doConfirm)="doAction(zone.id, action.id)"
+          >
+            <mat-icon>{{ action.icon }}</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

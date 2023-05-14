@@ -17,6 +17,7 @@ import { BasinGradeType } from '../../basins.models';
 import { ApiService } from '@app/common/services/api.service';
 import { Settings } from '@app/app.settings.model';
 import { AppSettings } from '@app/app.settings';
+import { GoogleMapService } from '@app/common/services/google-map.service';
 
 @Component({
   selector: 'app-basins',
@@ -54,22 +55,13 @@ export class BasinsPageComponent implements AfterViewInit {
     private apiService: ApiService,
     private zonesService: ZonesService,
     private notificationService: NotificationService,
-    public router: Router
+    public router: Router,
+    googleMapService: GoogleMapService
   ) {
     this.settings = appSettings.settings;
     this.selectedGrade = 'I';
 
-    this.gmOptions = {
-      center: { lat: -32, lng: -56 },
-      zoom: 6,
-      mapTypeId: 'satellite',
-      scaleControl: false,
-      disableDefaultUI: true,
-      zoomControl: true,
-      fullscreenControl: true,
-      fullscreenControlOptions: { position: google.maps.ControlPosition.BOTTOM_RIGHT },
-      keyboardShortcuts: false,
-    };
+    this.gmOptions = googleMapService.getMapOptions();
   }
 
   ngAfterViewInit() {

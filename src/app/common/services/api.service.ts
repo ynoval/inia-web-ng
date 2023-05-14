@@ -5,6 +5,7 @@ import { GEEMapLayerModel } from '../models/geeMapLayer.model';
 import { CommunityModel } from '../models/community.model';
 import { SpecieModel } from '../models/specie.model';
 import { SubCommunityModel } from '../models/subcommunity.model';
+import { Observable } from 'rxjs';
 
 type LayerData = {
   mapType: string;
@@ -211,6 +212,24 @@ export class ApiService {
     return axios
       .post(url, zoneInformation)
       .then((response) => response.data.ioseInformation)
+      .catch((error) => console.error(error));
+  }
+
+  //#region Mapbiomas
+  async getZoneHistoricalMapbiomas(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/mapbiomas/historical/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.mapbiomasInformation)
+      .catch((error) => console.error(error));
+  }
+
+  async getZoneAnnualMapbiomas(zoneInformation: ZoneInformation, year) {
+    console.log(`getZoneAnnualMapbiomas ${year}`);
+    const url = `${this.serverUrl}/gee/zone/mapbiomas/annual/${year}`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.mapbiomasInformation)
       .catch((error) => console.error(error));
   }
 
@@ -441,4 +460,22 @@ export class ApiService {
       properties: layer.communityInfo,
     };
   }
+
+  // #region Padrones
+  async validatePadronNumber(padronNumber: number): Promise<boolean> {
+    const url = `${this.serverUrl}/gee/padrones/validate/${padronNumber}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.isValid)
+      .catch((error) => console.error(error));
+  }
+
+  async getPadron(padronNumber: string) {
+    const url = `${this.serverUrl}/gee/padrones/${padronNumber}`;
+    return axios
+      .get(url)
+      .then((response) => response.data.padron)
+      .catch((error) => console.error(error));
+  }
+  // #endregion
 }
