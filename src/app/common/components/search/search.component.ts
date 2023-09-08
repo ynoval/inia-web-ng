@@ -49,14 +49,14 @@ export class SearchComponent implements OnInit {
    *
    * @type {BehaviorSubject<string>}
    */
-  private searchTerm$ = new BehaviorSubject<string>(this.initialValue || '');
+  searchTerm$ = new BehaviorSubject<string>(this.initialValue || '');
 
   /**
    * Debounce time in milliseconds
    *
    * @type {number}
    */
-  private searchDebounce = 500;
+  searchDebounce = 500;
 
   /**
    * Subscribe to the BehaviorSubject to emit search event
@@ -65,7 +65,6 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     // Emit a search event when new value is emitted (avoid unnecessary search using debounce)
     this.searchTerm$.pipe(debounceTime(this.searchDebounce)).subscribe((searchTerm) => {
-      console.log(`Searching ${searchTerm}...`);
       this.search.emit(searchTerm);
     });
   }

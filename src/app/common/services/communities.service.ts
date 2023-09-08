@@ -29,8 +29,6 @@ export class CommunitiesService {
     ];
 
     return Promise.allSettled(promises).then((results) => {
-      console.log(`get community results: ${results}`);
-
       if (results[0].status === 'rejected' || results[1].status === 'rejected' || results[2].status === 'rejected') {
         throw new Error('Unable to get community information');
       }
@@ -87,7 +85,6 @@ export class CommunitiesService {
     return this.apiService.getCommunityAnnualPPNA(storeCommunity.order, year).then((data) => {
       if (!data) {
         // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-        console.log('CHECK THIS ERROR!!!');
         return [];
       }
       const ppnaInfo = storeCommunity.ppnaAnnualInformation ? storeCommunity.ppnaAnnualInformation : [];
@@ -152,7 +149,6 @@ export class CommunitiesService {
     return this.apiService.getCommunityAnnualAPAR(storeCommunity.order, year).then((data) => {
       if (!data) {
         // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-        console.log('CHECK THIS ERROR!!!');
         return [];
       }
       const aparInfo = storeCommunity.aparAnnualInformation ? storeCommunity.aparAnnualInformation : [];
@@ -217,7 +213,6 @@ export class CommunitiesService {
     return this.apiService.getCommunityAnnualET(storeCommunity.order, year).then((data) => {
       if (!data) {
         // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-        console.log('CHECK THIS ERROR!!!');
         return [];
       }
       const etInfo = storeCommunity.etAnnualInformation ? storeCommunity.etAnnualInformation : [];
@@ -282,7 +277,6 @@ export class CommunitiesService {
     return this.apiService.getCommunityAnnualRH(storeCommunity.order, year).then((data) => {
       if (!data) {
         // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-        console.log('CHECK THIS ERROR!!!');
         return [];
       }
       const rhInfo = storeCommunity.rhAnnualInformation ? storeCommunity.rhAnnualInformation : [];
@@ -339,7 +333,6 @@ export class CommunitiesService {
       return info && info.year === year;
     });
 
-    console.log({ yearRHPropInformation });
     if (yearRHPropInformation) {
       // Return stored information
       return yearRHPropInformation;
@@ -348,7 +341,6 @@ export class CommunitiesService {
     return this.apiService.getCommunityAnnualRHProp(storeCommunity.order, year).then((data) => {
       if (!data) {
         // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-        console.log('CHECK THIS ERROR!!!');
         return [];
       }
       const rhPropInfo = storeCommunity.rhPropAnnualInformation ? storeCommunity.rhPropAnnualInformation : [];

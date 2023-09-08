@@ -70,6 +70,7 @@ export class BasinsPageComponent implements AfterViewInit {
 
     // Load Selected Zone
     this.zonesService.getSelectedZone().subscribe((zone) => {
+      console.log('test');
       this.selectedBasin = zone;
 
       const listItem = this.listItems.find((listItemRef) => {
@@ -88,7 +89,9 @@ export class BasinsPageComponent implements AfterViewInit {
     this.zonesService.getZones().subscribe((zones) => {
       // Avoid first call with zones equal to null
       // TODO: FIX!!
-      if (zones === null) return;
+      if (zones === null) {
+        return;
+      }
 
       // this.isLoadingZones = true;
 
@@ -119,7 +122,9 @@ export class BasinsPageComponent implements AfterViewInit {
   }
 
   private getGradeZones(zones) {
-    if (!zones || zones.length === 0) return [];
+    if (!zones || zones.length === 0) {
+      return [];
+    }
 
     return zones.filter((zone) => {
       const grade = zone.properties.find((p) => p.propertyName === 'grade');
@@ -143,15 +148,15 @@ export class BasinsPageComponent implements AfterViewInit {
 
         try {
           this.zonesService.importZones(basinsToImport);
-          this.isLoadingZones = false;
         } catch (error) {
           console.log({ error });
+        } finally {
+          this.isLoadingZones = false;
         }
         notification.dismiss();
       })
       .catch((e) => {
-        // TODO: Show error importing basings...
-        console.log('importing basings error', { error: e });
+        // TODO: Show error importing basins...
         notification.dismiss();
       });
   }
@@ -167,11 +172,10 @@ export class BasinsPageComponent implements AfterViewInit {
   }
 
   toggleSelectZone(zone: any) {
-    console.log({ zone }, { selectedBasin: this.selectedBasin });
-    if (this.selectedBasin === zone.name) {
+    if (this.selectedBasin === zone.id) {
       this.zonesService.noSelectedZone();
     } else {
-      this.zonesService.selectZone(zone.name);
+      this.zonesService.selectZone(zone.id);
     }
   }
 
@@ -207,7 +211,6 @@ export class BasinsPageComponent implements AfterViewInit {
   }
 
   cleanSearch() {
-    console.log('clean search');
     this.searchText = '';
   }
 }

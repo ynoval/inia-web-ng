@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './basin-ppna-analysis.component.html',
   styleUrls: ['./basin-ppna-analysis.component.scss'],
 })
-export class BasinPPNAAnalysisComponent implements OnInit {
+export class BasinPPNAAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class BasinPPNAAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('PPNA Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

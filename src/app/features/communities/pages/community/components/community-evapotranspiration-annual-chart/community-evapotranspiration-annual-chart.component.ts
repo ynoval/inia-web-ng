@@ -185,7 +185,6 @@ export class CommunityEvapotranspirationAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('ET anual Save CSV');
     const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
     const csvData = [];
     const years = Object.keys(this.selectedYears)
@@ -216,7 +215,6 @@ export class CommunityEvapotranspirationAnnualChartComponent {
     this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
-    console.log('ET load');
     this.etInformation = {
       annual: [await this.communitiesService.getAnnualET(this.communityId, lastYear)],
       annualMean: await this.communitiesService.getETMean(this.communityId),

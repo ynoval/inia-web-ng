@@ -10,7 +10,7 @@ export type ChartType = {
   templateUrl: './basin-chart-selector.component.html',
   styleUrls: ['./basin-chart-selector.component.scss'],
 })
-export class BasinChartSelectorComponent implements OnChanges, OnInit {
+export class BasinChartSelectorComponent implements OnInit {
   @Input() chartTypes: ChartType[];
 
   _selectedChart: string;
@@ -25,7 +25,5 @@ export class BasinChartSelectorComponent implements OnChanges, OnInit {
     this.selectedChartChanged.emit(selectedOption.value);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('changes:', { changes });
-  }
+
 }

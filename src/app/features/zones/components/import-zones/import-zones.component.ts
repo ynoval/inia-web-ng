@@ -69,17 +69,7 @@ export class ImportZonesComponent {
       }
     }
   }
-  // eslint-disable-next-line class-methods-use-this
-  // public fileOver(event) {
-  //   console.log('fileOver', event);
-  //   // reader.readAsText(event.target.files[0]);
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // public fileLeave(event) {
-  //   console.log(event);
-  // }
-
+  
   deleteFile(file: ZoneFileUploaded) {
     this.files = this.files.filter((f) => f.fileId !== file.fileId);
   }

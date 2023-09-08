@@ -107,7 +107,6 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
 
   ngOnInit() {
     this.processCommunityInformation();
-    console.log({ info: this.zoneInformation });
   }
 
   processCommunityInformation() {
@@ -134,7 +133,6 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
       });
     }
 
-    console.log({ data: this.communitiesData });
     this.updateCommunitiesOptions = {
       color: this.selectedColors,
       series: {
@@ -144,7 +142,6 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
   }
 
   onCommunitiesChartInit(ec) {
-    console.log({ ec });
     this.communitiesChartInstance = ec;
     this.communitiesChartInstance.on('dblclick', ({ data }) => {
       if (data.id) {
@@ -164,7 +161,6 @@ export class PoliceSectionalAreaDistributionComponent implements OnInit {
     const csvHeader = ['Comunidad', 'Área(ha)', 'Área(%)'];
     const csvData = [];
     this.communitiesData.forEach((community) => {
-      console.log(community);
       csvData.push({
         comunidad: community.name,
         area: ((community.value * this.zoneArea) / 100).toFixed(2),

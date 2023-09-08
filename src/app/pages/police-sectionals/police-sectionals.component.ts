@@ -63,7 +63,6 @@ export class PoliceSectionalsComponent implements AfterViewInit {
     try {
       this.policeSectionals = [];
       this.zonesService.getZones().subscribe((zones) => {
-        console.log('zones', zones);
         // Avoid first call with zones equal to null
         if (zones === null) return;
         if (zones.length === 0) {

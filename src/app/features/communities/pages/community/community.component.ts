@@ -52,7 +52,6 @@ export class CommunityPageComponent implements OnInit {
     this.isLoading = true;
     this.communityInformation$ = from(this.communitiesService.getCommunityInformation(this.id));
     this.communityInformation$.subscribe((communityInformation) => {
-      console.log({ communityInformation });
       this.communityInformation = communityInformation;
       this.isLoading = false;
     });
@@ -65,7 +64,6 @@ export class CommunityPageComponent implements OnInit {
   }
 
   private getCommunityTitle() {
-    console.log({ info: this.communityInformation });
     return `Comunidad ${this.communityInformation.order} - ${this.communityInformation.name}`;
   }
 }

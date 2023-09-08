@@ -131,7 +131,6 @@ export class BasinHydrologicalPerformanceHistoricalChartComponent {
   }
 
   saveCSV() {
-    console.log('RH save CSV');
     const csvHeader = ['Info', ...this.getAbscissaAxisData()];
     const csvData = [
       [

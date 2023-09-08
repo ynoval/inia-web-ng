@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './police-sectional-ppna-analysis.component.html',
   styleUrls: ['./police-sectional-ppna-analysis.component.scss'],
 })
-export class PoliceSectionalPPNAAnalysisComponent implements OnInit {
+export class PoliceSectionalPPNAAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class PoliceSectionalPPNAAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('PPNA Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

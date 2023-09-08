@@ -138,7 +138,6 @@ export class CommunityEvapotranspirationHistoricalChartComponent {
   }
 
   saveCSV() {
-    console.log('ET save CSV');
     const csvHeader = ['Info', ...this.getAbscissaAxisData()];
     const csvData = [['ET Histórica', ...this.historicalInformation.map((value) => (365 * value.et).toFixed(2))]];
     new AngularCsv(csvData, `${this.communityId} Evapotranspiración Histórica`, { headers: csvHeader });

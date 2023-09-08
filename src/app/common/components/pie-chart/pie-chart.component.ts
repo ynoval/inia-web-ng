@@ -30,7 +30,6 @@ export class PieChartComponent implements OnInit {
   updateOptions: any;
 
   ngOnInit() {
-    console.log('Init Pie Chart');
     this.pieChartOptions$.subscribe((options) => this.updateChartOptions(options));
     this.pieChartData$.subscribe((data) => this.updateChartData(data));
     this.isLoading$.subscribe((isLoading) => {
@@ -45,13 +44,10 @@ export class PieChartComponent implements OnInit {
   }
 
   onChartInit(ec) {
-    console.log({ ec });
     this.chartInstance = ec;
-    // this.chartInstance.showLoading({ text: 'Cargando datos...' });
   }
 
   updateChartOptions(options) {
-    console.log(`Update Chart Options: ${options}`);
     this.updateOptions = {
       ...this.updateOptions,
       ...options,
@@ -59,7 +55,6 @@ export class PieChartComponent implements OnInit {
   }
 
   updateChartData(data) {
-    console.log(`Update Chart Data: ${data}`);
     this.updateOptions = {
       ...this.updateOptions,
       series: [

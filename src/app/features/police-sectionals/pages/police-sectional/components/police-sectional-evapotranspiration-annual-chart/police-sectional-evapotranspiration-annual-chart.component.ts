@@ -186,7 +186,6 @@ export class PoliceSectionalEvapotranspirationAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('ET anual Save CSV');
     const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
     const csvData = [];
     const years = Object.keys(this.selectedYears)
@@ -212,12 +211,11 @@ export class PoliceSectionalEvapotranspirationAnnualChartComponent {
     new AngularCsv(csvData, `${this.zone.name} Evapotranspiración Anual`, { headers: csvHeader });
   }
 
-
   private async load() {
     this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
-    console.log('ET load');
+    
     this.zoneInformation = {
       annual: [await this.zonesService.getZoneAnnualET(this.zone.id, lastYear)],
       annualMean: await this.zonesService.getZoneAnnualETMean(this.zone.id),
@@ -260,7 +258,6 @@ export class PoliceSectionalEvapotranspirationAnnualChartComponent {
       this.selectedYears[`${i} - ${i + 1}`] = false;
     }
 
-    console.log({ info: this.zoneInformation });
     this.zoneInformation.annual.forEach((elem) => {
       const index = this.data.findIndex((value) => value.name === `${elem.year} - ${elem.year + 1}`);
       this.data[index].data = elem.values.map((value) => value?.et);

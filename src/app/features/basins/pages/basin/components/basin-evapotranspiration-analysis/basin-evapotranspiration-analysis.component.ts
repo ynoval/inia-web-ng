@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './basin-evapotranspiration-analysis.component.html',
   styleUrls: ['./basin-evapotranspiration-analysis.component.scss'],
 })
-export class BasinEvapotranspirationAnalysisComponent implements OnInit {
+export class BasinEvapotranspirationAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -22,9 +22,6 @@ export class BasinEvapotranspirationAnalysisComponent implements OnInit {
 
   selectedChart = 'ANNUAL';
 
-  ngOnInit() {
-    console.log('Evapotranspiration Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

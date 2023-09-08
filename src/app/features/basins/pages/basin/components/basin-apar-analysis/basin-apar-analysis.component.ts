@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './basin-apar-analysis.component.html',
   styleUrls: ['./basin-apar-analysis.component.scss'],
 })
-export class BasinAPARAnalysisComponent implements OnInit {
+export class BasinAPARAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class BasinAPARAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('APAR Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

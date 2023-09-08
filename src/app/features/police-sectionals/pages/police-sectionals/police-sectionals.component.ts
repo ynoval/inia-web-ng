@@ -123,26 +123,25 @@ export class PoliceSectionalsPageComponent implements AfterViewInit {
       .then((policeSectionals) => {
         const policeSectionalsToImport = policeSectionals.map((zone) => {
           const properties = zone.properties ? zone.properties : {};
-          console.log({ properties });
           properties.name = `Seccional Policial - ${properties.CODIGOSECC}`;
           properties.description = this.getPoliceSectionalDescription(properties);
           return { ...zone, properties: properties };
         });
 
-        console.log({ policeSectionalsToImport });
         try {
           this.zonesService.importZones(
             policeSectionalsToImport.sort((z1, z2) => (z1.properties.CODIGOSECC >= z2.properties.CODIGOSECC ? 1 : -1))
           );
-          this.isLoadingZones = false;
         } catch (error) {
+          // TODO: Show error message
           console.log({ error });
+        } finally {
+          this.isLoadingZones = false;
         }
         notification.dismiss();
       })
       .catch((e) => {
-        // TODO: Show error importing basings...
-        console.log('importing police sectionals error', { error: e });
+        // TODO: Show error importing SP...
         notification.dismiss();
       });
   }

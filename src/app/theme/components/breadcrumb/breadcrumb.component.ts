@@ -38,7 +38,6 @@ export class BreadcrumbComponent {
         });
         this.title.setTitle(this.settings.name + this.pageTitle);
         this.pageSection = this.getPageSection();
-        console.log(`route: ${this.router.url} pageSection: ${this.pageSection}`);
       }
     });
   }

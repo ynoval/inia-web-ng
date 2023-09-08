@@ -138,7 +138,6 @@ export class BasinsComponent implements AfterViewInit {
   }
 
   cleanSearch() {
-    console.log('clean search');
     this.searchText = '';
   }
 }

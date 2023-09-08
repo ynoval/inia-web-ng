@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,10 +6,6 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './police-sectional-iose-analysis.component.html',
   styleUrls: ['./police-sectional-iose-analysis.component.scss'],
 })
-export class PoliceSectionalIOSEAnalysisComponent implements OnInit {
+export class PoliceSectionalIOSEAnalysisComponent {
   @Input() zone: ZoneModel;
-
-  ngOnInit() {
-    console.log('IOSE Analysis Component initialized');
-  }
 }

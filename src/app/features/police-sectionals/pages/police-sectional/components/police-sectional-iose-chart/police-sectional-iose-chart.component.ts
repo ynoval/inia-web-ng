@@ -190,7 +190,6 @@ export class PoliceSectionalIOSEChartComponent {
   }
 
   saveCSV() {
-    console.log('IOSE CSV');
     const csvHeader = ['Info', ...this.historicalIOSEInformation.map((d) => `${d.year} - ${+d.year + 1}`)];
     const csvData = [['IOSE (Des Est.)', ...this.historicalIOSEInformation.map((d) => `${d.iose} (± ${d.stdDev})`)]];
     new AngularCsv(csvData, `${this.zone.name} IOSE Histórica`, { headers: csvHeader });

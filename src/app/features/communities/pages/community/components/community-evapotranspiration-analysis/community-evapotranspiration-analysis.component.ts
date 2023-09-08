@@ -1,12 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ZoneModel } from '@app/common/models/zone.model';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-community-et-analysis',
   templateUrl: './community-evapotranspiration-analysis.component.html',
   styleUrls: ['./community-evapotranspiration-analysis.component.scss'],
 })
-export class CommunityEvapotranspirationAnalysisComponent implements OnInit {
+export class CommunityEvapotranspirationAnalysisComponent {
   @Input() communityId: string;
 
   chartOptions = [
@@ -22,9 +21,6 @@ export class CommunityEvapotranspirationAnalysisComponent implements OnInit {
 
   selectedChart = 'ANNUAL';
 
-  ngOnInit() {
-    console.log('Evapotranspiration Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

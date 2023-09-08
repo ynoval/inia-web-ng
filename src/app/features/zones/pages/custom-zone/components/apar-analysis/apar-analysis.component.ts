@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './apar-analysis.component.html',
   styleUrls: ['./apar-analysis.component.scss'],
 })
-export class APARAnalysisComponent implements OnInit {
+export class APARAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class APARAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('APAR Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

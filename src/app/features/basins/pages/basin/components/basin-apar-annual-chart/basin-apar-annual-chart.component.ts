@@ -193,7 +193,6 @@ export class BasinAPARAnnualChartComponent {
       }
       csvData.push(csvRow);
     });
-    console.log('Cuenca: ', { zone: this.zone });
     new AngularCsv(csvData, `${this.zone.name} Radiación Absorbida Anual`, { headers: csvHeader });
   }
 

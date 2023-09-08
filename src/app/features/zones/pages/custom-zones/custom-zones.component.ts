@@ -79,13 +79,18 @@ export class CustomZonesPageComponent implements AfterViewInit {
     this.gmOptions = {
       center: { lat: -32, lng: -56 },
       zoom: 6,
-      mapTypeId: 'satellite',
+      mapTypeId: google.maps.MapTypeId.HYBRID,
       scaleControl: false,
       disableDefaultUI: true,
       zoomControl: true,
       fullscreenControl: true,
       fullscreenControlOptions: { position: google.maps.ControlPosition.BOTTOM_RIGHT },
       keyboardShortcuts: false,
+      mapTypeControl: true,
+      mapTypeControlOptions: {
+        position: google.maps.ControlPosition.TOP_RIGHT,
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+      },
     };
   }
 
@@ -288,16 +293,15 @@ export class CustomZonesPageComponent implements AfterViewInit {
   toggleZone(zone: any) {
     const index = this.zones.findIndex((z) => z.name === zone.name);
     if (this.zones[index].visible) {
-      this.zonesService.hideZone(zone.name);
+      this.zonesService.hideZone(zone.id);
     } else {
-      this.zonesService.showZone(zone.name);
+      this.zonesService.showZone(zone.id);
     }
   }
 
   // eslint-disable-next-line class-methods-use-this
   deleteZone(zone: any) {
-    console.log('BORRO');
-    this.zonesService.removeZone(zone.name);
+    this.zonesService.removeZone(zone.id);
   }
 
   toggleSelectZone(zone: any) {

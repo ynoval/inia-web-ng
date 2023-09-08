@@ -61,12 +61,10 @@ export class MapbiomasAnnualChartComponent implements OnInit {
   constructor(private zonesService: ZonesService) {}
 
   ngOnInit() {
-    console.log('Init Mapbiomas Annual Chart');
     this.load(this.initialYear);
   }
 
   onYearChange(selectedYear) {
-    console.log(`selected year ${selectedYear}`);
     this.load(selectedYear);
   }
 

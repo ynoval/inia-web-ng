@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 
 export type ChartType = {
   id: string;
@@ -10,7 +10,7 @@ export type ChartType = {
   templateUrl: './community-chart-selector.component.html',
   styleUrls: ['./community-chart-selector.component.scss'],
 })
-export class CommunityChartSelectorComponent implements OnChanges, OnInit {
+export class CommunityChartSelectorComponent implements OnInit {
   @Input() chartTypes: ChartType[];
 
   _selectedChart: string;
@@ -23,9 +23,5 @@ export class CommunityChartSelectorComponent implements OnChanges, OnInit {
 
   changeChart(selectedOption) {
     this.selectedChartChanged.emit(selectedOption.value);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('changes:', { changes });
   }
 }

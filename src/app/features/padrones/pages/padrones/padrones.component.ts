@@ -73,10 +73,6 @@ export class PadronesPageComponent implements OnInit {
     this.cd.detectChanges();
   }
 
-  onSearch(searchText) {
-    console.log(searchText);
-  }
-
   onAddPadron(): void {
     const dialogRef = this.dialog.open(AddPadronModalComponent, {
       width: '300px',
@@ -90,7 +86,6 @@ export class PadronesPageComponent implements OnInit {
   onAction($event): void {
     const { zoneId, actionId } = $event;
     try {
-      console.log(`actionId: ${actionId} on padron ${zoneId}`);
       const actionFn = this.actionHandlers[actionId];
       actionFn(zoneId);
     } catch (e) {
@@ -107,7 +102,6 @@ export class PadronesPageComponent implements OnInit {
   }
 
   viewPadron(padronId) {
-    console.log(`View Padron ${padronId}`);
     this.router.navigate(['padrones', padronId]);
   }
 
@@ -141,5 +135,9 @@ export class PadronesPageComponent implements OnInit {
         };
       });
     }
+  }
+
+  onSearch(text) {
+    console.log(`search in padrones ${text}`);
   }
 }

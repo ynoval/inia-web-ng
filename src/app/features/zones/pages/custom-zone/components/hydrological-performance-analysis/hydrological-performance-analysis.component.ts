@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './hydrological-performance-analysis.component.html',
   styleUrls: ['./hydrological-performance-analysis.component.scss'],
 })
-export class HydrologicalPerformanceAnalysisComponent implements OnInit {
+export class HydrologicalPerformanceAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class HydrologicalPerformanceAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('HydrologicalPerformanceComponent');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

@@ -172,7 +172,6 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
   }
 
   saveCSV() {
-    console.log('RH Anual save CSV');
     const csvHeader = ['AÑO', ...this.getAbscissaAxisData()];
     const csvData = [];
     const years = Object.keys(this.selectedYears)
@@ -219,7 +218,6 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
     const rhMean = await this.communitiesService.getRHMean(this.communityId);
     const rhPropMean = await this.communitiesService.getRHPropMean(this.communityId);
     const values = rhMean.values.map((value, index) => ({ rh: value.rh, rhProp: rhPropMean.values[index].rhProp }));
-    console.log(values);
     return values;
   }
 
@@ -230,7 +228,6 @@ export class CommunityHydrologicalPerformanceAnnualChartComponent {
 
     const result = await this.getRHData(lastYear);
     const resultMean = await this.getRHMeanData();
-    console.log('result', { result });
 
     this.rhInformation = {
       annualRHMean: resultMean,

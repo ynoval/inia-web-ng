@@ -495,7 +495,6 @@ export class ZonePageComponent implements OnInit {
     for (let i = firstYear; i <= lastYear; i += 1) {
       years.push(i);
     }
-    console.log('years:', years);
     return years;
   }
 
@@ -608,8 +607,6 @@ export class ZonePageComponent implements OnInit {
       annualPPNA: [await this.zonesService.getZoneAnnualPPNA(this.id, lastYear)],
     };
 
-    console.log('zonInfo:', this.zonePPNAInformation);
-
     this.annualData = [];
     const legendData = [];
     this.annualData.push({
@@ -690,7 +687,6 @@ export class ZonePageComponent implements OnInit {
     const csvHeader = ['Comunidad', 'Área(ha)', 'Área(%)'];
     const csvData = [];
     this.communitiesData.forEach((community) => {
-      console.log(community);
       csvData.push({
         comunidad: community.name,
         area: ((community.value * this.zoneArea) / 100).toFixed(2),

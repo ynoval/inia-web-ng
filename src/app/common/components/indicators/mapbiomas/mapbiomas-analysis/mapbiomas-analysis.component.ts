@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { ZoneModel } from '@app/common/models/zone.model';
   templateUrl: './mapbiomas-analysis.component.html',
   styleUrls: ['./mapbiomas-analysis.component.scss'],
 })
-export class MapbiomasAnalysisComponent implements OnInit {
+export class MapbiomasAnalysisComponent {
   @Input() zone: ZoneModel;
 
   chartOptions = [
@@ -21,10 +21,6 @@ export class MapbiomasAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('Mapbiomas Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

@@ -1,12 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ZoneModel } from '@app/common/models/zone.model';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-community-ppna-analysis',
   templateUrl: './community-ppna-analysis.component.html',
   styleUrls: ['./community-ppna-analysis.component.scss'],
 })
-export class CommunityPPNAAnalysisComponent implements OnInit {
+export class CommunityPPNAAnalysisComponent {
   @Input() communityId: string;
 
   chartOptions = [
@@ -21,10 +20,6 @@ export class CommunityPPNAAnalysisComponent implements OnInit {
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('PPNA Analysis Component initialized');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

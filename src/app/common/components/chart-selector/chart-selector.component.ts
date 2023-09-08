@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 export type ChartType = {
   id: string;
@@ -10,7 +10,7 @@ export type ChartType = {
   templateUrl: './chart-selector.component.html',
   styleUrls: ['./chart-selector.component.scss'],
 })
-export class ChartSelectorComponent implements OnChanges, OnInit {
+export class ChartSelectorComponent implements OnInit {
   @Input() chartTypes: ChartType[];
 
   _selectedChart: string;
@@ -25,7 +25,4 @@ export class ChartSelectorComponent implements OnChanges, OnInit {
     this.selectedChartChanged.emit(selectedOption.value);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('changes:', { changes });
-  }
 }

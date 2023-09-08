@@ -1,12 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ZoneModel } from '@app/common/models/zone.model';
-
+import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-community-rh-analysis',
   templateUrl: './community-hydrological-performance-analysis.component.html',
   styleUrls: ['./community-hydrological-performance-analysis.component.scss'],
 })
-export class CommunityHydrologicalPerformanceAnalysisComponent implements OnInit {
+export class CommunityHydrologicalPerformanceAnalysisComponent {
   @Input() communityId: string;
 
   chartOptions = [
@@ -21,10 +19,6 @@ export class CommunityHydrologicalPerformanceAnalysisComponent implements OnInit
   ];
 
   selectedChart = 'ANNUAL';
-
-  ngOnInit() {
-    console.log('HydrologicalPerformanceComponent');
-  }
 
   changeChart(chartType) {
     this.selectedChart = chartType;

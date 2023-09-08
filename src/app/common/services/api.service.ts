@@ -34,7 +34,6 @@ export class ApiService {
     return axios
       .get(url)
       .then((response) => {
-        console.log({ response });
         return response.data.layers.map((layer: LayerData, index: number) => {
           const geeLayer = this.getGEEMapLayer(layer);
           return {
@@ -81,9 +80,7 @@ export class ApiService {
   }
 
   async getZoneAnnualPPNA(zoneInformation: ZoneInformation, year: number) {
-    console.log({ year });
     const url = `${this.serverUrl}/gee/zone/ppna/annual/${year}`;
-    console.log('url', url);
     return axios
       .post(url, zoneInformation)
       .then((response) => response.data.ppnaInformation)
@@ -109,7 +106,6 @@ export class ApiService {
   }
 
   async getZoneAnnualAPAR(zoneInformation: ZoneInformation, year: number) {
-    console.log({ year });
     const url = `${this.serverUrl}/gee/zone/apar/annual/${year}`;
     return axios
       .post(url, zoneInformation)
@@ -136,9 +132,7 @@ export class ApiService {
   }
 
   async getZoneAnnualET(zoneInformation: ZoneInformation, year: number) {
-    console.log('ET', { year });
     const url = `${this.serverUrl}/gee/zone/et/annual/${year}`;
-    console.log('ET url', url);
     return axios
       .post(url, zoneInformation)
       .then((response) => response.data.etInformation)
@@ -225,7 +219,6 @@ export class ApiService {
   }
 
   async getZoneAnnualMapbiomas(zoneInformation: ZoneInformation, year) {
-    console.log(`getZoneAnnualMapbiomas ${year}`);
     const url = `${this.serverUrl}/gee/zone/mapbiomas/annual/${year}`;
     return axios
       .post(url, zoneInformation)

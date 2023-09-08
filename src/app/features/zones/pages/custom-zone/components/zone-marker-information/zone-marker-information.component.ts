@@ -34,16 +34,4 @@ export class ZoneMarkerInformationComponent implements OnInit {
       ? this.texts.noCommunityInformation
       : `${this.texts.communityInformation} ${this.communityInformation.order}`;
   }
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   for (const propName in changes) {
-  //     const chng = changes[propName];
-  //     const cur = JSON.stringify(chng.currentValue);
-  //     console.log('Change:', propName, cur);
-  //   }
-  // }
-
-  // viewCommunityDetails() {
-  //   this.viewCommunity.emit();
-  // }
 }

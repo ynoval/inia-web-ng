@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 export type ChartType = {
   id: string;
@@ -10,7 +10,7 @@ export type ChartType = {
   templateUrl: './zone-chart-selector.component.html',
   styleUrls: ['./zone-chart-selector.component.scss'],
 })
-export class ZoneChartSelectorComponent implements OnChanges, OnInit {
+export class ZoneChartSelectorComponent implements OnInit {
   @Input() chartTypes: ChartType[];
 
   _selectedChart: string;
@@ -23,9 +23,5 @@ export class ZoneChartSelectorComponent implements OnChanges, OnInit {
 
   changeChart(selectedOption) {
     this.selectedChartChanged.emit(selectedOption.value);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('changes:', { changes });
   }
 }

@@ -47,9 +47,6 @@ export class ZonesService {
   async loadZones() {
     this.zones = [];
     const storeZones = await this.db.storeZones.orderBy('order').toArray();
-
-    console.log({ storeZones });
-
     storeZones.forEach((sz) => {
       const shape = this.createShape(sz.id, sz.type, sz.coordinates);
       const zone = {
@@ -111,14 +108,10 @@ export class ZonesService {
       };
 
       this.zones.push(importedZone);
-      importedZones.push(importedZone); // this._zones.next(Object.assign([], this.zones));
-      // } else {
-      //   console.log('Geometry Type', zone.geometry.type);
-      // }
+      importedZones.push(importedZone);
     });
 
     // Save imported Zones to storage
-    console.log('imported Zones: ', importedZones.length);
     this.addStorageZones(importedZones);
     this._zones.next(Object.assign([], this.zones));
   }
@@ -338,7 +331,6 @@ export class ZonesService {
       .then((data) => {
         if (!data) {
           // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-          console.log('CHECK THIS ERROR!!!');
           return [];
         }
         const ppnaInfo = storeZone.ppnaAnnualInformation ? storeZone.ppnaAnnualInformation : [];
@@ -405,7 +397,6 @@ export class ZonesService {
     const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
 
     const yearAPARInformation = storeZone.aparAnnualInformation?.find((info) => {
-      console.log({ info });
       return info && info.year === year;
     });
 
@@ -425,7 +416,6 @@ export class ZonesService {
       .then((data) => {
         if (!data) {
           // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-          console.log('CHECK THIS ERROR!!!');
           return [];
         }
         const aparInfo = storeZone.aparAnnualInformation ? storeZone.aparAnnualInformation : [];
@@ -499,7 +489,6 @@ export class ZonesService {
       return yearETInformation;
     }
 
-    console.log('api service ET');
     return this.apiService
       .getZoneAnnualET(
         {
@@ -511,7 +500,6 @@ export class ZonesService {
       .then((data) => {
         if (!data) {
           // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-          console.log('CHECK THIS ERROR!!!');
           return [];
         }
         const info = storeZone.etAnnualInformation ? storeZone.etAnnualInformation : [];
@@ -595,7 +583,6 @@ export class ZonesService {
       .then((data) => {
         if (!data) {
           // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-          console.log('CHECK THIS ERROR!!!');
           return [];
         }
         const info = storeZone.rhAnnualInformation ? storeZone.rhAnnualInformation : [];
@@ -679,7 +666,6 @@ export class ZonesService {
       .then((data) => {
         if (!data) {
           // TODO: CHECK THIS ERROR (store [undefined] in indexDB ). Maybe implements retries
-          console.log('CHECK THIS ERROR!!!');
           return [];
         }
         const info = storeZone.rhPropAnnualInformation ? storeZone.rhPropAnnualInformation : [];
@@ -1145,7 +1131,6 @@ export class ZonesService {
       zone.geometry.type === 'MultiPolygon' ||
       zone.geometry.type === 'GeometryCollection';
 
-    console.log('Geometry Coordinates', { coordinates: zone.geometry.coordinates });
     const coordinates = this.getZoneCoordinates(zone);
 
     return {
@@ -1183,7 +1168,6 @@ export class ZonesService {
         result.push(...geometry.coordinates);
       }
     });
-    console.log('result', result);
     return result;
   }
 

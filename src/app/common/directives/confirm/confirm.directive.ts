@@ -26,7 +26,6 @@ export class ConfirmDirective {
 
     const dialogRef = this.openDialog();
     dialogRef.afterClosed().subscribe((result) => {
-      console.log({ result });
       if (result) {
         this.doConfirm.next(null);
         // const event = new MouseEvent('click', { bubbles: true });

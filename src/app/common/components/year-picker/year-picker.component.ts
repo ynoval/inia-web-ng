@@ -52,7 +52,6 @@ export class YearPickerComponent implements OnInit {
   selectedYear: Date;
 
   ngOnInit() {
-    console.log('init Year Picker component');
     this.selectedYear = this.initialYear ? new Date(`${this.initialYear}/1/1`) : new Date();
     this.minDate = this.minYear ? new Date(`${this.minYear}/1/1`) : new Date('1985/1/1'); //TODO: Get from Config
     this.maxDate = this.maxYear ? new Date(`${this.maxYear}/12/31`) : new Date();
@@ -63,7 +62,6 @@ export class YearPickerComponent implements OnInit {
     let { _d } = event;
     this.selectedYear = _d;
     this.picker.close();
-    console.log({ event });
     this.pick.emit(this.selectedYear.getFullYear());
   }
 }

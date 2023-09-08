@@ -41,7 +41,7 @@
         fxLayout="column"
         *ngFor="let zone of basins | deepFilter : searchText : keysToExclude; let index = index"
         class="row"
-        [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.name === selectedBasin }"
+        [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.id === selectedBasin }"
       >
         <div #zoneItem [attr.data-zone-id]="zone.name" fxFlex fxLayout="row" fxLayoutAlign="center center">
           <div>
@@ -65,6 +65,13 @@
         </div>
       </div>
     </div>
+
+    <!-- <app-zone-list
+        [zones]="basins"
+        [selectedZoneId]="selectedBasinId"
+        (action)="onAction($event)"
+        (toggleSelect)="onToggleSelect($event)"
+    /> -->
     <div *ngIf="isLoadingZones">cargando...</div>
   </div>
   <!-- <div fxFlex class="flex-p">
