@@ -26,11 +26,11 @@ export class PagesComponent implements OnInit, AfterViewInit {
 
   public menuTypeOption: string;
 
-  public lastScrollTop: number = 0;
+  public lastScrollTop = 0;
 
-  public showBackToTop: boolean = false;
+  public showBackToTop = false;
 
-  public toggleSearchBar: boolean = false;
+  public toggleSearchBar = false;
 
   private defaultMenu: string; // declared for return default menu when window resized
 

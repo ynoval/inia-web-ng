@@ -22,7 +22,7 @@ export const routes = [
   },
   {
     path: 'community/:id',
-    loadChildren: () => import('../community/community.module').then((m) => m.CommunityModule),
+    loadChildren: () => import('../communityOLD/community.module').then((m) => m.CommunityModule),
     data: { breadcrumb: 'Comunidad' },
   },
 ];

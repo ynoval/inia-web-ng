@@ -70,7 +70,6 @@ export class BasinsPageComponent implements AfterViewInit {
 
     // Load Selected Zone
     this.zonesService.getSelectedZone().subscribe((zone) => {
-      console.log('test');
       this.selectedBasin = zone;
 
       const listItem = this.listItems.find((listItemRef) => {
@@ -172,6 +171,7 @@ export class BasinsPageComponent implements AfterViewInit {
   }
 
   toggleSelectZone(zone: any) {
+    console.log('toggleSelectZone', this.selectedBasin, zone.id);
     if (this.selectedBasin === zone.id) {
       this.zonesService.noSelectedZone();
     } else {

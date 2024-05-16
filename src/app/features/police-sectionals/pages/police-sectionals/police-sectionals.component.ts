@@ -161,10 +161,10 @@ export class PoliceSectionalsPageComponent implements AfterViewInit {
   }
 
   toggleSelectZone(zone: any) {
-    if (zone.name === this.selectedZone) {
+    if (zone.id === this.selectedZone) {
       this.zonesService.noSelectedZone();
     } else {
-      this.zonesService.selectZone(zone.name);
+      this.zonesService.selectZone(zone.id);
     }
   }
 

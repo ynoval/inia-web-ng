@@ -2,12 +2,20 @@
 <form [formGroup]="addPadronForm" (ngSubmit)="onSubmit()">
   <mat-dialog-content>
     <mat-form-field>
+      <mat-label>Departamento</mat-label>
+      <mat-select formControlName="selectedDepartment">
+        <mat-option *ngFor="let department of departments" [value]="department.id">
+              {{ department.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
       <mat-label>Número de Padrón</mat-label>
       <input matInput formControlName="padronNumber" placeholder="Entre el número de padrón" />
-      <mat-error *ngIf="addPadronForm.controls.padronNumber.errors && addPadronForm.controls.padronNumber.touched">
-        {{ getErrorMessage() }}
-      </mat-error>
     </mat-form-field>
+     <mat-error *ngIf="addPadronForm.controls.padronNumber.errors && addPadronForm.controls.padronNumber.touched">
+        {{ getPadronErrorMessage() }}
+      </mat-error>
   </mat-dialog-content>
   <mat-dialog-actions>
     <div class="m-1">

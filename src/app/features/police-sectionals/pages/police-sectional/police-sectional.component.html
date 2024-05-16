@@ -65,6 +65,9 @@
           [zone]="zone"
         ></app-police-sectional-iose-analysis>
       </mat-tab>
+      <mat-tab label="Cobertura">
+        <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
+      </mat-tab>
     </mat-tab-group>
   </div>
 </div>

@@ -1,1 +1,58 @@
-<span>Padron {{ padronId }}</span>
+<div fxFlex fxLayout="column" class="zone-title">
+  <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+    <!-- <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon> -->
+    <div fxFlex fxLayout="column" class="zone-name">
+      <h2>{{ getZoneName() }}</h2>
+      <h4>{{ getZoneDescription() }}</h4>
+    </div>
+    <!-- <div>Options here</div> -->
+  </div>
+  <div fxFlex class="flex-p">
+    <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
+    <mat-tab-group>
+      <mat-tab label="Información">
+        <div
+          *ngIf="zoneInformation$ | async as zoneInformation; else loading"
+          fxFlex
+          fxLayout="row"
+          fxLayout.lt-md="column"
+          fxLayoutAlign="start start"
+          fxLayoutAlign.lt-md="start stretch"
+          class="flex-p"
+        >
+          <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
+            <app-padron-area-info
+              *ngIf="!isLoadingZone; else loading"
+              [zoneInformation]="zoneInformation"
+            ></app-padron-area-info>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Radiación absorbida">
+        <app-padron-apar-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-padron-apar-analysis>
+      </mat-tab>
+      <mat-tab label="Productividad">
+        <app-padron-ppna-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-padron-ppna-analysis>
+      </mat-tab>
+      <mat-tab label="Rendimiento Hidrológico">
+        <app-padron-rh-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-padron-rh-analysis>
+      </mat-tab>
+      <mat-tab label="Evapotranspiración">
+        <app-padron-et-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-padron-et-analysis>
+      </mat-tab>
+      <mat-tab label="IOSE">
+        <app-padron-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-padron-iose-analysis>
+      </mat-tab>
+      <mat-tab label="Cobertura">
+        <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>

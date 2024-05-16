@@ -75,8 +75,8 @@ export class PadronesService {
     this.zonesService.noSelectedZone();
   }
 
-  async addPadron(padronNumber: string) {
-    const padron = await this.apiService.getPadron(padronNumber);
+  async addPadron(padronNumber: string, departmentCode: string) {
+    const padron = await this.apiService.getPadron(padronNumber, departmentCode);
     const importPadron = {
       ...padron,
       name: `Padron - ${padronNumber}`,

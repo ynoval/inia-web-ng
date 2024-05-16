@@ -31,9 +31,9 @@
         fxLayout="column"
         *ngFor="let zone of zones | deepFilter : searchText : keysToExclude; let index = index"
         class="row"
-        [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.name === selectedZone }"
+        [ngClass]="{ 'even-row': 0 === index % 2, 'zone-active': zone.id === selectedZone }"
       >
-        <div #zoneItem [attr.data-zone-id]="zone.name" fxFlex fxLayout="row" fxLayoutAlign="center center">
+        <div #zoneItem [attr.data-zone-id]="zone.id" fxFlex fxLayout="row" fxLayoutAlign="center center">
           <div>
             <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon>
           </div>

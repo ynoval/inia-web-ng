@@ -455,16 +455,16 @@ export class ApiService {
   }
 
   // #region Padrones
-  async validatePadronNumber(padronNumber: number): Promise<boolean> {
-    const url = `${this.serverUrl}/gee/padrones/validate/${padronNumber}`;
+  async validatePadronNumber(padronNumber: number, department: string): Promise<boolean> {
+    const url = `${this.serverUrl}/gee/padrones/validate/${padronNumber}/${department}`;
     return axios
       .get(url)
       .then((response) => response.data.isValid)
       .catch((error) => console.error(error));
   }
 
-  async getPadron(padronNumber: string) {
-    const url = `${this.serverUrl}/gee/padrones/${padronNumber}`;
+  async getPadron(padronNumber: string, department: string) {
+    const url = `${this.serverUrl}/gee/padrones/${padronNumber}/${department}`;
     return axios
       .get(url)
       .then((response) => response.data.padron)

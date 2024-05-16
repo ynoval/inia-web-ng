@@ -51,12 +51,12 @@
             <div fxFlex>
               <strong>{{ getBasinName(zone) }}</strong>
             </div>
-            <small fxFlex (click)="selectZone(zone)">{{ getBasinDescription(zone) }}</small>
+            <small fxFlex>{{ getBasinDescription(zone) }}</small>
           </div>
           <div>
             <button mat-icon-button (click)="toggleZone(zone)">
-              <mat-icon *ngIf="zone.visible" matTooltip="Ocultar la zona">visibility_off</mat-icon>
-              <mat-icon *ngIf="!zone.visible" matTooltip="Mostrar la zona">visibility_on</mat-icon>
+              <mat-icon *ngIf="zone.visible" matTooltip="Ocultar la cuenca">visibility_off</mat-icon>
+              <mat-icon *ngIf="!zone.visible" matTooltip="Mostrar la cuenca">visibility_on</mat-icon>
             </button>
             <button mat-icon-button (click)="viewZone(zone)">
               <mat-icon>info</mat-icon>
@@ -74,15 +74,6 @@
     /> -->
     <div *ngIf="isLoadingZones">cargando...</div>
   </div>
-  <!-- <div fxFlex class="flex-p">
-    <mat-tab-group>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon>list</mat-icon>
-          Cuencas ({{ basins ? basins.length : 0 }})
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
-  </div> -->
+
   <div id="containerLayers"></div>
 </div>

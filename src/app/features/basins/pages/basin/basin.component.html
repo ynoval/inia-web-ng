@@ -10,7 +10,7 @@
   <div fxFlex class="flex-p">
     <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
     <mat-tab-group>
-      <mat-tab label="Cobertura del suelo">
+      <mat-tab label="Información">
         <div
           *ngIf="zoneInformation$ | async as zoneInformation; else loading"
           fxFlex
@@ -52,6 +52,9 @@
       </mat-tab>
       <mat-tab label="IOSE">
         <app-basin-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-iose-analysis>
+      </mat-tab>
+      <mat-tab label="Cobertura">
+        <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
       </mat-tab>
     </mat-tab-group>
   </div>

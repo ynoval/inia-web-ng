@@ -104,7 +104,6 @@ export class CustomZonesPageComponent implements AfterViewInit {
     // Load Selected Zone
     this.zonesService.getSelectedZone().subscribe((zone) => {
       this.selectedZone = zone;
-
       const listItem = this.listItems.find((listItemRef) => {
         return listItemRef.nativeElement.getAttribute('data-zone-id') === `${this.selectedZone}`;
       });
@@ -308,7 +307,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
     if (zone.name === this.selectedZone) {
       this.noSelectedZone();
     } else {
-      this.zonesService.selectZone(zone.name);
+      this.zonesService.selectZone(zone.id);
     }
   }
 

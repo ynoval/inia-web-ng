@@ -17,7 +17,7 @@
     </div>
     <div class="flex-p">
       <app-zone-list
-        [zones]="padronesZones"
+        [zones]="filteredZones"
         [selectedZoneId]="selectedPadronId"
         (action)="onAction($event)"
         (toggleSelect)="onToggleSelect($event)"
