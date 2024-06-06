@@ -31,4 +31,8 @@ export class CustomZonesService {
   getAll(): Observable<ZoneModel[]> {
     return this._zones.asObservable();
   }
+
+  getZoneName(id: string): Observable<string> {
+    
+  }
 }

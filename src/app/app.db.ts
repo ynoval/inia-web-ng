@@ -35,6 +35,15 @@ export interface StoreZone {
 
   // Mapbiomas
   historicalMapbiomasInformation: any;
+
+  // SOIL
+  soilInformation: any;
+
+  // EFT
+  eftInformation: any;
+
+  //AHPPN
+  ahppnInformation: any;
 }
 
 export class AppDB extends Dexie {

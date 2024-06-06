@@ -1,0 +1,49 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Qué información brinda?
+      </mat-panel-title>
+
+    </mat-expansion-panel-header>
+    <p>Es una medida de la multifuncionalidad del componente antrópico de los paisajes agropecuarios. Indica la heterogeneidad funcional de los usos que no corresponden a hábitats naturales en términos de la dinámica estacional de las ganancias de carbono. Una mayor heterogeneidad se asocia con una mayor oferta de hábitats y recursos, por lo que un componente antrópico más diverso presentaría mayor resiliencia.</p>
+  </mat-expansion-panel>
+  <mat-expansion-panel (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Cómo se calcula?
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p> Los TFE resultan de la combinación de tres atributos de la dinámica anual de un índice espectral de vegetación: la media anual, el coeficiente de variación intra-anual y el momento del año donde se observa el valor máximo. Se utilizó el Índice de Vegetación Mejorado (EVI, por sus siglas en inglés) derivado de imágenes MODIS del producto MOD13Q1, el cual presenta una resolución espacial de 250 m y una resolución temporal de 16 días. Se generaron cuatro niveles para cada uno de los tres atributos calculados, que luego se combinaron para generar un mapa de TFE. La diversidad de TFE se calculó a través del índice de Shannon (H’), el cual considera simultáneamente la riqueza de TFE y la proporción relativa (pi) de cada uno de ellos, indicando los valores más altos una mayor diversidad. Se calculó como: H’=-∑ pi * log2 pi  </p>
+  </mat-expansion-panel>
+</mat-accordion>
+<div *ngIf="eftInformation; else loading" fxFlex fxLayout="column" class="m-2">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Property Column -->
+  <ng-container matColumnDef="property">
+    <th mat-header-cell *matHeaderCellDef> Medida </th>
+    <td mat-cell *matCellDef="let element"> {{element.property}} </td>
+  </ng-container>
+
+  <!-- Value Column -->
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef> Valor </th>
+    <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>
+
+
+</div>

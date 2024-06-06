@@ -50,6 +50,10 @@ import { IOSEChartComponent } from './pages/custom-zone/components/iose-chart/io
 import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-dialog/confirm-dialog.component';
 // import { MapbiomasHistoricalChartComponent } from '../../common/components/indicators/mapbiomas/mapbiomas-historical-chart/mapbiomas-historical-chart.component';
 
+import { SOILAnalysisComponent } from './pages/custom-zone/components/soil-analysis/soil-analysis.component';
+import { EFTAnalysisComponent } from './pages/custom-zone/components/eft-analysis/eft-analysis.component';
+import { AHPPNAnalysisComponent } from './pages/custom-zone/components/ahppn-analysis/ahppn-analysis.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -100,6 +104,11 @@ import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-d
     IOSEAnalysisComponent,
     IOSEChartComponent,
     // MapbiomasHistoricalChartComponent,
+
+    SOILAnalysisComponent,
+    EFTAnalysisComponent,
+    AHPPNAnalysisComponent
+
   ],
   entryComponents: [
     MapLayersComponent,

@@ -37,6 +37,9 @@ import { CommunityPPNAAnnualChartComponent } from './pages/community/components/
 import { CommunityPPNAHistoricalChartComponent } from './pages/community/components/community-ppna-historical-chart/community-ppna-historical-chart.component';
 import { CommunityChartSelectorComponent } from './pages/community/components/community-chart-selector/community-chart-selector.component';
 import { SpeciePageComponent } from './pages/specie/specie.component';
+import { CommunityAHPPNAnalysisComponent } from './pages/community/components/community-ahppn-analysis/community-ahppn-analysis.component';
+import { CommunityEFTAnalysisComponent } from './pages/community/components/community-eft-analysis/community-eft-analysis.component';
+import { CommunitySOILAnalysisComponent } from './pages/community/components/community-soil-analysis/community-soil-analysis.component';
 
 @NgModule({
   imports: [
@@ -79,6 +82,9 @@ import { SpeciePageComponent } from './pages/specie/specie.component';
 
     CommunityIOSEAnalysisComponent,
     CommunityIOSEChartComponent,
+    CommunitySOILAnalysisComponent,
+    CommunityEFTAnalysisComponent,
+    CommunityAHPPNAnalysisComponent
   ],
   entryComponents: [CommunitiesMapLayersComponent, NotificationComponent, ConfirmDialogComponent],
   providers: [

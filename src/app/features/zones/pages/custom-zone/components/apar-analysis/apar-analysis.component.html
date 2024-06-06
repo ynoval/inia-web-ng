@@ -1,4 +1,5 @@
 <div fxFlex fxLayout="column" fxLayoutAlign="start">
+  <p>Información</p>
   <app-chart-selector [chartTypes]="chartOptions" (selectedChartChanged)="changeChart($event)"></app-chart-selector>
   <div *ngIf="selectedChart === 'ANNUAL'" fxFlex>
     <app-apar-annual-chart [zone]="zone"></app-apar-annual-chart>

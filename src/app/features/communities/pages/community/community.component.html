@@ -1,77 +1,102 @@
-<div fxFlex fxLayout="column" *ngIf="communityInformation$ | async as communityInformation; else loading">
-  <div *ngIf="!isLoading; else loading" fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
-    <div fxFlex fxLayout="column" fxLayoutAlign="start start" class="flex-p">
-      <h3>
-        {{ getCommunityTitle() }}
-      </h3>
+<div class="padron-title">
+  <div fxFlex fxLayout="column" *ngIf="communityInformation$ | async as communityInformation; else loading">
+    <div *ngIf="!isLoading; else loading" fxFlex fxLayout="row" fxLayoutAlign="space-between center" class="flex-p">
+      <div fxFlex fxLayout="column" fxLayoutAlign="start start" class="flex-p">
+        <h3>
+          {{ getCommunityTitle() }}
+        </h3>
+      </div>
+      <button *ngIf="order !== 'VI'" mat-icon-button (click)="viewCommunityInfo()" matTooltip="Mas información">
+        <mat-icon svgIcon="external-link"></mat-icon>
+      </button>
     </div>
-    <button *ngIf="order !== 'VI'" mat-icon-button (click)="viewCommunityInfo()" matTooltip="Mas información">
-      <mat-icon svgIcon="external-link"></mat-icon>
-    </button>
-  </div>
-  <div fxFlex class="flex-p">
-    <mat-tab-group>
-      <mat-tab label="Información">
-        <div *ngIf="!isLoading; else loading" fxFlex fxLayout="column" class="flex-p">
-          <div fxFlex>
-            <p>{{ communityInformation.description }}</p>
-            <p *ngIf="communityInformation.order === 'VI'">
-              La información de los <em>Pastizales del Este</em> aun no esta disponible.
-            </p>
-          </div>
-          <div fxFlex fxLayout="column" class="flex-p">
-            <span>
-              <strong *ngIf="species && species.length > 0">Especies Indicadoras:</strong>
-              <span
-                *ngFor="let specie of communityInformation.species; let i = index"
-                [routerLink]="['specie', specie.id]"
-              >
-                <span>{{ i === 0 ? ' ' : ', ' }}</span>
-                <span>{{ specie.name }}</span>
-              </span>
-            </span>
-          </div>
-          <div fxFlex fxLayout="column">
-            <app-subcommunity
-              fxFlex
-              *ngFor="let subcommunity of communityInformation.subcommunities"
-              [communityId]="id"
-              [subcommunity]="subcommunity"
-            ></app-subcommunity>
-          </div>
-        </div>
-      </mat-tab>
-      <mat-tab label="Radiación absorbida">
-        <app-community-apar-analysis
-          *ngIf="!isLoading; else loading"
-          [communityId]="communityInformation.id"
-        ></app-community-apar-analysis>
-      </mat-tab>
-      <mat-tab label="Productividad">
-        <app-community-ppna-analysis
-          *ngIf="!isLoading; else loading"
-          [communityId]="communityInformation.id"
-        ></app-community-ppna-analysis>
-      </mat-tab>
-      <mat-tab label="Rendimiento Hidrológico">
-        <app-community-rh-analysis
-          *ngIf="!isLoading; else loading"
-          [communityId]="communityInformation.id"
-        ></app-community-rh-analysis>
-      </mat-tab>
-      <mat-tab label="Evapotranspiración">
-        <app-community-et-analysis
-          *ngIf="!isLoading; else loading"
-          [communityId]="communityInformation.id"
-        ></app-community-et-analysis>
-      </mat-tab>
-      <mat-tab label="IOSE">
-        <app-community-iose-analysis
-          *ngIf="!isLoading; else loading"
-          [communityId]="communityInformation.id"
-        ></app-community-iose-analysis>
-      </mat-tab>
-    </mat-tab-group>
   </div>
 </div>
+
+<mat-tab-group>
+  <mat-tab label="Información">
+    <div *ngIf="!isLoading; else loading" fxFlex fxLayout="column" class="flex-p">
+      <div fxFlex>
+        <p>{{ communityInformation.description }}</p>
+        <p *ngIf="communityInformation.order === 'VI'">
+          La información de los <em>Pastizales del Este</em> aun no esta disponible.
+        </p>
+      </div>
+      <div fxFlex fxLayout="column" class="flex-p">
+        <span>
+          <strong *ngIf="species && species.length > 0">Especies Indicadoras:</strong>
+          <span
+            *ngFor="let specie of communityInformation.species; let i = index"
+            [routerLink]="['specie', specie.id]"
+          >
+            <span>{{ i === 0 ? ' ' : ', ' }}</span>
+            <span>{{ specie.name }}</span>
+          </span>
+        </span>
+      </div>
+      <div fxFlex fxLayout="column">
+        <app-subcommunity
+          fxFlex
+          *ngFor="let subcommunity of communityInformation.subcommunities"
+          [communityId]="id"
+          [subcommunity]="subcommunity"
+        ></app-subcommunity>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Radiación absorbida">
+    <app-community-apar-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-apar-analysis>
+  </mat-tab>
+  <mat-tab label="Productividad">
+    <app-community-ppna-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-ppna-analysis>
+  </mat-tab>
+  <mat-tab label="Rendimiento Hidrológico">
+    <app-community-rh-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-rh-analysis>
+  </mat-tab>
+  <mat-tab label="Evapotranspiración">
+    <app-community-et-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-et-analysis>
+  </mat-tab>
+  <mat-tab label="IOSE">
+    <app-community-iose-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-iose-analysis>
+  </mat-tab>
+  <!-- <mat-tab label="Cobertura">
+    <app-community-mapbiomas-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-mapbiomas-analysis>
+  </mat-tab> -->
+  <mat-tab label="Diversidad">
+    <app-community-eft-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-eft-analysis>
+  </mat-tab>
+  <mat-tab label="Conservación">
+    <app-community-soil-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id"
+    ></app-community-soil-analysis>
+  </mat-tab>
+  <mat-tab label="Apropiación Humana">
+    <app-community-ahppn-analysis
+      *ngIf="!isLoading; else loading"
+      [communityId]="communityInformation.id">
+    </app-community-ahppn-analysis>
+  </mat-tab>
+</mat-tab-group>
 <ng-template #loading> Espere por favor... </ng-template>

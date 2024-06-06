@@ -17,6 +17,7 @@ export class CustomZonePageComponent implements OnInit {
     loadingMessage: 'Cargando información de la zona, espere por favor... ',
   };
 
+
   public settings: Settings;
 
   id: string;

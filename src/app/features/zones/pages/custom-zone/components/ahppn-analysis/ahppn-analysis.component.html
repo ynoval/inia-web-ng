@@ -1,0 +1,49 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Qué información brinda?
+      </mat-panel-title>
+
+    </mat-expansion-panel-header>
+    <p>Este indicador informa la intensidad del uso del suelo. El complemento de la AHPPN cuantifica la energía disponible para los otros niveles tróficos del ecosistema que, a su vez, son responsables de regular el suministro de Servicios Ecosistémicos.</p>
+  </mat-expansion-panel>
+  <mat-expansion-panel (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Cómo se calcula?
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p> La energía disponible en el sistema se calculó como el complemento de la apropiación humana de la producción primaria neta (1-AHPPN), la cual resulta de la diferencia entre la producción primaria neta (PPN) en ausencia de influencia humana (PPN de la vegetación potencial: PPN0) y la PPN de la vegetación que queda después de la cosecha (PPNREM). La PPNREM es la diferencia entre la PPN de la vegetación PPN0 y la PPN cosechada (PPNCOS). PPNCOS es apropiado directamente por los humanos como productos agrícolas (grano, madera, carne, etc.) o destruido durante la cosecha. Se obtuvo la AHPPN total mediante la combinación de la AHPPN ganadera, AHPPN forestal y AHPPN agrícola considerando la proporción de estos usos del suelo identificados mediante la combinación de diferentes productos cartográficos de uso y cobertura del suelo.</p>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div *ngIf="ahppnInformation; else loading" fxFlex fxLayout="column" class="m-2">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Property Column -->
+  <ng-container matColumnDef="property">
+    <th mat-header-cell *matHeaderCellDef> Medida </th>
+    <td mat-cell *matCellDef="let element"> {{element.property}} </td>
+  </ng-container>
+
+  <!-- Value Column -->
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef> Valor </th>
+    <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>
+
+</div>

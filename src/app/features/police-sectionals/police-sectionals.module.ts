@@ -34,6 +34,10 @@ import { PoliceSectionalPPNAAnnualChartComponent } from './pages/police-sectiona
 import { PoliceSectionalPPNAHistoricalChartComponent } from './pages/police-sectional/components/police-sectional-ppna-historical-chart/police-sectional-ppna-historical-chart.component';
 import { PoliceSectionalPropertiesComponent } from './pages/police-sectional/components/police-sectional-properties/police-sectional-properties.component';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { PoliceSectionalSOILAnalysisComponent } from './pages/police-sectional/components/police-sectional-soil-analysis/police-sectional-soil-analysis.component';
+import { PoliceSectionalEFTAnalysisComponent } from './pages/police-sectional/components/police-sectional-eft-analysis/police-sectional-eft-analysis.component';
+import { PoliceSectionalAHPPNAnalysisComponent } from './pages/police-sectional/components/police-sectional-ahppn-analysis/police-sectional-ahppn-analysis.component';
+
 
 @NgModule({
   imports: [
@@ -78,6 +82,9 @@ import { NgxEchartsModule } from 'ngx-echarts';
 
     PoliceSectionalIOSEAnalysisComponent,
     PoliceSectionalIOSEChartComponent,
+    PoliceSectionalSOILAnalysisComponent,
+    PoliceSectionalEFTAnalysisComponent,
+    PoliceSectionalAHPPNAnalysisComponent
   ],
   entryComponents: [NotificationComponent],
   providers: [

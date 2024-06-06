@@ -27,6 +27,18 @@ export interface StoreCommunity {
 
   // IOSE
   ioseInformation: any;
+
+  // Mapbiomas
+  historicalMapbiomasInformation: any;
+
+  // SOIL
+  soilInformation: any;
+
+  // EFT
+  eftInformation: any;
+
+  //AHPPN
+  ahppnInformation: any;
 }
 
 export class CommunityDB extends Dexie {

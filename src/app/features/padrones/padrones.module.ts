@@ -42,6 +42,9 @@ import { PadronPropertiesComponent } from './pages/padron/components/padron-prop
 
 import { ZONES_SERVICE_CONTEXT, ZONES_SERVICE_EDITABLE } from '@app/common/services/zones.service';
 import { PADRONES_SERVICE_CONTEXT, PadronesService } from './services/padrones.service';
+import { PadronSOILAnalysisComponent } from './pages/padron/components/padron-soil-analysis/padron-soil-analysis.component';
+import { PadronEFTAnalysisComponent } from './pages/padron/components/padron-eft-analysis/padron-eft-analysis.component';
+import { PadronAHPPNAnalysisComponent } from './pages/padron/components/padron-ahppn-analysis/padron-ahppn-analysis.component';
 
 @NgModule({
   imports: [
@@ -87,6 +90,10 @@ import { PADRONES_SERVICE_CONTEXT, PadronesService } from './services/padrones.s
 
     PadronIOSEAnalysisComponent,
     PadronIOSEChartComponent,
+    PadronSOILAnalysisComponent,
+    PadronEFTAnalysisComponent,
+    PadronAHPPNAnalysisComponent,
+
     Ng2DeepSearchPipe,
     AddPadronModalComponent
   ],

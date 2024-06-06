@@ -789,6 +789,82 @@ export class ZonesService {
 
   // #endregion Mapbiomas
 
+
+  // #region SOIL
+  async getZoneSOILInformation(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.soilInformation) {
+      // Return load information
+      return storeZone.soilInformation;
+    }
+
+    return this.apiService
+      .getZoneSOIL({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ soilInformation: data });
+        return data;
+      });
+  }
+  // #endregion SOIL
+
+  // #region EFT
+  async getZoneEFTInformation(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.eftInformation) {
+      // Return load information
+      return storeZone.eftInformation;
+    }
+
+    return this.apiService
+      .getZoneEFT({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ eftInformation: data });
+        return data;
+      });
+  }
+  // #endregion EFT
+
+  // #region AHPPN
+  async getZoneAHPPNInformation(zoneId: string) {
+    const zone = await this.getZone(zoneId);
+    if (!zone) {
+      throw new Error('Zone not defined');
+    }
+    const storeZone = await this.db.storeZones.where('name').equals(zone.name).first();
+
+    if (storeZone.ahppnInformation) {
+      // Return load information
+      return storeZone.ahppnInformation;
+    }
+
+    return this.apiService
+      .getZoneAHPPN({
+        type: zone.type,
+        coordinates: this.getZoneCoordinatesList(zone),
+      })
+      .then((data) => {
+        this.db.storeZones.where('name').equals(zone.name).modify({ ahppnInformation: data });
+        return data;
+      });
+  }
+  // #endregion AHPPN
+
   // #region Private Methods
   // eslint-disable-next-line class-methods-use-this
   private getPolygonCoordinates(featureCoordinates) {
@@ -985,6 +1061,9 @@ export class ZonesService {
       historicalRHPropInformation: null,
       ioseInformation: null,
       historicalMapbiomasInformation: null,
+      soilInformation: null,
+      eftInformation: null,
+      ahppnInformation: null,
     };
   }
 

@@ -229,6 +229,37 @@ export class ApiService {
   // #endregion IOSE
   // #endregion Zone
 
+  //#region SOIL
+  async getZoneSOIL(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/soil/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.soilInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion SOIL
+
+  //#region EFT
+  async getZoneEFT(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/eft/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.eftInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion EFT
+
+  //#region AHPPN
+  async getZoneAHPPN(zoneInformation: ZoneInformation) {
+    const url = `${this.serverUrl}/gee/zone/ahppn/`;
+    return axios
+      .post(url, zoneInformation)
+      .then((response) => response.data.ahppnInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion AHPPN
+
+
   // #region Community
   // eslint-disable-next-line class-methods-use-this
   async getCommunity(communityId: string): Promise<CommunityModel> {
@@ -422,6 +453,37 @@ export class ApiService {
   }
 
   // #endregion IOSE
+
+//#region SOIL
+  async getCommunitySOIL(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/soil/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.soilInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion SOIL
+
+  //#region EFT
+  async getCommunityEFT(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/eft/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.eftInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion EFT
+
+  //#region AHPPN
+  async getCommunityAHPPN(communityOrder: string) {
+    const url = `${this.serverUrl}/gee/community/${communityOrder}/ahppn/`;
+    return axios
+      .get(url)
+      .then((response) => response.data.ahppnInformation)
+      .catch((error) => console.error(error));
+  }
+  // #endregion AHPPN
+
 
   // #endregion Community
 

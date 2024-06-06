@@ -1,64 +1,72 @@
-<div fxFlex fxLayout="column" class="zone-title">
-  <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
-    <!-- <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon> -->
-    <div fxFlex fxLayout="column" class="zone-name">
-      <h2>{{ getZoneName() }}</h2>
-      <h4>{{ getZoneDescription() }}</h4>
+<div class="basin-title">
+  <div fxFlex fxLayout="column">
+    <div *ngIf="zone && zone.type; else loading" fxFlex fxLayout="row wrap" fxLayoutAlign="space-between stretch">
+      <!-- <mat-icon class="zone-type-icon" svgIcon="{{ zone.type | lowercase }}"></mat-icon> -->
+      <div fxFlex fxLayout="column" class="zone-name">
+        <h2>{{ getZoneName() }}</h2>
+        <h4>{{ getZoneDescription() }}</h4>
+      </div>
+      <!-- <div>Options here</div> -->
     </div>
-    <!-- <div>Options here</div> -->
-  </div>
-  <div fxFlex class="flex-p">
-    <!-- <mat-tab-group (selectedTabChange)="tabChanged($event)"> -->
-    <mat-tab-group>
-      <mat-tab label="Información">
-        <div
-          *ngIf="zoneInformation$ | async as zoneInformation; else loading"
-          fxFlex
-          fxLayout="row"
-          fxLayout.lt-md="column"
-          fxLayoutAlign="start start"
-          fxLayoutAlign.lt-md="start stretch"
-          class="flex-p"
-        >
-          <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
-            <app-basin-area-info
-              *ngIf="!isLoadingZone; else loading"
-              [zoneInformation]="zoneInformation"
-            ></app-basin-area-info>
-          </div>
-          <!-- <div
-            fxFlex
-            fxFill
-            *ngIf="zone.properties && zone.properties.length > 0"
-            fxLayout="column"
-            fxLayoutAlign="start stretch"
-            class="flex-p"
-          >
-            <app-basin-properties [properties]="zone.properties"></app-basin-properties>
-          </div> -->
-        </div>
-      </mat-tab>
-      <mat-tab label="Radiación absorbida">
-        <app-basin-apar-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-apar-analysis>
-      </mat-tab>
-      <mat-tab label="Productividad">
-        <app-basin-ppna-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-ppna-analysis>
-      </mat-tab>
-      <mat-tab label="Rendimiento Hidrológico">
-        <app-basin-rh-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-rh-analysis>
-      </mat-tab>
-      <mat-tab label="Evapotranspiración">
-        <app-basin-et-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-et-analysis>
-      </mat-tab>
-      <mat-tab label="IOSE">
-        <app-basin-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-iose-analysis>
-      </mat-tab>
-      <mat-tab label="Cobertura">
-        <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
-      </mat-tab>
-    </mat-tab-group>
   </div>
 </div>
+<mat-tab-group>
+  <mat-tab label="Información">
+    <div
+      *ngIf="zoneInformation$ | async as zoneInformation; else loading"
+      fxFlex
+      fxLayout="row"
+      fxLayout.lt-md="column"
+      fxLayoutAlign="start start"
+      fxLayoutAlign.lt-md="start stretch"
+      class="flex-p"
+    >
+      <div fxFlex fxFill fxLayout="column" fxLayoutAlign="start stretch">
+        <app-basin-area-info
+          *ngIf="!isLoadingZone; else loading"
+          [zoneInformation]="zoneInformation"
+        ></app-basin-area-info>
+      </div>
+      <!-- <div
+        fxFlex
+        fxFill
+        *ngIf="zone.properties && zone.properties.length > 0"
+        fxLayout="column"
+        fxLayoutAlign="start stretch"
+        class="flex-p"
+      >
+        <app-basin-properties [properties]="zone.properties"></app-basin-properties>
+      </div> -->
+    </div>
+  </mat-tab>
+  <mat-tab label="Radiación absorbida">
+    <app-basin-apar-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-apar-analysis>
+  </mat-tab>
+  <mat-tab label="Productividad">
+    <app-basin-ppna-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-ppna-analysis>
+  </mat-tab>
+  <mat-tab label="Rendimiento Hidrológico">
+    <app-basin-rh-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-rh-analysis>
+  </mat-tab>
+  <mat-tab label="Evapotranspiración">
+    <app-basin-et-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-et-analysis>
+  </mat-tab>
+  <mat-tab label="IOSE">
+    <app-basin-iose-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-iose-analysis>
+  </mat-tab>
+  <mat-tab label="Cobertura">
+    <app-mapbiomas-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-mapbiomas-analysis>
+  </mat-tab>
+  <mat-tab label="Diversidad">
+    <app-basin-eft-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-eft-analysis>
+  </mat-tab>
+  <mat-tab label="Conservación">
+    <app-basin-soil-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-soil-analysis>
+  </mat-tab>
+  <mat-tab label="Apropiación Humana">
+    <app-basin-ahppn-analysis *ngIf="!isLoadingZone; else loading" [zone]="zone"></app-basin-ahppn-analysis>
+  </mat-tab>
+</mat-tab-group>
 
 <ng-template #loading>
   <div fxFlex fxLayout="row" class="m-1">

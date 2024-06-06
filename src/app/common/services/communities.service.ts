@@ -387,6 +387,65 @@ export class CommunitiesService {
   }
   // #endregion IOSE
 
+  // #region SOIL
+  async getZoneSOILInformation(id: string) {
+    const storeCommunity = await this.db.storeCommunities.where('id').equals(id).first();
+    if (!storeCommunity) {
+      throw new Error('Community not found');
+    }
+
+    if (storeCommunity.soilInformation) {
+      return storeCommunity.soilInformation;
+    }
+
+    return this.apiService.getCommunitySOIL(storeCommunity.order).then((data) => {
+      // Update storage
+      this.db.storeCommunities.where('id').equals(id).modify({ soilInformation: data });
+      return data;
+    });
+  }
+  // #endregion SOIL
+
+  // #region EFT
+  async getZoneEFTInformation(id: string) {
+    const storeCommunity = await this.db.storeCommunities.where('id').equals(id).first();
+    if (!storeCommunity) {
+      throw new Error('Community not found');
+    }
+
+    if (storeCommunity.eftInformation) {
+      return storeCommunity.eftInformation;
+    }
+
+    return this.apiService.getCommunityEFT(storeCommunity.order).then((data) => {
+      // Update storage
+      this.db.storeCommunities.where('id').equals(id).modify({ eftInformation: data });
+      return data;
+    });
+  }
+  // #endregion EFT
+
+  // #region AHPPN
+  async getZoneAHPPNInformation(id: string) {
+    const storeCommunity = await this.db.storeCommunities.where('id').equals(id).first();
+    if (!storeCommunity) {
+      throw new Error('Community not found');
+    }
+
+    if (storeCommunity.ahppnInformation) {
+      return storeCommunity.ahppnInformation;
+    }
+
+    return this.apiService.getCommunityAHPPN(storeCommunity.order).then((data) => {
+      // Update storage
+      this.db.storeCommunities.where('id').equals(id).modify({ ahppnInformation: data });
+      return data;
+    });
+  }
+  // #endregion AHPPN
+
+
+
   // #region Private Methods
   // #region STORAGE
   private addStorageCommunity(community) {
@@ -415,6 +474,10 @@ export class CommunitiesService {
       rhPropMeanInformation: null,
       historicalRHPropInformation: null,
       ioseInformation: null,
+      historicalMapbiomasInformation: null,
+      soilInformation: null,
+      eftInformation: null,
+      ahppnInformation: null,
     };
   }
 

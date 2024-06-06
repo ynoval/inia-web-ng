@@ -39,6 +39,9 @@ import { BasinEvapotranspirationAnnualChartComponent } from './pages/basin/compo
 import { BasinIOSEChartComponent } from './pages/basin/components/basin-iose-chart/basin-iose-chart.component';
 import { BasinAreaDistributionComponent } from './pages/basin/components/basin-area-distribution/basin-area-distribution.component';
 import { BasinPropertiesComponent } from './pages/basin/components/basin-properties/basin-properties.component';
+import { BasinAHPPNAnalysisComponent } from './pages/basin/components/basin-ahppn-analysis/basin-ahppn-analysis.component';
+import { BasinEFTAnalysisComponent } from './pages/basin/components/basin-eft-analysis/basin-eft-analysis.component';
+import { BasinSOILAnalysisComponent } from './pages/basin/components/basin-soil-analysis/basin-soil-analysis.component';
 
 @NgModule({
   imports: [
@@ -83,6 +86,10 @@ import { BasinPropertiesComponent } from './pages/basin/components/basin-propert
 
     BasinIOSEAnalysisComponent,
     BasinIOSEChartComponent,
+
+    BasinSOILAnalysisComponent,
+    BasinEFTAnalysisComponent,
+    BasinAHPPNAnalysisComponent,
 
     Ng2DeepSearchPipe,
   ],

@@ -29,7 +29,7 @@ export class BasinPageComponent implements OnInit {
 
   zoneInformation$: Observable<any>;
 
-  isLoadingZone: boolean = true;
+  isLoadingZone = true;
 
   constructor(
     public appSettings: AppSettings,

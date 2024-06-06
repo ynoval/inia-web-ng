@@ -1,0 +1,49 @@
+<div fxFlex fxLayout="column" fxLayoutAlign="start">
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Qué información brinda?
+      </mat-panel-title>
+
+    </mat-expansion-panel-header>
+    <p>Este indicador estima, a partir de modelos digitales de elevación del terreno, de mapas de tipos de cobertura del suelo y de indices espectarles de vegetación la pérdida esperada de suelos según la ecuación universal de pérdida de suelo (USLE-RUSLE).</p>
+  </mat-expansion-panel>
+  <mat-expansion-panel (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        ¿Cómo se calcula?
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>La conservación del suelo se estimó a partir de la versión revisada de la «Ecuación Universal de Pérdida de Suelo» (RUSLE, Renard, 1997). La estimación de la RUSLE implica multiplicar los factores de erosividad de la precipitación (R), erosionabilidad del suelo (K), topográfico (T, asociado a la longitud y pendiente de la pendiente), cobertura del suelo (C) y prácticas de conservación (P): RUSLE = R x K x T x C x P. Los valores más altos de RUSLE indican una mayor erosión del suelo o una menor conservación del mismo. Estimamos la RUSLE exclusivamente para píxeles bajo uso agrícola (cultivos), luego escalamos sus valores para que estén en el rango 0-1 y calculamos la conservación del suelo como 1 - RUSLE escalada.</p>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div *ngIf="soilInformation; else loading" fxFlex fxLayout="column" class="m-2">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Property Column -->
+  <ng-container matColumnDef="property">
+    <th mat-header-cell *matHeaderCellDef> Medida </th>
+    <td mat-cell *matCellDef="let element"> {{element.property}} </td>
+  </ng-container>
+
+  <!-- Value Column -->
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef> Valor </th>
+    <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<ng-template #loading>
+  <div fxFlex fxLayout="row" class="m-1">
+    <mat-spinner diameter="20" class="m-1"></mat-spinner>
+    <h3 class="m-1">{{ texts.loadingMessage }}</h3>
+  </div>
+</ng-template>
+
+</div>
