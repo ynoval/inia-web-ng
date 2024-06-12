@@ -69,7 +69,6 @@ import { YearPickerComponent } from './components/year-picker/year-picker.compon
     LayersService,
     CommunitiesLayersService,
     GoogleMapService,
-  ],
-  entryComponents: [ConfirmDialogComponent],
+  ]
 })
 export class AppCommonModule {}

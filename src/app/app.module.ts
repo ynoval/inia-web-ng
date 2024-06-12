@@ -5,11 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 
-import {
-  PerfectScrollbarModule,
-  PERFECT_SCROLLBAR_CONFIG,
-  PerfectScrollbarConfigInterface,
-} from 'ngx-perfect-scrollbar';
+// import {
+//   PerfectScrollbarModule,
+//   PERFECT_SCROLLBAR_CONFIG,
+//   type PerfectScrollbarConfigInterface,
+// } from 'ngx-perfect-scrollbar';
 
 import { CustomOverlayContainer } from './theme/utils/custom-overlay-container';
 
@@ -28,10 +28,10 @@ import { FullScreenComponent } from './theme/components/fullscreen/fullscreen.co
 import { HttpClientModule } from '@angular/common/http';
 import { AppSharedModule } from './shared.module';
 
-const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  wheelPropagation: true,
-  suppressScrollX: true,
-};
+// const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+//   wheelPropagation: true,
+//   suppressScrollX: true,
+// };
 
 @NgModule({
   imports: [
@@ -40,7 +40,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     AppSharedModule,
     AppRoutingModule,
   ],
@@ -56,10 +56,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   ],
   providers: [
     AppSettings,
-    {
-      provide: PERFECT_SCROLLBAR_CONFIG,
-      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
-    },
+    // {
+    //   provide: PERFECT_SCROLLBAR_CONFIG,
+    //   useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
+    // },
     { provide: OverlayContainer, useClass: CustomOverlayContainer },
   ],
   bootstrap: [AppComponent],

@@ -32,7 +32,7 @@ export class CustomZonesService {
     return this._zones.asObservable();
   }
 
-  getZoneName(id: string): Observable<string> {
-    
-  }
+  // getZoneName(id: string): Observable<string> {
+
+  // }
 }

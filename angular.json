@@ -56,7 +56,10 @@
             "allowedCommonJsDependencies": [
               "dragula",
               "js-kml-parser",
-              "shpjs"
+              "shpjs",
+              "jszip",
+              "angular-csv-ext",
+              "@google/earthengine"
             ],
             "aot": false,
             "vendorChunk": true,
@@ -107,18 +110,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "inia-admin:build"
+            "buildTarget": "inia-admin:build",
           },
           "configurations": {
             "production": {
-              "browserTarget": "inia-admin:build:production"
+              "buildTarget": "inia-admin:build,production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "inia-admin:build"
+            "buildTarget": "inia-admin:build"
           }
         },
         "test": {
@@ -184,6 +187,5 @@
         }
       }
     }
-  },
-  "defaultProject": "inia-admin"
+  }
 }

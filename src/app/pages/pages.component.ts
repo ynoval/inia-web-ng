@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, HostListener, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
 import { AppSettings } from '../app.settings';
 import { Settings } from '../app.settings.model';
 import { MenuService } from '../theme/components/menu/menu.service';
@@ -16,7 +16,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('backToTop') backToTop: any;
 
-  @ViewChildren(PerfectScrollbarDirective) pss: QueryList<PerfectScrollbarDirective>;
+  // @ViewChildren(PerfectScrollbarDirective) pss: QueryList<PerfectScrollbarDirective>;
 
   public settings: Settings;
 
@@ -96,11 +96,11 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   public scrollToTop() {
-    this.pss.forEach((ps) => {
-      if (ps.elementRef.nativeElement.id === 'main' || ps.elementRef.nativeElement.id === 'main-content') {
-        ps.scrollToTop(0, 250);
-      }
-    });
+    // this.pss.forEach((ps) => {
+    //   if (ps.elementRef.nativeElement.id === 'main' || ps.elementRef.nativeElement.id === 'main-content') {
+    //     ps.scrollToTop(0, 250);
+    //   }
+    // });
   }
 
   @HostListener('window:resize')

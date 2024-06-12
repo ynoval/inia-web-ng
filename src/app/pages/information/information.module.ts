@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { AppSharedModule } from '@app/shared.module';
 import { AppCommonModule } from '@app/common/common.module';
@@ -16,7 +16,7 @@ export const routes = [{ path: '', component: InformationComponent, pathMatch: '
     CommonModule,
     RouterModule.forChild(routes),
     FormsModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     AppSharedModule,
     AppCommonModule,
   ],

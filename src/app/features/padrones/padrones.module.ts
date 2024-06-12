@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxEchartsModule } from 'ngx-echarts';
@@ -16,7 +16,7 @@ import { Ng2DeepSearchPipe } from './pipes/padrones-search.pipe';
 import { PadronesPageComponent } from './pages/padrones/padrones.component';
 import { PadronPageComponent } from './pages/padron/padron.component';
 import { PadronesRoutes } from './padrones.routing';
-import { AddPadronModalComponent } from './pages/padrones/components/add-padron-modal/add-padron-modal.component';
+// import { AddPadronModalComponent } from './pages/padrones/components/add-padron-modal/add-padron-modal.component';
 
 import { PadronChartSelectorComponent } from './pages/padron/components/padron-chart-selector/padron-chart-selector.component';
 
@@ -55,7 +55,7 @@ import { PadronAHPPNAnalysisComponent } from './pages/padron/components/padron-a
     GoogleMapsModule,
     HttpClientModule,
     HttpClientJsonpModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
@@ -94,10 +94,10 @@ import { PadronAHPPNAnalysisComponent } from './pages/padron/components/padron-a
     PadronEFTAnalysisComponent,
     PadronAHPPNAnalysisComponent,
 
-    Ng2DeepSearchPipe,
-    AddPadronModalComponent
+    Ng2DeepSearchPipe
+
   ],
-  entryComponents: [NotificationComponent, AddPadronModalComponent],
+  // entryComponents: [NotificationComponent],
   providers: [
     {
       provide: PADRONES_SERVICE_CONTEXT,

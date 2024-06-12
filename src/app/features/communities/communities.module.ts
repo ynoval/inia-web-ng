@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { createCustomElement } from '@angular/elements';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { NgxFileDropModule } from 'ngx-file-drop';
@@ -46,7 +46,7 @@ import { CommunitySOILAnalysisComponent } from './pages/community/components/com
     CommonModule,
     FormsModule,
     GoogleMapsModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     HttpClientModule,
     HttpClientJsonpModule,
     NgxFileDropModule,
@@ -86,7 +86,7 @@ import { CommunitySOILAnalysisComponent } from './pages/community/components/com
     CommunityEFTAnalysisComponent,
     CommunityAHPPNAnalysisComponent
   ],
-  entryComponents: [CommunitiesMapLayersComponent, NotificationComponent, ConfirmDialogComponent],
+  // entryComponents: [CommunitiesMapLayersComponent, NotificationComponent, ConfirmDialogComponent],
   providers: [
     {
       provide: COMMUNITIES_LAYERS_SERVICE_CONTEXT,

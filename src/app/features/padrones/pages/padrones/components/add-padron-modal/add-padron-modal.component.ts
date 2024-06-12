@@ -1,3 +1,4 @@
+import { AppSharedModule } from '@app/shared.module';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -11,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import type { DepartmentModel } from '@app/features/padrones/models/department.model';
 @Component({
   selector: 'app-add-padron-modal',
+  standalone: true,
   templateUrl: './add-padron-modal.component.html',
   styleUrls: ['./add-padron-modal.component.scss'],
   imports: [
@@ -21,6 +23,7 @@ import type { DepartmentModel } from '@app/features/padrones/models/department.m
     ReactiveFormsModule,
     NgFor,
     AsyncPipe,
+    AppSharedModule
   ],
 })
 export class AddPadronModalComponent implements OnInit {

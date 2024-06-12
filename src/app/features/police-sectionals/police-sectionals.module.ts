@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { NgxFileDropModule } from 'ngx-file-drop';
 
@@ -47,7 +47,7 @@ import { PoliceSectionalAHPPNAnalysisComponent } from './pages/police-sectional/
     GoogleMapsModule,
     HttpClientModule,
     HttpClientJsonpModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
@@ -86,7 +86,7 @@ import { PoliceSectionalAHPPNAnalysisComponent } from './pages/police-sectional/
     PoliceSectionalEFTAnalysisComponent,
     PoliceSectionalAHPPNAnalysisComponent
   ],
-  entryComponents: [NotificationComponent],
+  // entryComponents: [NotificationComponent],
   providers: [
     {
       provide: POLICE_SECTIONALS_SERVICE_CONTEXT,

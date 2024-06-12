@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { createCustomElement } from '@angular/elements';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgxFileDropModule } from 'ngx-file-drop';
 
 import { AppSharedModule } from '@app/shared.module';
@@ -53,6 +53,7 @@ import { ConfirmDialogComponent } from '@app/common/directives/confirm/confirm-d
 import { SOILAnalysisComponent } from './pages/custom-zone/components/soil-analysis/soil-analysis.component';
 import { EFTAnalysisComponent } from './pages/custom-zone/components/eft-analysis/eft-analysis.component';
 import { AHPPNAnalysisComponent } from './pages/custom-zone/components/ahppn-analysis/ahppn-analysis.component';
+import { ZoneAreaMapbiomasDistributionComponent } from './pages/custom-zone/components/zone-area-mapbiomas-distribution/zone-area-mapbiomas-distribution.component';
 
 @NgModule({
   imports: [
@@ -62,7 +63,7 @@ import { AHPPNAnalysisComponent } from './pages/custom-zone/components/ahppn-ana
     GoogleMapsModule,
     HttpClientModule,
     HttpClientJsonpModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
@@ -104,21 +105,22 @@ import { AHPPNAnalysisComponent } from './pages/custom-zone/components/ahppn-ana
     IOSEAnalysisComponent,
     IOSEChartComponent,
     // MapbiomasHistoricalChartComponent,
+    ZoneAreaMapbiomasDistributionComponent,
 
     SOILAnalysisComponent,
     EFTAnalysisComponent,
     AHPPNAnalysisComponent
 
   ],
-  entryComponents: [
-    MapLayersComponent,
-    NotificationComponent,
-    ImportZonesComponent,
-    ExportZonesComponent,
-    AddZoneComponent,
-    DeleteZonesComponent,
-    ConfirmDialogComponent,
-  ],
+  // entryComponents: [
+  //   MapLayersComponent,
+  //   NotificationComponent,
+  //   ImportZonesComponent,
+  //   ExportZonesComponent,
+  //   AddZoneComponent,
+  //   DeleteZonesComponent,
+  //   ConfirmDialogComponent,
+  // ],
   providers: [
     {
       provide: LAYERS_SERVICE_CONTEXT,

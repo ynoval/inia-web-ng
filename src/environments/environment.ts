@@ -2,13 +2,13 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { keys } from './keys';
+// import { keys } from './keys';
 
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3333/api',
   // apiUrl: 'https://inia-server-diqgi2hzma-ue.a.run.app/api',
-  gmKey: keys.gmKey,
+  gmKey: 'AIzaSyAqsx1gPP9Rx6B2WyBAuds6Oy9wUxjS5zQ',
 };
 
 /*

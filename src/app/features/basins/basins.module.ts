@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+// import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxEchartsModule } from 'ngx-echarts';
@@ -51,7 +51,7 @@ import { BasinSOILAnalysisComponent } from './pages/basin/components/basin-soil-
     GoogleMapsModule,
     HttpClientModule,
     HttpClientJsonpModule,
-    PerfectScrollbarModule,
+    // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts'),
@@ -93,7 +93,7 @@ import { BasinSOILAnalysisComponent } from './pages/basin/components/basin-soil-
 
     Ng2DeepSearchPipe,
   ],
-  entryComponents: [NotificationComponent],
+  // entryComponents: [NotificationComponent],
   providers: [
     {
       provide: BASINS_SERVICE_CONTEXT,

@@ -1,11 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import * as ee from '@google/earthengine';
-import { GEEMapLayerModel } from '../models/geeMapLayer.model';
-import { ApiService } from './api.service';
+import { BehaviorSubject, type Observable } from 'rxjs';
+
+import type { GEEMapLayerModel } from '../models/geeMapLayer.model';
+// import type { ApiService } from './api.service';
 
 export const LAYERS_SERVICE_CONTEXT = new InjectionToken<string>('LayersServiceContext');
+
+// import * as ee from '@google/earthengine';
 
 @Injectable({ providedIn: 'root' })
 export class LayersService {
@@ -13,28 +15,28 @@ export class LayersService {
 
   private layers: GEEMapLayerModel[] = [];
 
-  constructor(@Inject(LAYERS_SERVICE_CONTEXT) private storageKey: string, private apiService: ApiService) {
+  constructor(@Inject(LAYERS_SERVICE_CONTEXT) private storageKey: string) {
     this.loadLayers();
   }
 
   loadLayers() {
-    this.apiService.getInformationLayers().then((layers) => {
-      layers.forEach((layer) => {
-        const source = new ee.layers.EarthEngineTileSource({ mapid: layer.mapId });
-        const overlay = new ee.layers.ImageOverlay(source);
-        overlay.name = layer.label;
-        const storageLayers = this.getStorageLayers();
-        this.layers.push({
-          ...layer,
-          isVisible: layer.label === 'ROU' || storageLayers.findIndex((l) => l === layer.label) !== -1,
-          isEditable: layer.label !== 'ROU',
-          overlay,
-        });
-      });
+    // this.apiService.getInformationLayers().then((layers) => {
+      // layers.forEach((layer) => {
+        // const source = new ee.layers.EarthEngineTileSource({ mapid: layer.mapId });
+        // const overlay = new ee.layers.ImageOverlay(source);
+        // overlay.name = layer.label;
+        // const storageLayers = this.getStorageLayers();
+        // this.layers.push({
+        //   ...layer,
+        //   isVisible: layer.label === 'ROU' || storageLayers.findIndex((l) => l === layer.label) !== -1,
+        //   isEditable: layer.label !== 'ROU',
+        //   overlay,
+        // });
+      // });
 
-      this._layers.next(Object.assign([], this.layers));
+      // this._layers.next(Object.assign([], this.layers));
       // Save to storage
-    });
+    // });
   }
 
   getAll(): Observable<GEEMapLayerModel[]> {

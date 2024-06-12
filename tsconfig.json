@@ -1,25 +1,28 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "dist-old/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2022",
-    "module": "es2020",
-    "lib": ["es2018", "dom"],
-    "typeRoots": ["node_modules/@types"],
-    "paths": {
-      "@app/*": ["src/app/*"],
-      "@env/*": ["src/environments/*"]
-    }
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false
-  }
+	"compileOnSave": false,
+	"compilerOptions": {
+		// "strict": true,
+		// "forceConsistentCasingInFileNames": true,
+		"baseUrl": "./",
+		"outDir": "dist-old/out-tsc",
+		"sourceMap": true,
+		"declaration": false,
+		"downlevelIteration": true,
+		"experimentalDecorators": true,
+		"moduleResolution": "node",
+		"importHelpers": true,
+		"target": "es2022",
+		"module": "es2020",
+		"lib": ["es2018", "dom"],
+		"typeRoots": ["node_modules/@types", "src/app/types"],
+		"paths": {
+			"@app/*": ["src/app/*"],
+			"@env/*": ["src/environments/*"]
+		}
+	},
+	"include": ["src/**/*.ts"],
+	"angularCompilerOptions": {
+		"enableI18nLegacyMessageIdFormat": false
+	}
 }
