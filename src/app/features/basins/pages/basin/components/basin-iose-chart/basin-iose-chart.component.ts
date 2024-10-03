@@ -3,7 +3,8 @@ import { NotificationService } from '@app/common/components/notification/notific
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
+
 
 @Component({
   selector: 'app-basin-iose-chart',
@@ -79,7 +80,7 @@ export class BasinIOSEChartComponent {
     return group;
   }
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     tooltip: {},
     title: {
       text: 'IOSE Histórico',

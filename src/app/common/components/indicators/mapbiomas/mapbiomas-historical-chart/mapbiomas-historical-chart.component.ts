@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 
 const coverMap = {
   '1': 'Bosque Natural',
@@ -31,7 +31,7 @@ const coverMap = {
 export class MapbiomasHistoricalChartComponent {
   @Input() zone: ZoneModel;
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     grid: {
       left: '2%',
       right: '15%',

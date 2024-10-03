@@ -31,28 +31,8 @@ export class PadronEFTAnalysisComponent implements OnInit {
     this.eftInformation = await this.zonesService.getZoneEFTInformation(this.zone.id);
     this.dataSource = [
       {
-        property: "Promedio",
-        value: this.eftInformation.mean,
-      },
-      {
-        property: "Mediana",
-        value: this.eftInformation.median,
-      },
-      {
-        property: "Mínimo",
-        value: this.eftInformation.min,
-      },
-      {
-        property: "Máximo",
-        value: this.eftInformation.max,
-      },
-      {
-        property: "Percentil 25",
-        value: this.eftInformation.p25,
-      },
-      {
-        property: "Percentil 75",
-        value: this.eftInformation.p75,
+        property: "Índice de Shannon",
+        value: this.eftInformation.eft,
       }
     ]
     this.isLoading = false;

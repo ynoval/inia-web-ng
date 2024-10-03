@@ -43,6 +43,8 @@ export class PadronesPageComponent implements AfterViewInit {
 
   public selectedPadronId = '';
 
+  public searchText = '';
+
   keysToExclude: string[] = ['shape', 'visible', 'coordinates'];
 
   private readonly actionHandlers: Record<ZoneActionType, (arg0: string) => void> = {
@@ -73,9 +75,12 @@ export class PadronesPageComponent implements AfterViewInit {
 
   private loadPadrones() {
     // Load from service
+    console.log("1-Loading Padrones");
     this.padronesService.getAll().subscribe((padrones) => {
+      console.log("2-Loading Padrones");
       if (!padrones) return;
 
+      console.log("3-Loading Padrones");
       this.padrones = padrones;
 
       // Set Map
@@ -83,13 +88,13 @@ export class PadronesPageComponent implements AfterViewInit {
       this.padrones.forEach((p) => {
         p.shape.setMap(p.visible ? this.mapInstance.googleMap : null);
       });
+      console.log("4-Loading Padrones");
       this.cd.detectChanges();
       this.reloadPadronesZones();
+      console.log("5-Loading Padrones");
     });
 
-
-
-
+    console.log("6-Loading Padrones");
   }
 
   onAddPadron(): void {
@@ -99,6 +104,7 @@ export class PadronesPageComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       this.padronesService.addPadron(result.padron, result.department);
+      this.loadPadrones()
     });
   }
 
@@ -125,7 +131,21 @@ export class PadronesPageComponent implements AfterViewInit {
   }
 
   deletePadron(padronId) {
-    this.padronesService.deletePadron(padronId);
+    console.log(`1-Deleting padron ${padronId}`);
+    const previousPadrones = [...this.padrones];
+    this.padrones = this.padrones.filter(p => p.id !== padronId);
+    this.filteredZones = this.filteredZones.filter(p => p.id !== padronId);
+    this.padronesZones = this.padronesZones.filter(p => p.id !== padronId);
+
+    try {
+      console.log(`2-Deleting padron ${padronId}`);
+      this.padronesService.deletePadron(padronId);
+      console.log(`3-Deleting padron ${padronId}`);
+      this.loadPadrones()
+      console.log(`4-Deleting padron ${padronId}`);
+    }catch(e) {
+      this.padrones = previousPadrones;
+    }
   }
 
   onToggleSelect($event) {
@@ -138,7 +158,11 @@ export class PadronesPageComponent implements AfterViewInit {
   }
 
   reloadPadronesZones() {
+    console.log("1-RE Loading Padrones");
+    // this.filteredZones = [];
+    // this.padronesZones = [];
     if (this.padrones && this.padrones.length > 0) {
+      console.log("2-RE Loading Padrones");
       this.padronesZones = this.padrones.map((p) => {
         return {
           id: p.id,
@@ -153,10 +177,15 @@ export class PadronesPageComponent implements AfterViewInit {
           type: 'POLYGON',
         };
       });
+      console.log("3-RE Loading Padrones");
+      this.filteredZones = this.ng2DeepSearchPipe.transform(this.padronesZones, this.searchText, this.keysToExclude);
+      console.log("4-RE Loading Padrones");
     }
   }
 
   onSearch(text) {
+    console.log("searching padrones");
+    this.searchText = text;
     this.filteredZones = this.ng2DeepSearchPipe.transform(this.padronesZones, text, this.keysToExclude);
   }
 

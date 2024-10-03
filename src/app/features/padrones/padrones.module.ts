@@ -58,7 +58,7 @@ import { PadronAHPPNAnalysisComponent } from './pages/padron/components/padron-a
     // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+    echarts: async () => await import('echarts'),
     }),
     AppSharedModule,
     AppCommonModule,

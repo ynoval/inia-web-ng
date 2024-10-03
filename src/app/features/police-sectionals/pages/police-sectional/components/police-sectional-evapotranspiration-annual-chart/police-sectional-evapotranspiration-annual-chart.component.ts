@@ -3,7 +3,7 @@ import { NotificationService } from '@app/common/components/notification/notific
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 
 @Component({
   selector: 'app-police-sectional-et-annual-chart',
@@ -13,7 +13,7 @@ import { EChartsOption } from 'echarts';
 export class PoliceSectionalEvapotranspirationAnnualChartComponent {
   @Input() zone: ZoneModel;
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     grid: {
       left: '5%',
       right: '10%',
@@ -215,7 +215,7 @@ export class PoliceSectionalEvapotranspirationAnnualChartComponent {
     this.chartInstance.showLoading({ text: 'Cargando datos...' });
     const currentDate = new Date();
     const lastYear = currentDate.getMonth() >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
-    
+
     this.zoneInformation = {
       annual: [await this.zonesService.getZoneAnnualET(this.zone.id, lastYear)],
       annualMean: await this.zonesService.getZoneAnnualETMean(this.zone.id),

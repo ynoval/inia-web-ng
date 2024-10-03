@@ -7,7 +7,7 @@ import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxEchartsModule } from 'ngx-echarts';
-
+// import echarts from '@app/echarts-module';
 import { AppSharedModule } from '@app/shared.module';
 import { AppCommonModule } from '@app/common/common.module';
 import { NotificationComponent } from '@app/common/components/notification/notification.component';
@@ -54,8 +54,11 @@ import { BasinSOILAnalysisComponent } from './pages/basin/components/basin-soil-
     // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+      echarts: async () => await import('echarts'),
     }),
+    // NgxEchartsModule.forRoot({ echarts }),
+
+
     AppSharedModule,
     AppCommonModule,
   ],

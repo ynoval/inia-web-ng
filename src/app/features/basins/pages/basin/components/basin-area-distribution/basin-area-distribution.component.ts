@@ -1,7 +1,7 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-// import { EChartsOption } from 'echarts';
+// import EChartsOption  from 'echarts';
 
 @Component({
   selector: 'app-basin-area-info',

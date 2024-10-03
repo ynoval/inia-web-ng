@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
   styleUrls: ['./pie-chart.component.scss'],
 })
 export class PieChartComponent implements OnInit {
-  @Input() pieChartOptions$: Observable<Partial<EChartsOption>>;
+  @Input() pieChartOptions$: Observable<Partial<EChartsOption.EChartsOption>>;
 
   @Input() pieChartData$: Observable<Array<{ value: number; name: string }>>;
 

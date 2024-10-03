@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 
 import { CommunitiesService } from '@app/common/services/communities.service';
 
@@ -12,7 +12,7 @@ import { CommunitiesService } from '@app/common/services/communities.service';
 export class CommunityEvapotranspirationAnnualChartComponent {
   @Input() communityId: string;
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     grid: {
       left: '5%',
       right: '10%',

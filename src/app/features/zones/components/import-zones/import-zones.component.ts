@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import * as shp from 'shpjs';
 import kmlParser from 'js-kml-parser';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { kml } from '@tmcw/togeojson';
 import { ZoneModel } from '@app/common/models/zone.model';
 import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
@@ -69,7 +69,7 @@ export class ImportZonesComponent {
       }
     }
   }
-  
+
   deleteFile(file: ZoneFileUploaded) {
     this.files = this.files.filter((f) => f.fileId !== file.fileId);
   }

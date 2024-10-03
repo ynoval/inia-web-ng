@@ -214,8 +214,11 @@ export class ZonesService {
         this.zones[index].shape.setMap(null);
       }
       this.zones.splice(index, 1);
+      console.log('Removing Zone', zoneId);
       this._zones.next(Object.assign([], this.zones));
+
       this.db.deleteZone(zoneId);
+
     }
   }
 

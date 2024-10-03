@@ -26,9 +26,9 @@ export class PadronesService {
       if (zones === null) {
         return;
       }
-
+      let padrones = [];
       if (zones && zones.length > 0) {
-        const padrones = zones.map((z) => {
+          padrones = zones.map((z) => {
           const departmentProp = z.properties.find((p) => p.propertyName === 'NOMDEPTO');
           const departmentName = departmentProp ? departmentProp.propertyValue : '';
           return {
@@ -39,8 +39,8 @@ export class PadronesService {
             visible: z.visible,
           };
         });
-        this.padrones$.next(padrones);
       }
+      this.padrones$.next(padrones);
     });
     this.zonesService.getSelectedZone().subscribe((zone) => {
       this.selectedPadron$.next(zone);

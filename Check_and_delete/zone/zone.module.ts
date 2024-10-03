@@ -6,6 +6,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgxEchartsModule } from 'ngx-echarts';
 // import { AgGridModule } from '@ag-grid-community/angular';
 
+// import echarts from '@app/echarts-module';
 import { AppSharedModule } from '@app/shared.module';
 import { AppCommonModule } from '@app/common/common.module';
 import { ZONES_SERVICE_CONTEXT } from '@app/common/services/zones.service';
@@ -34,8 +35,9 @@ export const routes = [
     FormsModule,
     PerfectScrollbarModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+      echarts: async () => await import('echarts'),
     }),
+    // NgxEchartsModule.forRoot({ echarts }),
     // AgGridModule.withComponents([GridDeleteButtonRendererComponent]),
     // AgGridModule,
     AppSharedModule,

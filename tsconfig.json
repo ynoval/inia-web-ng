@@ -1,20 +1,21 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-		// "strict": true,
-		// "forceConsistentCasingInFileNames": true,
+		"strict": false,
+		"forceConsistentCasingInFileNames": true,
 		"baseUrl": "./",
 		"outDir": "dist-old/out-tsc",
 		"sourceMap": true,
 		"declaration": false,
 		"downlevelIteration": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node",
 		"importHelpers": true,
 		"target": "es2022",
-		"module": "es2020",
+		"allowSyntheticDefaultImports": true,
+		"module": "esnext",
+		"moduleResolution": "node",
 		"lib": ["es2018", "dom"],
+		"esModuleInterop": true,
 		"typeRoots": ["node_modules/@types", "src/app/types"],
 		"paths": {
 			"@app/*": ["src/app/*"],

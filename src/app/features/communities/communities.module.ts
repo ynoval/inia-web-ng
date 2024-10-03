@@ -51,7 +51,7 @@ import { CommunitySOILAnalysisComponent } from './pages/community/components/com
     HttpClientJsonpModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+    echarts: async () => await import('echarts'),
     }),
     RouterModule.forChild(CommunitiesRoutes),
     AppSharedModule,

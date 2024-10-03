@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommunitiesService } from '@app/common/services/communities.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 
 @Component({
   selector: 'app-community-iose-chart',
@@ -77,7 +77,7 @@ export class CommunityIOSEChartComponent {
     return group;
   }
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     tooltip: {},
     title: {
       text: 'IOSE Histórico',

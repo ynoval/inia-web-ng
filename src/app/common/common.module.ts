@@ -22,6 +22,7 @@ import { MapbiomasHistoricalChartComponent } from './components/indicators/mapbi
 import { ChartSelectorComponent } from './components/chart-selector/chart-selector.component';
 import { MapbiomasAnnualChartComponent } from './components/indicators/mapbiomas/mapbiomas-annual-chart/mapbiomas-annual-chart.component';
 import { NgxEchartsModule } from 'ngx-echarts';
+// import echarts from '@app/echarts-module';
 import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { YearPickerComponent } from './components/year-picker/year-picker.component';
 
@@ -31,7 +32,7 @@ import { YearPickerComponent } from './components/year-picker/year-picker.compon
     ReactiveFormsModule,
     FormsModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+    echarts: async () => await import('echarts'),
     }),
     AppSharedModule,
   ],

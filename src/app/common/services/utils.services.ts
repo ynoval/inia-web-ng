@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as dayjs from 'dayjs';
+// import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 @Injectable({ providedIn: 'root' })
 export class UtilsService {

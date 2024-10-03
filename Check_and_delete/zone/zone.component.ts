@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 // import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { v4 as uuidv4 } from 'uuid';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
@@ -66,7 +66,7 @@ export class ZonePageComponent implements OnInit {
 
   endPredictionMonth = this.startPredictionMonth + 3;
 
-  annualChartOptions: EChartsOption = {
+  annualChartOptions: EChartsOption.EChartsOption = {
     title: {
       text: 'Productividad Anual',
       top: '2%',
@@ -154,7 +154,7 @@ export class ZonePageComponent implements OnInit {
 
   historicalChartInstance: any;
 
-  historicalChartOptions: EChartsOption = {
+  historicalChartOptions: EChartsOption.EChartsOption = {
     title: {
       text: 'Productividad Anual',
       top: '2%',
@@ -211,7 +211,7 @@ export class ZonePageComponent implements OnInit {
 
   monthlyChartInstance: any;
 
-  monthlyChartOptions: EChartsOption = {
+  monthlyChartOptions: EChartsOption.EChartsOption = {
     title: {
       text: 'Productividad Anual',
       top: '2%',

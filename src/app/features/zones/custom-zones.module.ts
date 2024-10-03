@@ -66,7 +66,7 @@ import { ZoneAreaMapbiomasDistributionComponent } from './pages/custom-zone/comp
     // PerfectScrollbarModule,
     NgxFileDropModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+    echarts: async () => await import('echarts'),
     }),
     AppSharedModule,
     AppCommonModule,

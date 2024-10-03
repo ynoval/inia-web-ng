@@ -3,7 +3,7 @@ import { NotificationService } from '@app/common/components/notification/notific
 import { ZoneModel } from '@app/common/models/zone.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { AngularCsv } from 'angular-csv-ext/dist/Angular-csv';
-import { EChartsOption } from 'echarts';
+import EChartsOption  from 'echarts';
 
 @Component({
   selector: 'app-padron-et-annual-chart',
@@ -13,7 +13,7 @@ import { EChartsOption } from 'echarts';
 export class PadronEvapotranspirationAnnualChartComponent {
   @Input() zone: ZoneModel;
 
-  chartOptions: EChartsOption = {
+  chartOptions: EChartsOption.EChartsOption = {
     grid: {
       left: '5%',
       right: '10%',
