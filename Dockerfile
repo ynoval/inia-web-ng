@@ -2,15 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Use the project's lockfile and Angular CLI (devDependencies) instead of the latest global CLI
+COPY package.json yarn.lock ./
 
-RUN apk update && apk add yarn && yarn global add @angular/cli
-RUN yarn add typescript@5.4.5 --dev
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN ng build --configuration=production
+RUN yarn ng build --configuration=production
 
 EXPOSE 8080
 
