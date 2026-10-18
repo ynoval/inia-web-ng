@@ -6,6 +6,7 @@ import { CommunityModel } from '../models/community.model';
 import { SpecieModel } from '../models/specie.model';
 import { SubCommunityModel } from '../models/subcommunity.model';
 import { Observable } from 'rxjs';
+import { ZoneType } from '../models/zone.model';
 
 type LayerData = {
   mapType: string;
@@ -17,7 +18,7 @@ type LayerData = {
 };
 
 type ZoneInformation = {
-  type: google.maps.drawing.OverlayType;
+  type: ZoneType;
   coordinates: number[]; // Array of number that represent coordinates
 };
 

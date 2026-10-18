@@ -1,7 +1,7 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { ZoneModel } from '../models/zone.model';
+import { ZoneModel, ZoneType } from '../models/zone.model';
 import { ApiService } from './api.service';
 import { AppDB } from '@app/app.db';
 
@@ -116,16 +116,18 @@ export class ZonesService {
     this._zones.next(Object.assign([], this.zones));
   }
 
-  addZone(gmZone) {
+  /**
+   * @param coordinates marker: { lat, lng } | polygon: { lat, lng }[]
+   */
+  addZone(type: ZoneType, coordinates) {
     const id = uuidv4();
     const name = this.generateZoneName();
-    const coordinates = this.getOverlayCoordinates(gmZone);
-    const shape = this.createShape(id, gmZone.type, coordinates, true);
+    const shape = this.createShape(id, type, coordinates, true);
     const zone = {
       id,
       name,
       order: this.generateZoneOrder(),
-      type: gmZone.type,
+      type,
       visible: true,
       shape,
       properties: [],
@@ -141,7 +143,7 @@ export class ZonesService {
     if (this.selectedZone) {
       const zone = this.zones.find((z) => z.id === this.selectedZone);
       if (zone) {
-        if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
+        if (zone.type !== ZoneType.MARKER) {
           if (this.isEditable) {
             zone.shape.setEditable(false);
           }
@@ -162,7 +164,7 @@ export class ZonesService {
 
     const newSelectedZone = this.zones.find((z) => z.id === zoneId);
     if (newSelectedZone) {
-      if (newSelectedZone.type !== google.maps.drawing.OverlayType.MARKER) {
+      if (newSelectedZone.type !== ZoneType.MARKER) {
         if (this.isEditable) {
           newSelectedZone.shape.setEditable(true);
         }
@@ -187,7 +189,7 @@ export class ZonesService {
     if (this.selectedZone) {
       const zone = this.zones.find((z) => z.id === this.selectedZone);
       if (zone) {
-        if (zone.type !== google.maps.drawing.OverlayType.MARKER) {
+        if (zone.type !== ZoneType.MARKER) {
           if (this.isEditable) {
             zone.shape.setEditable(false);
           }
@@ -897,7 +899,7 @@ export class ZonesService {
   }
 
   private createShape(zoneId, zoneType, coordinates, isActive = false) {
-    if (zoneType === google.maps.drawing.OverlayType.MARKER) {
+    if (zoneType === ZoneType.MARKER) {
       const marker = this.createMarker(coordinates, isActive);
       marker.addListener('dragend', () => {
         this.updateStorageZone(zoneId);
@@ -922,7 +924,7 @@ export class ZonesService {
       return marker;
     }
 
-    if (zoneType === google.maps.drawing.OverlayType.POLYGON) {
+    if (zoneType === ZoneType.POLYGON) {
       const polygon = this.createPolygon(coordinates);
       polygon.getPath().addListener('insert_at', () => {
         this.updateStorageZone(zoneId);
@@ -958,7 +960,7 @@ export class ZonesService {
       return polygon;
     }
 
-    if (zoneType === google.maps.drawing.OverlayType.RECTANGLE) {
+    if (zoneType === ZoneType.RECTANGLE) {
       const rectangle = this.createRectangle(coordinates);
       rectangle.addListener('bounds_changed', () => {
         this.updateStorageZone(zoneId);
@@ -1106,64 +1108,6 @@ export class ZonesService {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private getOverlayCoordinates(gmOverlay) {
-    switch (gmOverlay.type) {
-      case 'marker': {
-        return this.getOverlayMarkerCoordinates(gmOverlay.overlay);
-      }
-      case 'rectangle': {
-        return this.getOverlayRectangleCoordinates(gmOverlay.overlay);
-      }
-      case 'polygon': {
-        return this.getOverlayPolygonCoordinates(gmOverlay.overlay);
-      }
-      default: {
-        throw new Error('Solo Poligonos, Rectangulos y Marcadores son soportados');
-      }
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private getOverlayMarkerCoordinates(marker) {
-    //return  new google.maps.LatLng(marker.position.lat(), marker.position.lng());
-    return { lat: marker.position.lat(), lng: marker.position.lng() };
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private getOverlayRectangleCoordinates(rectangle) {
-    return rectangle.getBounds();
-    // const coordinates = [];
-
-    // const bounds = {
-    //   north: path[0].lat,
-    //   south: path[1].lat,
-    //   east: path[0].lng,
-    //   west: path[1].lng,
-    // };
-    // const NE = bounds.getNorthEast();
-    // const SW = bounds.getSouthWest();
-    // const NW = new google.maps.LatLng(NE.lat(), SW.lng());
-    // const SE = new google.maps.LatLng(SW.lat(), NE.lng());
-    // coordinates.push(NE.toJSON());
-    // coordinates.push(SW.toJSON());
-    // coordinates.push(NW.toJSON());
-    // coordinates.push(SE.toJSON());
-    // return coordinates;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private getOverlayPolygonCoordinates(polygon) {
-    const coordinates = [];
-    polygon
-      .getPath()
-      .getArray()
-      .forEach((coor) => {
-        coordinates.push(coor.toJSON());
-      });
-    return coordinates;
-  }
-
   private getZoneCoordinatesList(zone) {
     const coordinates = this.getShapeCoordinates(zone.type, zone.shape);
     // eslint-disable-next-line default-case
@@ -1217,7 +1161,7 @@ export class ZonesService {
 
     return {
       zoneName: zone.name || this.generateZoneName(),
-      zoneType: isPolygon ? google.maps.drawing.OverlayType.POLYGON : google.maps.drawing.OverlayType.MARKER,
+      zoneType: isPolygon ? ZoneType.POLYGON : ZoneType.MARKER,
       zoneCoordinates: isPolygon ? this.getPolygonCoordinates(coordinates) : this.getMarkerCoordinates(coordinates),
       zoneProperties,
     };

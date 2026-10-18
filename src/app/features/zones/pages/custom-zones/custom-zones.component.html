@@ -62,4 +62,33 @@
     <div *ngIf="isLoadingZones">cargando...</div>
   </div>
   <div id="containerLayers"></div>
+  <div #drawingControl class="drawing-control">
+    <button
+      mat-icon-button
+      matTooltip="Mover el mapa"
+      [disabled]="!isDrawingReady"
+      [class.active]="drawingMode === 'static'"
+      (click)="setDrawingMode('static')"
+    >
+      <mat-icon>pan_tool</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Dibujar un marcador"
+      [disabled]="!isDrawingReady"
+      [class.active]="drawingMode === 'point'"
+      (click)="setDrawingMode('point')"
+    >
+      <mat-icon svgIcon="marker"></mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Dibujar un polígono (clic en el primer punto para cerrarlo, Esc para cancelar)"
+      [disabled]="!isDrawingReady"
+      [class.active]="drawingMode === 'polygon'"
+      (click)="setDrawingMode('polygon')"
+    >
+      <mat-icon svgIcon="polygon"></mat-icon>
+    </button>
+  </div>
 </div>

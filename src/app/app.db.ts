@@ -1,11 +1,12 @@
 import Dexie, { Table } from 'dexie';
+import { ZoneType } from '@app/common/models/zone.model';
 
 export interface StoreZone {
   id: string;
   name: string;
   order: number;
   visible: boolean;
-  type: google.maps.drawing.OverlayType;
+  type: ZoneType;
   coordinates: { lat: number; lng: number }[];
   properties: { propertyName: string; propertyValue: string }[];
   generalInformation: any;

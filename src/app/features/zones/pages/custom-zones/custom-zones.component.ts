@@ -3,6 +3,8 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  NgZone,
+  OnDestroy,
   QueryList,
   ViewChild,
   ViewChildren,
@@ -11,11 +13,13 @@ import { NgElement, WithProperties } from '@angular/elements';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { GoogleMap } from '@angular/google-maps';
+import { TerraDraw, TerraDrawPointMode, TerraDrawPolygonMode } from 'terra-draw';
+import { TerraDrawGoogleMapsAdapter } from 'terra-draw-google-maps-adapter';
 
 import { GEEMapLayerModel } from '@app/common/models/geeMapLayer.model';
 import { ZonesService } from '@app/common/services/zones.service';
 import { ConfirmInfoModel } from '@app/common/directives/confirm/confirm.model';
-import { ZoneModel } from '@app/common/models/zone.model';
+import { ZoneModel, ZoneType } from '@app/common/models/zone.model';
 import { LayersService } from '@app/common/services/layers.service';
 import { NotificationService } from '@app/common/components/notification/notification.service';
 import { Settings } from '@app/app.settings.model';
@@ -27,12 +31,15 @@ import { ExportZonesComponent } from '../../components/export-zones/export-zones
 import { DeleteZonesComponent } from '../../components/delete-zones/delete-zones.component';
 import { AddZoneComponent } from '../../components/add-zone/add-zone.component';
 
+// Terra Draw mode names ('static' = no drawing, the map can be moved)
+type DrawingMode = 'static' | 'point' | 'polygon';
+
 @Component({
   selector: 'app-custom-zones',
   templateUrl: './custom-zones.component.html',
   styleUrls: ['./custom-zones.component.scss'],
 })
-export class CustomZonesPageComponent implements AfterViewInit {
+export class CustomZonesPageComponent implements AfterViewInit, OnDestroy {
   public settings: Settings;
 
   @ViewChild(GoogleMap, { static: false }) mapInstance: GoogleMap;
@@ -53,7 +60,15 @@ export class CustomZonesPageComponent implements AfterViewInit {
 
   public mapLayers = [];
 
-  drawingManager: google.maps.drawing.DrawingManager;
+  // Google Drawing Library (DrawingManager) was removed in Maps JavaScript API 3.65,
+  // Terra Draw is the replacement recommended by Google
+  drawing: TerraDraw;
+
+  drawingMode: DrawingMode = 'static';
+
+  isDrawingReady: boolean = false;
+
+  @ViewChild('drawingControl', { static: true }) drawingControl: ElementRef<HTMLElement>;
 
   confirmInformation: ConfirmInfoModel = {
     title: 'Eliminar Zona',
@@ -72,7 +87,8 @@ export class CustomZonesPageComponent implements AfterViewInit {
     private notificationService: NotificationService,
     public router: Router,
     private layersService: LayersService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private ngZone: NgZone
   ) {
     this.settings = appSettings.settings;
     // TODO: Move to configuration
@@ -116,6 +132,12 @@ export class CustomZonesPageComponent implements AfterViewInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.drawing?.enabled) {
+      this.drawing.stop();
+    }
+  }
+
   // #region GoogleMap and Layers
   private loadLayers() {
     const notification = this.notificationService.showAction('Cargando las capas...');
@@ -128,7 +150,7 @@ export class CustomZonesPageComponent implements AfterViewInit {
       notification.dismiss();
     });
     // Initialize Drawing
-    this.initDrawingManager();
+    this.initDrawing();
   }
 
   // LAZY LOADING PROBLEM (multiple googlemap API)
@@ -156,51 +178,87 @@ export class CustomZonesPageComponent implements AfterViewInit {
   //     );
   // }
 
-  private initDrawingManager() {
-    this.mapInstance.googleMap.addListener('click', () => {
+  private initDrawing() {
+    const map = this.mapInstance.googleMap;
+    map.addListener('click', () => {
       this.noSelectedZone();
     });
-    if (!this.drawingManager) {
-      const drawingOptions = {
-        // drawingMode: google.maps.drawing.OverlayType.MARKER,
-        drawingControl: true,
-        drawingControlOptions: {
-          position: google.maps.ControlPosition.TOP_LEFT,
-          drawingModes: [
-            google.maps.drawing.OverlayType.MARKER,
-            google.maps.drawing.OverlayType.POLYGON,
-            // google.maps.drawing.OverlayType.RECTANGLE,
-          ],
-        },
-        markerOptions: {
-          draggable: true,
-        },
-        polygonOptions: {
-          strokeWeight: 1,
-          fillOpacity: 0.5,
-          editable: true,
-          fillColor: '#EA4435',
-          strokeColor: '#FFF',
-          draggable: true,
-          clickable: true,
-        },
-        rectangleOptions: {
-          strokeWeight: 1,
-          fillOpacity: 0.5,
-          editable: true,
-          fillColor: '#EA4435',
-          strokeColor: '#FFF',
-          draggable: true,
-          clickable: true,
-        },
-      };
-      this.drawingManager = new google.maps.drawing.DrawingManager(drawingOptions);
-      this.drawingManager.setMap(this.mapInstance.googleMap);
-      google.maps.event.addListener(this.drawingManager, 'overlaycomplete', (event) => {
-        this.zonesService.addZone(event);
-        event.overlay.setMap(null);
-      });
+    if (!this.drawing) {
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.drawingControl.nativeElement);
+      // Terra Draw adapter needs an id on the map element and a map projection
+      if (!map.getDiv().id) {
+        map.getDiv().id = 'custom-zones-map';
+      }
+      if (map.getProjection()) {
+        this.startDrawing(map);
+      } else {
+        google.maps.event.addListenerOnce(map, 'projection_changed', () => this.startDrawing(map));
+      }
     }
+  }
+
+  private startDrawing(map: google.maps.Map) {
+    // Outside Angular to avoid change detection on every map mouse event
+    this.ngZone.runOutsideAngular(() => {
+      this.drawing = new TerraDraw({
+        adapter: new TerraDrawGoogleMapsAdapter({ map, lib: google.maps, coordinatePrecision: 9 }),
+        modes: [
+          new TerraDrawPointMode({
+            styles: { pointColor: '#EA4435', pointWidth: 6, pointOutlineColor: '#FFFFFF', pointOutlineWidth: 1 },
+          }),
+          new TerraDrawPolygonMode({
+            styles: {
+              fillColor: '#EA4435',
+              fillOpacity: 0.5,
+              outlineColor: '#FFFFFF',
+              outlineWidth: 1,
+              closingPointColor: '#FFFFFF',
+              closingPointOutlineColor: '#EA4435',
+            },
+          }),
+        ],
+      });
+
+      this.drawing.on('ready', () => {
+        this.ngZone.run(() => {
+          this.isDrawingReady = true;
+        });
+      });
+
+      this.drawing.on('finish', (id, context) => {
+        if (context.action !== 'draw') return;
+        const feature = this.drawing.getSnapshotFeature(id);
+        // The zone is drawn by ZonesService as a google.maps Marker/Polygon (editable, selectable, ...)
+        setTimeout(() => {
+          if (this.drawing.enabled) {
+            this.drawing.removeFeatures([id]);
+          }
+        });
+        if (!feature) return;
+
+        this.ngZone.run(() => {
+          if (feature.geometry.type === 'Point') {
+            const [lng, lat] = feature.geometry.coordinates;
+            this.zonesService.addZone(ZoneType.MARKER, { lat, lng });
+          } else if (feature.geometry.type === 'Polygon') {
+            // GeoJSON rings repeat the first coordinate at the end, Google Maps polygons don't need it
+            const ring = feature.geometry.coordinates[0].slice(0, -1);
+            this.zonesService.addZone(
+              ZoneType.POLYGON,
+              ring.map(([lng, lat]) => ({ lat, lng }))
+            );
+          }
+        });
+      });
+
+      this.drawing.start();
+    });
+  }
+
+  setDrawingMode(mode: DrawingMode) {
+    if (!this.isDrawingReady) return;
+    this.drawingMode = mode;
+    this.ngZone.runOutsideAngular(() => this.drawing.setMode(mode));
   }
 
   private setLayers() {

@@ -9578,6 +9578,16 @@ tar@^6.1.11, tar@^6.2.1:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
+terra-draw-google-maps-adapter@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/terra-draw-google-maps-adapter/-/terra-draw-google-maps-adapter-1.7.0.tgz#9a7afc06e651d80f1b8891e7f2ac804491e1c739"
+  integrity sha512-XB9X2k4r+j07MN8REDc0cHTsvu1exf+x+m3qXeYV2Ke/T0x5fQpplaWAGxbe5vn2ezP+fdH8CO7vcXiP+cdifw==
+
+terra-draw@^1.37.0:
+  version "1.37.0"
+  resolved "https://registry.yarnpkg.com/terra-draw/-/terra-draw-1.37.0.tgz#20dedb883f0bf08858dbf6958c9deefbbec08c55"
+  integrity sha512-t8aGT6tZM+ZTygPg3nRG0/B/OtjiQfrjJauMB1MLyJTFvt4gDNSgk7InFIYzGc/zOwHICJEEDn8Hq+pKzC8mag==
+
 terser-webpack-plugin@^5.3.10:
   version "5.3.10"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.3.10.tgz#904f4c9193c6fd2a03f693a2150c62a92f40d199"
